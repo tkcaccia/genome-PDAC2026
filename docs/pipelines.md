@@ -36,10 +36,11 @@ Important scripts:
 - `validate_samplesheet.py`: input samplesheet validation
 - `differential_expression_limma_template.R`: paired tumour-normal limma-voom template
 - `phenotype_group_comparison_limma_template.R`: phenotype-group and interaction comparison template
+- `run_standard_de_from_star_readspergene.R`: end-to-end STAR gene-count matrix construction with paired limma-voom and paired DESeq2 sensitivity analysis
 
 ## Differential Expression
 
-The statistically preferred downstream workflow is `limma-voom` with TMM normalization from `edgeR`. For matched tumour-normal comparisons, the model is:
+The statistically preferred downstream workflow is `limma-voom` with TMM normalization from `edgeR`, with `DESeq2` used as a sensitivity analysis when raw integer counts are available. For matched tumour-normal comparisons, the model is:
 
 ```r
 ~ patient_id + condition

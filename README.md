@@ -34,6 +34,7 @@ One historical downstream file name used during exploratory analysis implied `DE
 
 - `pipelines/rnaseq/differential_expression_limma_template.R`
 - `pipelines/rnaseq/phenotype_group_comparison_limma_template.R`
+- `pipelines/rnaseq/run_standard_de_from_star_readspergene.R`
 - `docs/differential_expression.md`
 
 For reporting, the defensible phrasing is: RNA-seq quantification was performed with nf-core/rnaseq; downstream tumour-normal and phenotype comparisons should be reported as limma-voom/edgeR-based when generated with the scripts in this repository. Historical fallback outputs should be labelled exploratory and not described as DESeq2.

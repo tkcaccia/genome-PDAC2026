@@ -36,6 +36,14 @@ The provided script is:
 pipelines/rnaseq/differential_expression_limma_template.R
 ```
 
+For STAR `ReadsPerGene.out.tab` outputs, the end-to-end reusable script is:
+
+```text
+pipelines/rnaseq/run_standard_de_from_star_readspergene.R
+```
+
+This script constructs an unstranded gene-count matrix, writes clean metadata, runs paired `limma-voom` as the primary model, and runs paired `DESeq2` as a sensitivity analysis.
+
 Example:
 
 ```bash
@@ -72,6 +80,8 @@ The provided reusable script is:
 ```text
 pipelines/rnaseq/phenotype_group_comparison_limma_template.R
 ```
+
+The STAR-count script above also performs the tumour-only extreme phenotype comparison when a phenotype assignment table is supplied.
 
 Required metadata columns:
 
