@@ -12,6 +12,19 @@ The project combined standard nf-core pipelines with downstream R/Python/Bash sc
 - `SigProfilerAssignment 1.1.3` for mutational signature assignment
 - Local downstream scripts for COSMIC annotation, KRAS review, MSI/MMR review, immune/stromal analyses, circos-style plots and integrated summaries
 
+## Data Flow
+
+| Source pipeline/tool | Main file classes used | Downstream transformation | Final analysis use |
+| --- | --- | --- | --- |
+| `nf-core/rnaseq 3.24.0` | STAR `ReadsPerGene.out.tab`, Salmon quantification outputs, RNA-seq QC summaries | Merge STAR gene-count files into a count matrix; generate normalized/log-expression matrices | Differential expression, RNA-seq QC, subtype scoring, pathway scoring, immune/stromal deconvolution and RNA-fusion context |
+| `nf-core/sarek 3.8.1` germline | Normal-sample germline VCF/annotation outputs and QC summaries | Filter/harmonize germline-relevant calls for driver, DDR and MMR panels | Germline-context review, DDR/MMR interpretation and integrated oncoprint annotations |
+| `nf-core/sarek 3.8.1` tumour-normal | Mutect2 and Strelka somatic VCFs, VEP annotations, alignment/QC outputs | Filter calls, convert to MAF-like tables and summarize by patient/sample | Somatic SNV/indel summary, driver review, KRAS validation, TMB estimation and COSMIC annotation |
+| `nf-core/sarek 3.8.1` CNA/SV | ASCAT segments, purity/ploidy outputs, Manta candidate SV calls | Summarize ASCAT segments into gene-level CNA and burden features; convert Manta calls into affected-gene/SV-type tables | CNA burden, key-gene CNA status, purity/ploidy, SV burden, interchromosomal translocation summaries and exploratory CNA/SV signatures |
+| `nf-core/rnafusion 4.1.0` | Arriba and FusionCatcher candidate fusion calls; Salmon transcript-level outputs | Filter by gene-pair/breakpoint interpretability, caller support, artifact review and DNA-SV concordance where available | Exploratory RNA fusion review and potentially clinically relevant fusion-candidate prioritization |
+| `SigProfilerAssignment 1.1.3` | SBS96/DBS/ID catalogues from somatic variants; CNV48 and SV32-style matrices from ASCAT/Manta summaries | Fit COSMIC v3.5 signatures; use exome mode for SBS/DBS/ID analyses | Exploratory SBS, DBS, indel, CNA and SV signature contribution summaries |
+| `MSIsensor-pro` | Tumour-normal WES alignments and exome-filtered microsatellite site list | Calculate microsatellite instability scores per tumour and integrate with MMR-gene evidence | MSI/MMR classification, hypermutation review and patient-prioritization tables |
+| Custom R/Python/Bash scripts | Pipeline outputs, metadata, sample-pairing tables and curated PDAC gene sets | Harmonize identifiers, check pairing, run downstream statistics, score gene sets, integrate deconvolution outputs and generate figures | Integrated genotype-phenotype summaries, manuscript-style figures, exploratory annotations and safe reusable pipeline export |
+
 ## RNA-seq Quantification
 
 Code location: `pipelines/rnaseq/`
