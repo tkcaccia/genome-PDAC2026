@@ -201,9 +201,13 @@ Input:
 
 Interpretation:
 
-- Scores are method-specific and usually not percentages unless the method explicitly reports fractions.
-- ESTIMATE score is a relative combined stromal/immune admixture score, not a percent purity.
+- Outputs must be interpreted method-by-method rather than pooled as a single immune percentage.
+- ESTIMATE scores are relative immune, stromal and combined admixture scores, not percent purity.
+- MCP-counter outputs are method-specific abundance scores.
+- xCell outputs are enrichment-style scores and should not be treated as direct cell fractions.
+- CIBERSORT, EPIC and quanTIseq can report model-derived fractions, but those fractions depend on each method's reference signature, normalization and mixture assumptions.
 - Negative scores are possible and indicate lower expression of the corresponding stromal/immune signature relative to the method scale.
+- Nominal paired tumour-normal trends should be separated from FDR-significant findings after multiple-testing correction.
 
 ## KRAS, MSI/MMR and Hypermutation Review
 
