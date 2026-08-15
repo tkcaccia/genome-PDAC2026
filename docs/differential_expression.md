@@ -59,6 +59,35 @@ Required metadata columns:
 - `patient_id`
 - `condition`, with values `Tumour` and `Normal`
 
+## Diagnostic Sensitivity Checks
+
+When `limma-voom` and `DESeq2` return different numbers of significant genes, the recommended next step is not to choose the larger list automatically. Instead, inspect sample-level QC, PCA structure, effect-size concordance and overlap between methods.
+
+The reusable diagnostic script is:
+
+```text
+pipelines/rnaseq/de_diagnostics_sensitivity.R
+```
+
+Example:
+
+```bash
+Rscript pipelines/rnaseq/de_diagnostics_sensitivity.R \
+  star_unstranded_gene_counts_matrix.tsv \
+  rnaseq_metadata_for_standard_DE.tsv \
+  DE_tumour_vs_normal_paired_limma_voom.tsv \
+  DE_tumour_vs_normal_paired_DESeq2.tsv \
+  results/de_diagnostics
+```
+
+The script writes sample QC, pairing, PCA coordinates, a diagnostic summary, a merged limma/DESeq2 table, the top discordant genes, a PCA plot, a limma-vs-DESeq2 logFC scatter plot and a library-size plot.
+
+Recommended interpretation:
+
+- Concordant effect directions across methods are more reliable than method-specific FDR calls in a small paired cohort.
+- A large discrepancy in significant-gene counts should be reported as a sensitivity-analysis limitation.
+- Biological claims should not depend only on the method that produces the largest significant-gene list.
+
 ## Phenotype Group Comparisons
 
 The student question also mentions immune/stromal/EMT tumour phenotype group comparisons. These are not the same as the tumour-normal comparison.
