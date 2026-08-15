@@ -1,0 +1,5 @@
+sample_id	patient_id	condition	phenotype_group
+PATIENT01_T	PATIENT01	Tumour	Stromal_EMT_high_Immune_low
+PATIENT01_N	PATIENT01	Normal	Stromal_EMT_high_Immune_low
+PATIENT02_T	PATIENT02	Tumour	Immune_high_Stromal_low
+PATIENT02_N	PATIENT02	Normal	Immune_high_Stromal_low

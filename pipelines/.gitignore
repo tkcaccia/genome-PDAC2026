@@ -1,0 +1,7 @@
+.DS_Store
+*.log
+*.out
+*.err
+*.bak
+__pycache__/
+.pytest_cache/

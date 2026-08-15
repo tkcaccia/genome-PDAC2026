@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.stefano.pdac.pipeline.watch</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/stefano/.local/bin/check_pdac_remote_once.sh</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StartInterval</key>
+  <integer>1800</integer>
+  <key>StandardOutPath</key>
+  <string>/Users/stefano/Library/Logs/PDACWatch/pdac_launchd_watch.stdout.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/stefano/Library/Logs/PDACWatch/pdac_launchd_watch.stderr.log</string>
+</dict>
+</plist>
