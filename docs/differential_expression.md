@@ -100,9 +100,9 @@ This is an interaction question. A clean model is possible only if there are eno
 design <- model.matrix(~ patient_id + condition * phenotype_group, data = metadata)
 ```
 
-But with only 14 patients and only three tumours in each extreme phenotype group, this is statistically fragile. For the manuscript, these results should be called exploratory.
+But with only 14 patients and only three tumours in each extreme phenotype group, this is statistically fragile. These results should be called exploratory.
 
-## How to Explain This in the Manuscript
+## How to Explain This in Methods
 
 Recommended wording:
 

@@ -1,6 +1,6 @@
 # genome-PDAC2026
 
-Reusable, patient-data-safe pipeline code and methods documentation for the PDAC2026 African pancreatic cancer multi-omics manuscript.
+Reusable, patient-data-safe pipeline code and methods documentation for the PDAC2026 African pancreatic cancer multi-omics analysis.
 
 This repository is intended to document how the analyses were performed, not to distribute private data or patient-level results. Raw FASTQ/BAM/CRAM/VCF/MAF/CNV/SV files, expression matrices, reports, figures and real result tables are deliberately excluded.
 
@@ -10,10 +10,9 @@ The GitHub Pages documentation lives in `docs/` and is designed to be published 
 
 Main pages:
 
-- `docs/index.md`: manuscript story and pipeline overview
+- `docs/index.md`: project overview and pipeline index
 - `docs/pipelines.md`: exhaustive pipeline and method map
 - `docs/differential_expression.md`: student-facing differential-expression clarification and recommended analysis code
-- `docs/manuscript_reviewer_comments.md`: reviewer-style comments for Journal of Translational Medicine
 
 ## Code Layout
 
@@ -37,7 +36,7 @@ One historical downstream file name used during exploratory analysis implied `DE
 - `pipelines/rnaseq/phenotype_group_comparison_limma_template.R`
 - `docs/differential_expression.md`
 
-For manuscript language, the defensible phrasing is: RNA-seq quantification was performed with nf-core/rnaseq; downstream tumour-normal and phenotype comparisons should be reported as limma-voom/edgeR-based when generated with the scripts in this repository. Historical fallback outputs should be labelled exploratory and not described as DESeq2.
+For reporting, the defensible phrasing is: RNA-seq quantification was performed with nf-core/rnaseq; downstream tumour-normal and phenotype comparisons should be reported as limma-voom/edgeR-based when generated with the scripts in this repository. Historical fallback outputs should be labelled exploratory and not described as DESeq2.
 
 ## Safety
 

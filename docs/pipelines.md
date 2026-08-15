@@ -117,7 +117,7 @@ Main pipeline:
 
 - `nf-core/rnafusion 4.1.0`
 
-Tools noted in the manuscript:
+Tools used in the analysis:
 
 - Arriba
 - FusionCatcher
@@ -219,7 +219,7 @@ Main principles:
 - Filtered/subclonal candidate: candidate exists but requires cautious interpretation
 - MSI/MMR candidate: MSIsensor-pro signal plus MMR gene or mutation-pattern support
 
-Final manuscript framing:
+Final analysis framing:
 
 - Patient 23 is the strongest computational KRAS-wild-type MSI/MMR-deficient candidate.
 - Patient 35 is borderline MSI-elevated but not equivalent to patient 23.
