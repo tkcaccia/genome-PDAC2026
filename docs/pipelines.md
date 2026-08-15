@@ -118,13 +118,21 @@ Main pipeline:
 
 - `nf-core/rnafusion 4.1.0`
 
-Tools used in the analysis:
+Final successful tools:
 
 - Arriba
 - FusionCatcher
 - Salmon
 
 `fusionreport` was not used in the completed workflow because its database step failed despite local database availability. This should be documented as a limitation of the fusion workflow rather than hidden.
+
+Candidate filtering/prioritization:
+
+- Review gene-pair and breakpoint interpretability.
+- Review caller support and remove likely recurrent artifacts or low-confidence calls.
+- Prioritize PDAC-relevant or actionable genes including NTRK1, NTRK2, NTRK3, ALK, RET, ROS1, FGFR2, NRG1, ERBB2, BRAF and RAF1.
+- Cross-check RNA fusion candidates against DNA structural-variant calls where available.
+- Treat unvalidated calls as exploratory candidates, not confirmed clinical fusions.
 
 ## COSMIC Annotation
 
