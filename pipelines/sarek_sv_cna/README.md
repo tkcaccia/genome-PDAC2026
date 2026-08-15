@@ -23,6 +23,13 @@ The scripts in this folder run a dedicated Sarek retry with:
 
 ASCAT on WES requires WES-specific loci, allele, GC, and replication-timing reference bundles. The remote launcher downloads the official hg38 WES bundles published by the ASCAT authors and then rewrites the loci files to `chr`-based format because the cohort CRAMs are aligned against a `chr`-based GRCh38 reference.
 
+Interpretation limits:
+
+- This is a WES-compatible SV/CNA workflow, not a WGS-grade structural-variation workflow.
+- ASCAT WES outputs are useful for purity/ploidy, allele-specific copy-number and gene-level CNA summaries at captured loci.
+- Manta WES outputs are useful for candidate SV and breakend prioritization in covered regions, but exome capture gives lower and less uniform breakpoint sensitivity than whole-genome sequencing.
+- Interchromosomal translocations, CNV burden, SV burden and circos links should therefore be interpreted as exploratory summaries requiring orthogonal review before driver-level conclusions.
+
 Primary references:
 
 - [ASCAT GitHub](https://github.com/VanLoo-lab/ascat)
@@ -47,6 +54,8 @@ Launch flow:
 [summarize_interchromosomal_translocations.py](/Users/stefano/Documents/SEQ/PDAC2026/sarek_sv_cna/summarize_interchromosomal_translocations.py) summarizes Manta breakend records and reports interchromosomal translocations per tumor-normal pair.
 
 [make_patient_circos.py](/Users/stefano/Documents/SEQ/PDAC2026/sarek_sv_cna/make_patient_circos.py) builds one circos-style PNG per patient from the completed Sarek outputs. Each plot includes all GRCh38 autosomes plus chrX/chrY, cytobands and centromeres, a chromosome-level PASS SNV load ring, 5 Mb PASS SNV density bars, ASCAT total-copy-number segments, Manta intrachromosomal SV links, highlighted interchromosomal translocations, PDAC driver-gene markers, matched tumor-normal RNA expression change, and likely biallelic-inactivation flags. Generated PNGs are result files and are intentionally not committed to GitHub.
+
+Because the circos plots use WES-derived Manta and ASCAT calls, absence of a link or segment should not be interpreted as absence of a genome-wide SV/CNA event.
 
 [run_enhanced_circos_remote.sh](/Users/stefano/Documents/SEQ/PDAC2026/sarek_sv_cna/run_enhanced_circos_remote.sh) records the exact remote command used to download the missing UCSC cytoband reference and regenerate the enhanced circos plots.
 

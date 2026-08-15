@@ -105,6 +105,13 @@ Important scripts:
 
 Outputs generated during the study included gene-level CNA summaries, SV burden summaries, translocation summaries and circos-style plots. The output files themselves are not included here.
 
+Interpretation limits:
+
+- These are WES-compatible ASCAT and Manta inferences, not WGS-grade copy-number/SV catalogues.
+- ASCAT on exome data is useful for allele-specific copy-number, purity/ploidy and gene-level CNA summaries at captured loci.
+- Manta on exome data can nominate candidate SVs supported by reads in sufficiently covered regions, but breakpoint sensitivity is lower and less uniform than WGS.
+- Broad genome-wide structural-pattern, chromothripsis-like, translocation-burden and genomic-scar conclusions should be treated as exploratory unless confirmed by WGS or orthogonal assays.
+
 ## RNA Fusion
 
 Code location: `pipelines/rnafusion/`
@@ -191,6 +198,8 @@ Important scripts:
 Interpretation:
 
 - These are exploratory WES-derived signatures, not definitive whole-genome scar measurements.
+- CNV48/SV32 matrices derived from ASCAT/Manta WES outputs have lower and less uniform genome-wide sensitivity than WGS-derived matrices.
+- Use these signatures for prioritization and hypothesis generation, not definitive structural-scar assignment.
 
 ## Immune and Stromal Deconvolution
 
