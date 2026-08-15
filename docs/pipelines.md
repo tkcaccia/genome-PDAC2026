@@ -137,7 +137,7 @@ Candidate filtering/prioritization:
 
 - Review gene-pair and breakpoint interpretability.
 - Review caller support and remove likely recurrent artifacts or low-confidence calls.
-- Prioritize PDAC-relevant or actionable genes including NTRK1, NTRK2, NTRK3, ALK, RET, ROS1, FGFR2, NRG1, ERBB2, BRAF and RAF1.
+- Prioritize PDAC-relevant or potentially clinically relevant genes including NTRK1, NTRK2, NTRK3, ALK, RET, ROS1, FGFR2, NRG1, ERBB2, BRAF and RAF1.
 - Cross-check RNA fusion candidates against DNA structural-variant calls where available.
 - Treat unvalidated calls as exploratory candidates, not confirmed clinical fusions.
 
@@ -260,6 +260,6 @@ The final integrated interpretation combined:
 - RNA subtype/phenotype
 - Immune/stromal scores
 - CAF/EMT/hypoxia/pathway scores
-- Exploratory actionable annotations
+- Exploratory potentially clinically relevant annotations
 
-These outputs are research-grade and hypothesis-generating. They should not be used as clinical reports.
+These outputs are research-grade and hypothesis-generating. They should not be used as clinical reports or treatment recommendations; any candidate finding may warrant orthogonal validation and appropriate clinical review before further use.
