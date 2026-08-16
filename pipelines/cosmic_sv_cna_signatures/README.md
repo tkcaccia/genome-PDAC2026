@@ -36,6 +36,6 @@ Typical remote inputs:
 
 Key scripts:
 
-- [run_sigprofiler_sv_cna_signatures.sh](/Users/stefano/Documents/SEQ/PDAC2026/cosmic_sv_cna_signatures/run_sigprofiler_sv_cna_signatures.sh)
-- [run_sigprofiler_sv_cna_signatures.py](/Users/stefano/Documents/SEQ/PDAC2026/cosmic_sv_cna_signatures/run_sigprofiler_sv_cna_signatures.py)
-- [summarize_sigprofiler_sv_cna.py](/Users/stefano/Documents/SEQ/PDAC2026/cosmic_sv_cna_signatures/summarize_sigprofiler_sv_cna.py)
+- [`run_sigprofiler_sv_cna_signatures.sh`](run_sigprofiler_sv_cna_signatures.sh)
+- [`run_sigprofiler_sv_cna_signatures.py`](run_sigprofiler_sv_cna_signatures.py)
+- [`summarize_sigprofiler_sv_cna.py`](summarize_sigprofiler_sv_cna.py)

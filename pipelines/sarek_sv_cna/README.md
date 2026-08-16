@@ -45,19 +45,19 @@ Expected remote outputs:
 
 Launch flow:
 
-1. Run [launch_remote.sh](/Users/stefano/Documents/SEQ/PDAC2026/sarek_sv_cna/launch_remote.sh) locally.
-2. It uses the shared SSH helper to execute [run_sarek_sv_cna_remote.sh](/Users/stefano/Documents/SEQ/PDAC2026/sarek_sv_cna/run_sarek_sv_cna_remote.sh) on the remote Ubuntu workstation.
+1. Run [`launch_remote.sh`](launch_remote.sh) locally after configuring the shared SSH helper.
+2. It uses the shared SSH helper to execute [`run_sarek_sv_cna_remote.sh`](run_sarek_sv_cna_remote.sh) on the remote Ubuntu workstation.
 3. The remote script backgrounds the job under `nohup`, downloads/prepares ASCAT references if needed, and starts Sarek with `-resume`.
 
 ## Downstream Summaries
 
-[summarize_interchromosomal_translocations.py](/Users/stefano/Documents/SEQ/PDAC2026/sarek_sv_cna/summarize_interchromosomal_translocations.py) summarizes Manta breakend records and reports interchromosomal translocations per tumor-normal pair.
+[`summarize_interchromosomal_translocations.py`](summarize_interchromosomal_translocations.py) summarizes Manta breakend records and reports interchromosomal translocations per tumor-normal pair.
 
-[make_patient_circos.py](/Users/stefano/Documents/SEQ/PDAC2026/sarek_sv_cna/make_patient_circos.py) builds one circos-style PNG per patient from the completed Sarek outputs. Each plot includes all GRCh38 autosomes plus chrX/chrY, cytobands and centromeres, a chromosome-level PASS SNV load ring, 5 Mb PASS SNV density bars, ASCAT total-copy-number segments, Manta intrachromosomal SV links, highlighted interchromosomal translocations, PDAC driver-gene markers, matched tumor-normal RNA expression change, and likely biallelic-inactivation flags. Generated PNGs are result files and are intentionally not committed to GitHub.
+[`make_patient_circos.py`](make_patient_circos.py) builds one circos-style PNG per patient from the completed Sarek outputs. Each plot includes all GRCh38 autosomes plus chrX/chrY, cytobands and centromeres, a chromosome-level PASS SNV load ring, 5 Mb PASS SNV density bars, ASCAT total-copy-number segments, Manta intrachromosomal SV links, highlighted interchromosomal translocations, PDAC driver-gene markers, matched tumor-normal RNA expression change, and likely biallelic-inactivation flags. Generated PNGs are result files and are intentionally not committed to GitHub.
 
 Because the circos plots use WES-derived Manta and ASCAT calls, absence of a link or segment should not be interpreted as absence of a genome-wide SV/CNA event.
 
-[run_enhanced_circos_remote.sh](/Users/stefano/Documents/SEQ/PDAC2026/sarek_sv_cna/run_enhanced_circos_remote.sh) records the exact remote command used to download the missing UCSC cytoband reference and regenerate the enhanced circos plots.
+[`run_enhanced_circos_remote.sh`](run_enhanced_circos_remote.sh) records the exact remote command used to download the missing UCSC cytoband reference and regenerate the enhanced circos plots.
 
 The enhanced circos run uses these additional inputs:
 
