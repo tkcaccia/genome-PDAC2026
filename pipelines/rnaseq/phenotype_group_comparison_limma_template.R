@@ -35,9 +35,17 @@ if (length(missing_cols) > 0) {
   stop("Missing metadata columns: ", paste(missing_cols, collapse = ", "), call. = FALSE)
 }
 
+normalize_phenotype_group <- function(x) {
+  x <- as.character(x)
+  x[x %in% c("Immune_high_Stromal_low", "immune_high_stromal_low")] <- "ImmuneHigh_StromalLow"
+  x[x %in% c("Stromal_EMT_high_Immune_low", "stromal_emt_high_immune_low")] <- "StromalHigh_EMTHigh_ImmuneLow"
+  x
+}
+
 metadata <- metadata[condition %in% c("Tumour", "Normal")]
 metadata[, condition := factor(condition, levels = c("Normal", "Tumour"))]
 metadata[, patient_id := factor(patient_id)]
+metadata[, phenotype_group := normalize_phenotype_group(phenotype_group)]
 metadata[, phenotype_group := factor(phenotype_group)]
 
 common_samples <- intersect(colnames(counts), metadata$sample_id)
@@ -76,7 +84,7 @@ run_limma_voom(
 )
 
 # 2. Tumour-only phenotype contrast between the two extreme groups.
-extreme_groups <- c("Immune_high_Stromal_low", "Stromal_EMT_high_Immune_low")
+extreme_groups <- c("ImmuneHigh_StromalLow", "StromalHigh_EMTHigh_ImmuneLow")
 tumour_meta <- metadata[condition == "Tumour" & phenotype_group %in% extreme_groups]
 if (length(unique(tumour_meta$phenotype_group)) == 2 && nrow(tumour_meta) >= 4) {
   tumour_meta[, phenotype_group := factor(phenotype_group, levels = extreme_groups)]
@@ -86,7 +94,7 @@ if (length(unique(tumour_meta$phenotype_group)) == 2 && nrow(tumour_meta) >= 4) 
     tumour_counts,
     tumour_meta,
     tumour_design,
-    "phenotype_groupStromal_EMT_high_Immune_low",
+    "phenotype_groupStromalHigh_EMTHigh_ImmuneLow",
     file.path(outdir, "DE_tumour_stromal_emt_high_vs_immune_high_limma.tsv")
   )
 } else {

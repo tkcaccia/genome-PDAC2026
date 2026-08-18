@@ -98,6 +98,8 @@ The phenotype analysis asks:
 Among tumour samples only, do stromal-high/EMT-high/immune-low tumours differ from immune-high/stromal-low tumours?
 ```
 
+Important: the phenotype-group comparison script does **not** calculate immune, stromal or EMT scores. It assumes a previous scoring/integration step has already labelled each tumour in a `phenotype_group` column. If that column is absent, the script cannot know which tumours are stromal-high, EMT-high or immune-high.
+
 Recommended tumour-only model:
 
 ```r
@@ -121,9 +123,17 @@ Required metadata columns:
 
 Recommended group labels:
 
-- `Stromal_EMT_high_Immune_low`
-- `Immune_high_Stromal_low`
+- `StromalHigh_EMTHigh_ImmuneLow`
+- `ImmuneHigh_StromalLow`
 - `Intermediate`
+
+Older scripts or notes may use equivalent underscore-heavy labels such as `Stromal_EMT_high_Immune_low` and `Immune_high_Stromal_low`. The current reusable scripts normalize these aliases, but the metadata should still be inspected before running the analysis.
+
+For a full explanation of the upstream scoring and group assignment, see:
+
+```text
+docs/rnaseq_phenotype_workflow.md
+```
 
 ## Optional Two-Way/Interaction-Style Question
 

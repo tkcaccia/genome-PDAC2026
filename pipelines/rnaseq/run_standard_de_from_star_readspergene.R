@@ -41,6 +41,13 @@ sample_from_file <- function(path) {
   sub("^PC0*([0-9]+[NT]).*$", "\\1_RNA", base)
 }
 
+normalize_phenotype_group <- function(x) {
+  x <- as.character(x)
+  x[x %in% c("Immune_high_Stromal_low", "immune_high_stromal_low")] <- "ImmuneHigh_StromalLow"
+  x[x %in% c("Stromal_EMT_high_Immune_low", "stromal_emt_high_immune_low")] <- "StromalHigh_EMTHigh_ImmuneLow"
+  x
+}
+
 count_list <- lapply(files, read_star_counts)
 sample_ids <- vapply(files, sample_from_file, character(1))
 names(count_list) <- sample_ids
@@ -70,6 +77,7 @@ counts <- counts[, metadata$sample_id, drop = FALSE]
 if (!is.na(phenotype_file) && file.exists(phenotype_file)) {
   phenotype <- fread(phenotype_file)
   phenotype[, patient_id := as.character(patient_id)]
+  phenotype[, phenotype_group := normalize_phenotype_group(phenotype_group)]
   metadata[, patient_id_chr := as.character(patient_id)]
   metadata <- merge(
     metadata,

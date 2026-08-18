@@ -1,0 +1,4 @@
+patient_id	phenotype_group	notes
+P01	StromalHigh_EMTHigh_ImmuneLow	Example only: assign from upstream immune/stromal/EMT scoring, not from this template
+P02	ImmuneHigh_StromalLow	Example only: assign from upstream immune/stromal/EMT scoring, not from this template
+P03	Intermediate	Example only: use when tumour does not belong to one of the two extreme groups

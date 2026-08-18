@@ -31,3 +31,4 @@ This GitHub Pages site documents the pipelines and code used for the analysis in
 
 - [Pipeline details](pipelines.md)
 - [Differential expression clarification](differential_expression.md)
+- [RNA-seq phenotype workflow: scores, groups and comparisons](rnaseq_phenotype_workflow.md)

@@ -13,6 +13,7 @@ Main pages:
 - `docs/index.md`: project overview and pipeline index
 - `docs/pipelines.md`: exhaustive pipeline and method map
 - `docs/differential_expression.md`: student-facing differential-expression clarification and recommended analysis code
+- `docs/rnaseq_phenotype_workflow.md`: student-facing explanation of immune/stromal/EMT scoring, phenotype assignment and phenotype-group differential expression
 
 ## Code Layout
 
@@ -38,6 +39,8 @@ One historical downstream file name used during exploratory analysis implied `DE
 - `docs/differential_expression.md`
 
 For reporting, the defensible phrasing is: RNA-seq quantification was performed with nf-core/rnaseq; downstream tumour-normal and phenotype comparisons should be reported as limma-voom/edgeR-based when generated with the scripts in this repository. Historical fallback outputs should be labelled exploratory and not described as DESeq2.
+
+Important distinction for students: the phenotype-group limma script does not calculate immune, stromal or EMT scores. Those scores are upstream inputs used to assign tumours to groups such as `StromalHigh_EMTHigh_ImmuneLow` or `ImmuneHigh_StromalLow`. The limma script only compares expression between groups after that assignment exists in the metadata.
 
 ## Safety
 
