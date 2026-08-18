@@ -69,6 +69,38 @@ For phenotype-group analyses, the recommended approach is:
 
 The historical Python fallback should be treated as exploratory and not described as DESeq2.
 
+## Immune/Stromal/EMT Scoring and Phenotype Assignment
+
+The immune/stromal/EMT phenotype groups were not created by the limma differential-expression scripts. They came from upstream RNA-seq score integration.
+
+The workflow is:
+
+```text
+nf-core/rnaseq expression outputs
+  -> normalized/log expression matrices
+  -> immune, stromal, CAF, EMT, hypoxia and pathway scores
+  -> integrated tumour phenotype labels
+  -> limma-voom phenotype-group comparison
+```
+
+The scoring layer used normalized RNA-seq expression matrices from nf-core/rnaseq/STAR-derived gene counts. In practical terms, the inputs were gene-by-sample expression tables generated after RNA-seq processing, not VCF/CNV/SV files. The scoring step then combined several method families:
+
+- ESTIMATE for relative immune, stromal and combined ESTIMATE scores.
+- MCP-counter for immune and stromal population abundance-like scores, including fibroblast-related signal.
+- CIBERSORT LM22 for model-derived immune-cell fractions.
+- EPIC, xCell and quanTIseq through immunedeconv for additional immune/stromal deconvolution.
+- Curated gene-set scoring for CAF, EMT, hypoxia, angiogenesis, pathway and PDAC-related programmes.
+
+These outputs were interpreted on their own method-specific scales. They were not treated as the same kind of number and were not all interpreted as percentages.
+
+The score outputs were then reviewed together. Tumours with high fibroblast/stromal/CAF and EMT-like signal but relatively lower immune signal were labelled stromal-high/EMT-high/immune-low. Tumours with stronger immune signal and lower stromal signal were labelled immune-high/stromal-low. Tumours that did not clearly fit either extreme were labelled intermediate. The broad group labels used by downstream scripts are:
+
+- `StromalHigh_EMTHigh_ImmuneLow`
+- `ImmuneHigh_StromalLow`
+- `Intermediate`
+
+The phenotype-group limma scripts use this already assigned `phenotype_group` metadata column. They do not calculate ESTIMATE, MCP-counter, CIBERSORT, EPIC, xCell, quanTIseq, CAF or EMT scores themselves. A safe example metadata template is provided in `templates/phenotype_assignment_template.tsv`.
+
 ## Germline and Somatic WES
 
 Code locations:

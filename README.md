@@ -12,8 +12,6 @@ Main pages:
 
 - `docs/index.md`: project overview and pipeline index
 - `docs/pipelines.md`: exhaustive pipeline and method map
-- `docs/differential_expression.md`: student-facing differential-expression clarification and recommended analysis code
-- `docs/rnaseq_phenotype_workflow.md`: student-facing explanation of immune/stromal/EMT scoring, phenotype assignment and phenotype-group differential expression
 
 ## Code Layout
 
@@ -29,16 +27,18 @@ Main pages:
 - `pipelines/shared_runtime/`: shared shell and validation helpers
 - `pipelines/monitoring_and_recovery/`: remote watchdog/recovery scripts
 
-## Differential Expression Clarification
+## RNA-seq Downstream Analysis
 
-One historical downstream file name used during exploratory analysis implied `DESeq2_or_limma`, but one fallback calculation used custom Python log2CPM and paired statistics rather than DESeq2, edgeR or limma. This repository addresses that concern by documenting the distinction and providing a reproducible `limma-voom` paired workflow in:
+RNA-seq downstream analysis has two different layers that should not be mixed up. First, expression matrices are used to calculate immune, stromal, EMT, CAF and pathway-related scores. Those scores are then integrated to assign broad tumour phenotype groups. Only after those groups exist does the limma-voom phenotype comparison test which genes differ between groups.
+
+The reproducible tumour-normal and phenotype-comparison code is in:
 
 - `pipelines/rnaseq/differential_expression_limma_template.R`
 - `pipelines/rnaseq/phenotype_group_comparison_limma_template.R`
 - `pipelines/rnaseq/run_standard_de_from_star_readspergene.R`
-- `docs/differential_expression.md`
+- `docs/pipelines.md`
 
-For reporting, the defensible phrasing is: RNA-seq quantification was performed with nf-core/rnaseq; downstream tumour-normal and phenotype comparisons should be reported as limma-voom/edgeR-based when generated with the scripts in this repository. Historical fallback outputs should be labelled exploratory and not described as DESeq2.
+For reporting, the defensible phrasing is: RNA-seq quantification was performed with nf-core/rnaseq; downstream tumour-normal and phenotype comparisons were performed with limma-voom/edgeR-based scripts in this repository, with DESeq2 used as a sensitivity analysis where explicitly stated. Historical fallback outputs should be labelled exploratory and not described as DESeq2.
 
 Important distinction for students: the phenotype-group limma script does not calculate immune, stromal or EMT scores. Those scores are upstream inputs used to assign tumours to groups such as `StromalHigh_EMTHigh_ImmuneLow` or `ImmuneHigh_StromalLow`. The limma script only compares expression between groups after that assignment exists in the metadata.
 
