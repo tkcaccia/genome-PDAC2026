@@ -61,6 +61,7 @@ Rscript create_programme_score_table_figure.R \
   --score-table path/to/integrated_tumour_programme_scores.tsv \
   --sample-column sample_id \
   --phenotype-column phenotype_group \
+  --msi-column validated_MSI_MMR_status \
   --out-dir results/programme_score_summary
 ```
 
@@ -72,6 +73,7 @@ This writes:
 - `programme_score_heatmap.pdf`
 
 This is the safe template corresponding to the manuscript's GSVA/ssGSEA programme-score summary table and heatmap.
+If `--phenotype-column` is present, the heatmap includes a tumour microenvironment phenotype annotation bar. If `--msi-column` is supplied, it also includes an MSI/MMR annotation bar.
 
 ## Important Interpretation Notes
 

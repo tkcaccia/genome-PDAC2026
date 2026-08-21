@@ -9,6 +9,7 @@
 suppressPackageStartupMessages({
   library(data.table)
   library(ggplot2)
+  library(patchwork)
 })
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -23,6 +24,7 @@ score_table <- get_arg("--score-table")
 out_dir <- get_arg("--out-dir")
 sample_column <- get_arg("--sample-column", "sample_id")
 phenotype_column <- get_arg("--phenotype-column", "phenotype_group")
+msi_column <- get_arg("--msi-column", NULL)
 if (is.null(score_table) || is.null(out_dir)) {
   stop("Usage: Rscript create_programme_score_table_figure.R --score-table scores.tsv --out-dir results/")
 }
@@ -31,6 +33,7 @@ dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 dt <- fread(score_table, check.names = TRUE)
 if (!sample_column %in% names(dt)) stop("Missing sample column: ", sample_column)
 if (!phenotype_column %in% names(dt)) dt[, (phenotype_column) := "not_provided"]
+if (!is.null(msi_column) && !msi_column %in% names(dt)) stop("Missing MSI/MMR column: ", msi_column)
 
 programme_map <- data.table(
   score_col = c(
@@ -107,7 +110,86 @@ setorder(summary, category, programme)
 fwrite(summary, file.path(out_dir, "programme_score_summary.tsv"), sep = "\t")
 fwrite(long, file.path(out_dir, "programme_scores_long.tsv"), sep = "\t")
 
-long[, tumour_label := factor(tumour_label, levels = unique(tumour_label))]
+annotation <- unique(long[, .(tumour_label, phenotype_group)])
+if (!is.null(msi_column)) {
+  annotation <- merge(
+    annotation,
+    unique(dt[, .(tumour_label, MSI_MMR_status = as.character(get(msi_column)))]),
+    by = "tumour_label",
+    all.x = TRUE
+  )
+} else {
+  annotation[, MSI_MMR_status := NA_character_]
+}
+phenotype_levels <- c("StromalHigh_EMTHigh_ImmuneLow", "Intermediate_or_mixed", "ImmuneHigh_StromalLow", "not_provided")
+annotation[, phenotype_group := factor(phenotype_group, levels = phenotype_levels)]
+annotation <- annotation[order(phenotype_group, tumour_label)]
+tumour_levels <- annotation$tumour_label
+
+pretty_phenotype <- c(
+  "StromalHigh_EMTHigh_ImmuneLow" = "Stromal/EMT-high\nimmune-low",
+  "Intermediate_or_mixed" = "Intermediate/\nmixed",
+  "ImmuneHigh_StromalLow" = "Immune-high\nstromal-low",
+  "not_provided" = "Not provided"
+)
+annotation[, TME_phenotype := pretty_phenotype[as.character(phenotype_group)]]
+annotation[is.na(TME_phenotype), TME_phenotype := as.character(phenotype_group)]
+annotation[, MSI_MMR := fifelse(
+  is.na(MSI_MMR_status),
+  NA_character_,
+  fifelse(
+    grepl("MSI-high|MMR-deficient", MSI_MMR_status, ignore.case = TRUE),
+    "MSI-high/\nMMRd",
+    fifelse(
+      grepl("Borderline", MSI_MMR_status, ignore.case = TRUE),
+      "Borderline\nMSI",
+      fifelse(
+        grepl("variant review", MSI_MMR_status, ignore.case = TRUE),
+        "MSS + MMR\nvariant",
+        "MSS/low\nMSI"
+      )
+    )
+  )
+)]
+
+annotation_cols <- c("TME_phenotype")
+if (!all(is.na(annotation$MSI_MMR))) annotation_cols <- c(annotation_cols, "MSI_MMR")
+ann_long <- melt(
+  annotation[, c("tumour_label", annotation_cols), with = FALSE],
+  id.vars = "tumour_label",
+  variable.name = "track",
+  value.name = "annotation"
+)
+ann_long[, track := factor(track, levels = rev(annotation_cols), labels = rev(c("TME phenotype", "MSI/MMR")[seq_along(annotation_cols)]))]
+ann_long[, tumour_label := factor(tumour_label, levels = tumour_levels)]
+
+annotation_colours <- c(
+  "Stromal/EMT-high\nimmune-low" = "#C44E52",
+  "Intermediate/\nmixed" = "#B0B0B0",
+  "Immune-high\nstromal-low" = "#4C72B0",
+  "Not provided" = "#DDDDDD",
+  "MSI-high/\nMMRd" = "#7B3294",
+  "Borderline\nMSI" = "#C2A5CF",
+  "MSS + MMR\nvariant" = "#F6E8C3",
+  "MSS/low\nMSI" = "#E6E6E6"
+)
+annotation_colours <- annotation_colours[names(annotation_colours) %in% ann_long$annotation]
+
+p_ann <- ggplot(ann_long, aes(tumour_label, track, fill = annotation)) +
+  geom_tile(color = "white", linewidth = 0.3) +
+  scale_fill_manual(values = annotation_colours, name = "Annotation") +
+  labs(x = NULL, y = NULL) +
+  theme_minimal(base_size = 10) +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.text.y = element_text(face = "bold", size = 9),
+    panel.grid = element_blank(),
+    legend.position = "right",
+    plot.margin = margin(5, 25, 0, 15)
+  )
+
+long[, tumour_label := factor(tumour_label, levels = tumour_levels)]
 long[, programme := factor(programme, levels = rev(programme_map$programme))]
 
 p <- ggplot(long, aes(tumour_label, programme, fill = pmax(pmin(z_score, 2.5), -2.5))) +
@@ -127,7 +209,9 @@ p <- ggplot(long, aes(tumour_label, programme, fill = pmax(pmin(z_score, 2.5), -
     plot.margin = margin(15, 25, 15, 15)
   )
 
-ggsave(file.path(out_dir, "programme_score_heatmap.png"), p, width = 11.5, height = 8.5, dpi = 300)
-ggsave(file.path(out_dir, "programme_score_heatmap.pdf"), p, width = 11.5, height = 8.5)
+combined <- p_ann / p + plot_layout(heights = c(0.13, 0.87), guides = "collect")
+
+ggsave(file.path(out_dir, "programme_score_heatmap.png"), combined, width = 12.5, height = 9.2, dpi = 300)
+ggsave(file.path(out_dir, "programme_score_heatmap.pdf"), combined, width = 12.5, height = 9.2)
 
 cat("Wrote programme summary and heatmap to:", out_dir, "\n")
