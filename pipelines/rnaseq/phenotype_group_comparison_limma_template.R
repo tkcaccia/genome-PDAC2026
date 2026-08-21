@@ -37,8 +37,16 @@ if (length(missing_cols) > 0) {
 
 normalize_phenotype_group <- function(x) {
   x <- as.character(x)
-  x[x %in% c("Immune_high_Stromal_low", "immune_high_stromal_low")] <- "ImmuneHigh_StromalLow"
-  x[x %in% c("Stromal_EMT_high_Immune_low", "stromal_emt_high_immune_low")] <- "StromalHigh_EMTHigh_ImmuneLow"
+  key <- tolower(gsub("[^A-Za-z0-9]", "", x))
+  x[key %in% c("immunehighstromallow", "immunehighstromalow")] <- "ImmuneHigh_StromalLow"
+  x[key %in% c(
+    "stromalhighemthighimmunelow",
+    "stromalemthighimmunelow",
+    "stromahighemthighimmunelow",
+    "stromalhighenthighimmunelow",
+    "stromahighenthighimmunelow"
+  )] <- "StromalHigh_EMTHigh_ImmuneLow"
+  x[key == "intermediate"] <- "Intermediate"
   x
 }
 

@@ -71,7 +71,7 @@ The historical Python fallback should be treated as exploratory and not describe
 
 ## Immune/Stromal/EMT Scoring and Phenotype Assignment
 
-The immune/stromal/EMT phenotype groups were not created by the limma differential-expression scripts. They came from upstream RNA-seq score integration.
+The immune/stromal/EMT phenotype groups were not created by the limma differential-expression scripts. They came from upstream RNA-seq score integration. They are derived tumour-phenotype labels used to organise the cohort for exploratory expression comparisons; they are not separate raw measurements, not percentages, and not formal PDAC transcriptional subtype names.
 
 The workflow is:
 
@@ -93,13 +93,21 @@ The scoring layer used normalized RNA-seq expression matrices from nf-core/rnase
 
 These outputs were interpreted on their own method-specific scales. They were not treated as the same kind of number and were not all interpreted as percentages.
 
-The score outputs were then reviewed together. Tumours with high fibroblast/stromal/CAF and EMT-like signal but relatively lower immune signal were labelled stromal-high/EMT-high/immune-low. Tumours with stronger immune signal and lower stromal signal were labelled immune-high/stromal-low. Tumours that did not clearly fit either extreme were labelled intermediate. The broad group labels used by downstream scripts are:
+The score outputs were then reviewed together at patient/tumour level. The assignment was based on concordant patterns across the immune-deconvolution outputs and curated gene-set scores, not on a single hard cutoff from one package. In practical terms:
+
+- Tumours with consistently high fibroblast, stromal, CAF, ECM and EMT-like signals, together with relatively lower immune-cell signal, were labelled stromal-high/EMT-high/immune-low.
+- Tumours with stronger immune-infiltration signal and comparatively lower stromal/fibroblast signal were labelled immune-high/stromal-low.
+- Tumours that did not clearly fit either extreme were labelled intermediate.
+
+The broad group labels used by downstream scripts are:
 
 - `StromalHigh_EMTHigh_ImmuneLow`
 - `ImmuneHigh_StromalLow`
 - `Intermediate`
 
 The phenotype-group limma scripts use this already assigned `phenotype_group` metadata column. They do not calculate ESTIMATE, MCP-counter, CIBERSORT, EPIC, xCell, quanTIseq, CAF or EMT scores themselves. A safe example metadata template is provided in `templates/phenotype_assignment_template.tsv`.
+
+The canonical spellings are `ImmuneHigh_StromalLow` and `StromalHigh_EMTHigh_ImmuneLow`. Older notes or manually edited files may contain spelling variants such as `ImmuneHigh_StromaLow` or `StromaHigh_ENTHigh_ImmuneLow`; the R templates now normalise those variants to the canonical labels before running the comparison.
 
 ## Germline and Somatic WES
 
