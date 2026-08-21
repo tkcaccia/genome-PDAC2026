@@ -50,6 +50,7 @@ Important scripts:
 - `differential_expression_limma_template.R`: paired tumour-normal limma-voom template
 - `phenotype_group_comparison_limma_template.R`: phenotype-group and interaction comparison template
 - `run_standard_de_from_star_readspergene.R`: end-to-end STAR gene-count matrix construction with paired limma-voom and paired DESeq2 sensitivity analysis
+- `../pathway_scoring/run_gsva_ssgsea_programme_scores.R`: GSVA/ssGSEA pathway and programme scoring template from normalized expression matrices
 
 ## Differential Expression
 
@@ -89,7 +90,7 @@ The scoring layer used normalized RNA-seq expression matrices from nf-core/rnase
 - MCP-counter for immune and stromal population abundance-like scores, including fibroblast-related signal.
 - CIBERSORT LM22 for model-derived immune-cell fractions.
 - EPIC, xCell and quanTIseq through immunedeconv for additional immune/stromal deconvolution.
-- Curated gene-set scoring for CAF, EMT, hypoxia, angiogenesis, pathway and PDAC-related programmes.
+- Curated gene-set scoring for CAF, EMT, hypoxia, angiogenesis, pathway and PDAC-related programmes using GSVA/ssGSEA-style scoring. The safe reusable script is `pipelines/pathway_scoring/run_gsva_ssgsea_programme_scores.R`, and an example non-patient GMT file is provided at `templates/pdac_programme_gene_sets_example.gmt`.
 
 These outputs were interpreted on their own method-specific scales. They were not treated as the same kind of number and were not all interpreted as percentages.
 

@@ -16,6 +16,7 @@ Main pages:
 ## Code Layout
 
 - `pipelines/rnaseq/`: nf-core/rnaseq launcher/configuration and differential-expression templates
+- `pipelines/pathway_scoring/`: GSVA/ssGSEA programme scoring from normalized RNA-seq expression matrices
 - `pipelines/immune_infiltration/`: paired tumour-normal immune/stromal score comparison template
 - `pipelines/phenotype_assignment/`: documented immune/stromal/EMT phenotype group assignment logic
 - `pipelines/driver_mutation_review/`: safe example showing how TP53 mutation evidence was extracted from VEP-annotated Sarek somatic calls

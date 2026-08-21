@@ -34,7 +34,7 @@ Where the labels come from:
 
 - The starting point is the normalized RNA-seq expression matrix generated from the nf-core/rnaseq/STAR gene-count outputs.
 - Immune/stromal context was estimated with tools such as ESTIMATE, MCP-counter, CIBERSORT and immunedeconv methods where available.
-- CAF, EMT, hypoxia, angiogenesis and pathway programmes were scored from curated gene sets using the expression matrix.
+- CAF, EMT, hypoxia, angiogenesis and pathway programmes were scored from curated gene sets using the expression matrix. A patient-data-safe GSVA/ssGSEA implementation is provided in `../pathway_scoring/run_gsva_ssgsea_programme_scores.R`.
 - Those score tables were integrated at tumour level. Tumours with high stromal/CAF/EMT signal and relatively low immune signal were labelled `StromalHigh_EMTHigh_ImmuneLow`; tumours with stronger immune signal and low stromal signal were labelled `ImmuneHigh_StromalLow`; unclear cases were labelled `Intermediate`.
 
 The labels are therefore derived phenotype summaries used for an exploratory tumour-only comparison. They are not raw percentages, and they are not calculated inside the limma script itself.

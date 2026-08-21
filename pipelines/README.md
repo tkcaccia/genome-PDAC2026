@@ -35,6 +35,7 @@ The production run finished successfully. Final status:
 - `cohort_autodraft/`: cohort-specific samplesheet/autodraft generation code
 - `shared_runtime/`: shared shell and samplesheet validation helpers used by the pipeline launchers
 - `rnaseq/`: RNA-seq wrapper, config, and launch example
+- `pathway_scoring/`: GSVA/ssGSEA pathway and programme scoring templates
 - `immune_infiltration/`: paired tumour-normal comparison for deconvolution score tables
 - `phenotype_assignment/`: immune/stromal/EMT tumour phenotype assignment example and documentation
 - `driver_mutation_review/`: patient-data-safe TP53 mutation-identification example from VEP-annotated somatic calls
