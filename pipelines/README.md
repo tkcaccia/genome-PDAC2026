@@ -36,6 +36,7 @@ The production run finished successfully. Final status:
 - `shared_runtime/`: shared shell and samplesheet validation helpers used by the pipeline launchers
 - `rnaseq/`: RNA-seq wrapper, config, and launch example
 - `immune_infiltration/`: paired tumour-normal comparison for deconvolution score tables
+- `phenotype_assignment/`: immune/stromal/EMT tumour phenotype assignment example and documentation
 - `driver_mutation_review/`: patient-data-safe TP53 mutation-identification example from VEP-annotated somatic calls
 - `sarek_germline/`: germline Sarek wrapper, config, and launch example
 - `sarek_tumor_normal/`: tumor-normal Sarek wrapper, config, and launch example

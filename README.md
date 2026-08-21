@@ -17,6 +17,7 @@ Main pages:
 
 - `pipelines/rnaseq/`: nf-core/rnaseq launcher/configuration and differential-expression templates
 - `pipelines/immune_infiltration/`: paired tumour-normal immune/stromal score comparison template
+- `pipelines/phenotype_assignment/`: documented immune/stromal/EMT phenotype group assignment logic
 - `pipelines/driver_mutation_review/`: safe example showing how TP53 mutation evidence was extracted from VEP-annotated Sarek somatic calls
 - `pipelines/sarek_tumor_normal/`: nf-core/sarek tumour-normal WES calling
 - `pipelines/sarek_germline/`: nf-core/sarek germline WES calling

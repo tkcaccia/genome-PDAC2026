@@ -107,6 +107,14 @@ The broad group labels used by downstream scripts are:
 - `ImmuneHigh_StromalLow`
 - `Intermediate`
 
+For the PDAC2026 cohort, the final reviewed tumour phenotype split was:
+
+- 3 tumours classified as `StromalHigh_EMTHigh_ImmuneLow`.
+- 3 tumours classified as `ImmuneHigh_StromalLow`.
+- 8 tumours classified as `Intermediate` or mixed.
+
+The reproducible, patient-data-safe example is provided in `pipelines/phenotype_assignment/assign_tme_phenotype_groups.py`. It takes tumour-level immune, stromal and EMT score columns, z-scales each feature across tumours, averages related features into meta-scores, calculates immune-high/stromal-low and stromal/EMT-high/immune-low contrast scores, and assigns the broad phenotype groups either by cohort-relative quantile thresholds or by ranked top-N extremes.
+
 The phenotype-group limma scripts use this already assigned `phenotype_group` metadata column. They do not calculate ESTIMATE, MCP-counter, CIBERSORT, EPIC, xCell, quanTIseq, CAF or EMT scores themselves. A safe example metadata template is provided in `templates/phenotype_assignment_template.tsv`.
 
 The canonical spellings are `ImmuneHigh_StromalLow` and `StromalHigh_EMTHigh_ImmuneLow`. Older notes or manually edited files may contain spelling variants such as `ImmuneHigh_StromaLow` or `StromaHigh_ENTHigh_ImmuneLow`; the R templates now normalise those variants to the canonical labels before running the comparison.
