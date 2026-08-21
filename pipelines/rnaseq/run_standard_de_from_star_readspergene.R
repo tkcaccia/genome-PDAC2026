@@ -22,6 +22,8 @@ phenotype_file <- if (length(args) >= 3) args[[3]] else NA_character_
 dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
 
 read_star_counts <- function(path) {
+  # STAR writes four count columns. The manuscript used the unstranded column
+  # because the project-level count matrix was built from unstranded counts.
   dt <- fread(path, header = FALSE, col.names = c("gene_id", "unstranded", "sense", "antisense"))
   dt <- dt[!grepl("^N_", gene_id)]
   dt[, .(gene_id, count = as.integer(round(unstranded)))]
@@ -106,6 +108,10 @@ fwrite(metadata, file.path(outdir, "rnaseq_metadata_for_standard_DE.tsv"), sep =
 keep <- filterByExpr(counts, group = metadata$condition)
 filtered_counts <- counts[keep, , drop = FALSE]
 
+# Primary paired tumour-normal model:
+#   ~ patient_id + condition
+# The patient term absorbs baseline differences between matched individuals.
+# The conditionTumour coefficient then estimates tumour versus matched normal.
 dge <- DGEList(counts = filtered_counts)
 dge <- calcNormFactors(dge, method = "TMM")
 design <- model.matrix(~ patient_id + condition, data = metadata)
@@ -118,6 +124,9 @@ limma_res[, significant_FDR_0_05_logFC_1 := adj.P.Val < 0.05 & abs(logFC) > 1]
 fwrite(limma_res, file.path(outdir, "DE_tumour_vs_normal_paired_limma_voom.tsv"), sep = "\t")
 fwrite(data.table(gene_id = rownames(voom_fit$E), voom_fit$E), file.path(outdir, "limma_voom_logCPM.tsv"), sep = "\t")
 
+# DESeq2 is run as a sensitivity analysis from the same filtered integer-count
+# matrix and the same paired design. It should only be described as DESeq2 when
+# this section completes successfully.
 dds <- DESeqDataSetFromMatrix(
   countData = filtered_counts,
   colData = as.data.frame(metadata),
@@ -135,6 +144,9 @@ fwrite(data.table(gene_id = rownames(norm_counts), norm_counts), file.path(outdi
 extreme_groups <- c("ImmuneHigh_StromalLow", "StromalHigh_EMTHigh_ImmuneLow")
 tumour_meta <- metadata[condition == "Tumour" & phenotype_group %in% extreme_groups]
 if (nrow(tumour_meta) >= 4 && length(unique(tumour_meta$phenotype_group)) == 2) {
+  # This tumour-only contrast starts after phenotype labels have already been
+  # assigned from upstream immune/stromal/EMT score integration. It does not
+  # calculate those scores itself.
   tumour_meta[, phenotype_group := factor(phenotype_group, levels = extreme_groups)]
   tumour_counts <- counts[, tumour_meta$sample_id, drop = FALSE]
   tumour_keep <- filterByExpr(tumour_counts, group = tumour_meta$phenotype_group)

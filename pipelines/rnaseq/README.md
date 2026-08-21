@@ -21,6 +21,11 @@ Files:
 | `de_diagnostics_sensitivity.R` | Do limma-voom and DESeq2 agree in effect size and significance? | Count matrix, metadata, limma table, DESeq2 table | QC tables, PCA, limma-vs-DESeq2 comparison, discordant genes |
 | `phenotype_group_comparison_limma_template.R` | Among tumours only, which genes differ between pre-defined phenotype groups? | Count matrix plus metadata containing `phenotype_group` | Tumour-normal limma table, tumour phenotype-group limma table or skipped-file explanation |
 
+The paired tumour-normal immune-infiltration comparison is not performed in this
+RNA-seq folder. It is implemented in
+`../immune_infiltration/paired_tumour_normal_immune_comparison.R`, after
+deconvolution scores have already been calculated from the expression matrix.
+
 ## Important: Scoring Is Upstream of Group Comparison
 
 The tumour phenotype comparison uses labels such as `StromalHigh_EMTHigh_ImmuneLow` and `ImmuneHigh_StromalLow`. These labels come from upstream immune/stromal/EMT scoring and integrated interpretation. The limma script only compares expression between groups after the labels already exist.

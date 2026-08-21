@@ -35,6 +35,7 @@ The production run finished successfully. Final status:
 - `cohort_autodraft/`: cohort-specific samplesheet/autodraft generation code
 - `shared_runtime/`: shared shell and samplesheet validation helpers used by the pipeline launchers
 - `rnaseq/`: RNA-seq wrapper, config, and launch example
+- `immune_infiltration/`: paired tumour-normal comparison for deconvolution score tables
 - `sarek_germline/`: germline Sarek wrapper, config, and launch example
 - `sarek_tumor_normal/`: tumor-normal Sarek wrapper, config, and launch example
 - `rnafusion/`: RNA fusion wrapper, config, and launch example

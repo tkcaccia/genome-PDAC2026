@@ -93,6 +93,8 @@ The scoring layer used normalized RNA-seq expression matrices from nf-core/rnase
 
 These outputs were interpreted on their own method-specific scales. They were not treated as the same kind of number and were not all interpreted as percentages.
 
+For paired tumour-normal immune-infiltration analysis, each method-specific score table was analysed separately with `pipelines/immune_infiltration/paired_tumour_normal_immune_comparison.R`. The script matches each tumour sample to its normal sample by `patient_id`, calculates tumour-minus-normal deltas for every immune, stromal or tumour-microenvironment feature, then performs paired Wilcoxon signed-rank tests and paired t-tests. Benjamini-Hochberg FDR correction is applied across features within each method. This is the analysis referred to in the manuscript when describing tumour-normal immune/stromal contrasts.
+
 The score outputs were then reviewed together at patient/tumour level. The assignment was based on concordant patterns across the immune-deconvolution outputs and curated gene-set scores, not on a single hard cutoff from one package. In practical terms:
 
 - Tumours with consistently high fibroblast, stromal, CAF, ECM and EMT-like signals, together with relatively lower immune-cell signal, were labelled stromal-high/EMT-high/immune-low.
