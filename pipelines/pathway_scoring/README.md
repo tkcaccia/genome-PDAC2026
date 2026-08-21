@@ -52,6 +52,27 @@ The script writes:
 - `<out-prefix>.programme_summary.tsv`: median, min, max and high/intermediate/low counts per programme.
 - `<out-prefix>.method_notes.txt`: package versions and notes about which mode ran.
 
+## Create A Manuscript-Style Table And Heatmap
+
+After programme scores have been integrated into a tumour-level table, use:
+
+```bash
+Rscript create_programme_score_table_figure.R \
+  --score-table path/to/integrated_tumour_programme_scores.tsv \
+  --sample-column sample_id \
+  --phenotype-column phenotype_group \
+  --out-dir results/programme_score_summary
+```
+
+This writes:
+
+- `programme_score_summary.tsv`
+- `programme_scores_long.tsv`
+- `programme_score_heatmap.png`
+- `programme_score_heatmap.pdf`
+
+This is the safe template corresponding to the manuscript's GSVA/ssGSEA programme-score summary table and heatmap.
+
 ## Important Interpretation Notes
 
 - Scores are relative to the expression matrix and gene sets used.
@@ -76,4 +97,3 @@ See also:
 - `../phenotype_assignment/assign_tme_phenotype_groups.py`
 - `../immune_infiltration/paired_tumour_normal_immune_comparison.R`
 - `../rnaseq/phenotype_group_comparison_limma_template.R`
-
