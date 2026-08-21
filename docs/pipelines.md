@@ -117,6 +117,7 @@ Code locations:
 
 - `pipelines/sarek_germline/`
 - `pipelines/sarek_tumor_normal/`
+- `pipelines/driver_mutation_review/`
 
 Purpose:
 
@@ -138,6 +139,25 @@ Downstream summaries:
 - KRAS/TP53/CDKN2A/SMAD4 review
 - DDR/MMR gene review
 - Exploratory germline/somatic integrated oncoprint
+
+### TP53 Mutation Identification Example
+
+Code location: `pipelines/driver_mutation_review/`
+
+The TP53 mutation review used VEP-annotated somatic calls from the tumour-normal Sarek workflow. The patient-data-safe example script is:
+
+- `identify_tp53_mutations_example.py`
+
+The script demonstrates the logic used to extract TP53 evidence:
+
+- read a tab-separated VEP-annotated somatic variant table;
+- select rows where the annotated gene symbol is `TP53`;
+- classify protein-impacting consequences such as missense, frameshift, stop-gained and splice-site variants;
+- prioritize `PASS` somatic calls as strongest evidence;
+- keep lower-confidence rows separately for audit/review rather than silently discarding them;
+- write both detailed TP53 rows and a conservative patient-level TP53 mutation-status table.
+
+This example also explains the manuscript distinction between a strict `somatic TP53 mutation` and a broader integrated `TP53 alteration`, where the latter may include copy-number or germline-context flags retained in the patient-level molecular summary.
 
 ## Copy Number and Structural Variants
 
