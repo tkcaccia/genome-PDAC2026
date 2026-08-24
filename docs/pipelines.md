@@ -78,13 +78,17 @@ The workflow is:
 
 ```text
 nf-core/rnaseq expression outputs
-  -> normalized/log expression matrices
-  -> immune, stromal, CAF, EMT, hypoxia and pathway scores
-  -> integrated tumour phenotype labels
+  |-- linear TPM-like matrix -> immune/stromal deconvolution scores
+  |-- normalized/log matrix + curated GMT -> GSVA/ssGSEA programme scores
+  -> merge score matrices by RNA sample ID
+  -> standardize selected features and calculate meta-scores
+  -> integrated tumour phenotype labels (3/3/8 split)
   -> limma-voom phenotype-group comparison
 ```
 
-The scoring layer used normalized RNA-seq expression matrices from nf-core/rnaseq/STAR-derived gene counts. In practical terms, the inputs were gene-by-sample expression tables generated after RNA-seq processing, not VCF/CNV/SV files. The scoring step then combined several method families:
+The scoring layer used gene-by-sample expression tables generated after RNA-seq processing, not VCF, CNV or SV files. Gene symbols must be in rows and RNA samples in columns. GSVA/ssGSEA accepts normalized/log expression such as log2-CPM, VST or log2(TPM + 1). The `immunedeconv` interface instead recommends non-log TPM-like expression, particularly for fraction-oriented EPIC, quanTIseq and CIBERSORT. A matrix known to equal `log2(TPM + 1)` can be returned to linear TPM as `2^x - 1`; DESeq2 VST/rlog or an unknown transformation must not be back-transformed as though it were TPM.
+
+The scoring step combined several method families:
 
 - ESTIMATE for relative immune, stromal and combined ESTIMATE scores.
 - MCP-counter for immune and stromal population abundance-like scores, including fibroblast-related signal.
@@ -94,9 +98,19 @@ The scoring layer used normalized RNA-seq expression matrices from nf-core/rnase
 
 These outputs were interpreted on their own method-specific scales. They were not treated as the same kind of number and were not all interpreted as percentages.
 
+The GMT is an upstream biological reference, not an expression-derived output and not an R script. Each row contains a programme name, a description/source field and the HGNC symbols belonging to that programme. `run_gsva_ssgsea_programme_scores.R` reads the GMT, intersects each gene set with the expression-matrix row names and produces programme-by-sample score matrices. The supplied GMT is a transparent curated fallback; broader public MSigDB collections can be retrieved with `msigdbr` when their version and collection are recorded.
+
+The executable order is:
+
+1. `pipelines/immune_infiltration/run_immune_stromal_scores_from_expression.R` converts linear TPM-like expression, or a declared `log2(TPM + 1)` matrix, into separate ESTIMATE, MCP-counter, EPIC, xCell, quanTIseq and optional licensed CIBERSORT outputs.
+2. `pipelines/pathway_scoring/run_gsva_ssgsea_programme_scores.R` converts normalized/log expression plus `templates/pdac_programme_gene_sets_example.gmt` into GSVA/ssGSEA programme scores.
+3. `pipelines/phenotype_assignment/assemble_tme_score_table.py` accepts feature-by-sample runner outputs or archived sample-by-feature tables and merges them into one tumour-level score table with method-prefixed columns.
+4. `pipelines/phenotype_assignment/assign_tme_phenotype_groups.py` z-standardizes selected features across tumours, calculates immune/stromal/EMT meta-scores and assigns the two extremes plus the intermediate group.
+5. `pipelines/rnaseq/phenotype_group_comparison_limma_template.R` compares raw-count expression between the already assigned extreme groups; it does not calculate the phenotype scores.
+
 For paired tumour-normal immune-infiltration analysis, each method-specific score table was analysed separately with `pipelines/immune_infiltration/paired_tumour_normal_immune_comparison.R`. The script matches each tumour sample to its normal sample by `patient_id`, calculates tumour-minus-normal deltas for every immune, stromal or tumour-microenvironment feature, then performs paired Wilcoxon signed-rank tests and paired t-tests. Benjamini-Hochberg FDR correction is applied across features within each method. This is the analysis referred to in the manuscript when describing tumour-normal immune/stromal contrasts.
 
-The score outputs were then reviewed together at patient/tumour level. The assignment was based on concordant patterns across the immune-deconvolution outputs and curated gene-set scores, not on a single hard cutoff from one package. In practical terms:
+The score outputs were then integrated at tumour level. No method's raw scale was allowed to dominate merely because its numerical range was larger: selected features were first z-standardized across tumours, then averaged into immune, stromal and EMT meta-scores. In practical terms:
 
 - Tumours with consistently high fibroblast, stromal, CAF, ECM and EMT-like signals, together with relatively lower immune-cell signal, were labelled stromal-high/EMT-high/immune-low.
 - Tumours with stronger immune-infiltration signal and comparatively lower stromal/fibroblast signal were labelled immune-high/stromal-low.
@@ -114,7 +128,7 @@ For the PDAC2026 cohort, the final reviewed tumour phenotype split was:
 - 3 tumours classified as `ImmuneHigh_StromalLow`.
 - 8 tumours classified as `Intermediate` or mixed.
 
-The reproducible, patient-data-safe example is provided in `pipelines/phenotype_assignment/assign_tme_phenotype_groups.py`. It takes tumour-level immune, stromal and EMT score columns, z-scales each feature across tumours, averages related features into meta-scores, calculates immune-high/stromal-low and stromal/EMT-high/immune-low contrast scores, and assigns the broad phenotype groups either by cohort-relative quantile thresholds or by ranked top-N extremes.
+The reproducible, patient-data-safe example is provided in `pipelines/phenotype_assignment/assign_tme_phenotype_groups.py`. It takes tumour-level immune, stromal and EMT score columns, z-scales each feature across tumours, averages related features into meta-scores, calculates immune-high/stromal-low and stromal/EMT-high/immune-low contrast scores, and assigns the broad phenotype groups either by cohort-relative quantile thresholds or by ranked top-N extremes. The manuscript-facing 3/3/8 split corresponds to `--target-per-extreme 3`; tumours not selected for either non-overlapping extreme remain intermediate.
 
 The phenotype-group limma scripts use this already assigned `phenotype_group` metadata column. They do not calculate ESTIMATE, MCP-counter, CIBERSORT, EPIC, xCell, quanTIseq, CAF or EMT scores themselves. A safe example metadata template is provided in `templates/phenotype_assignment_template.tsv`.
 
@@ -325,11 +339,11 @@ Main principles:
 - Filtered/subclonal candidate: candidate exists but requires cautious interpretation
 - MSI/MMR candidate: MSIsensor-pro signal plus MMR gene or mutation-pattern support
 
-Final analysis framing:
+Reporting safeguards:
 
-- Patient 23 is the strongest computational KRAS-wild-type MSI/MMR-deficient candidate.
-- Patient 35 is borderline MSI-elevated but not equivalent to patient 23.
-- Broad cohort-level hypermutation is not a robust conclusion after strict filtering.
+- Keep patient-level calls and result tables outside this public code repository.
+- Describe MSI/MMR and hypermutation calls as computational candidates unless orthogonally validated.
+- Do not infer population-level differences from a small single cohort without an identically processed comparator cohort.
 
 ## Integrated Reporting
 

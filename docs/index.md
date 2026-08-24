@@ -1,14 +1,10 @@
 # genome-PDAC2026
 
-## Project Message in Plain Language
+## Methods Scope In Plain Language
 
-This project studied pancreatic cancers from 14 African patients using several layers of information: DNA mutations, germline-relevant variants, copy-number changes, structural variants, RNA expression, RNA fusion calls, immune/stromal signals and integrated patient-level summaries.
+This repository explains how pancreatic-cancer DNA and RNA sequencing outputs can be processed into mutation, copy-number, structural-variant, fusion, expression, pathway and tumour-microenvironment summaries. It focuses on reusable code and the order in which inputs move through the analysis. Patient-level findings, real result tables, clinical metadata, figures and manuscript text are intentionally excluded from this public site.
 
-The central analysis message is cautious but important: this small African PDAC cohort contains patient-level noncanonical molecular findings that should be interpreted in the context of published PDAC literature, not as a formal ancestry comparison. In particular, one tumour emerged as a strong computational candidate for a KRAS-wild-type, MSI-high/MMR-deficient pancreatic cancer. That finding is biologically interesting because most pancreatic ductal adenocarcinomas are KRAS-driven, whereas MSI/MMR-deficient tumours can reflect a different DNA-repair biology. The result is not presented as clinically confirmed; it should be validated with orthogonal pathology or molecular testing.
-
-The second message is that the tumour microenvironment varied across patients. Some tumours looked stromal-rich, fibroblast/CAF-rich and EMT-high, while others looked more immune-high and stromal-low. These expression phenotypes are exploratory because the cohort is small and immune-deconvolution tools use different score scales and assumptions, but they provide a useful genotype-phenotype framework for future validation.
-
-The analysis should not overclaim broad cohort-wide hypermutation. Earlier broader mutation-burden signals became weaker after stricter somatic filtering. The stronger conclusion is one high-priority MSI/MMR-deficient candidate and several KRAS-wild-type or non-clean-KRAS tumours needing focused validation.
+The RNA workflow starts from gene expression, calculates immune/stromal and biological-programme scores, combines those scores into exploratory tumour phenotypes, and only then tests gene-expression differences between phenotype groups. The DNA workflow independently produces germline/somatic variants, copy-number and structural-variant evidence; those variables are integrated with RNA phenotypes only after both upstream analyses are complete.
 
 ## Repository Purpose
 
@@ -26,6 +22,8 @@ This GitHub Pages site documents the pipelines and code used for the analysis in
 - KRAS-focused algorithmic review
 - MSI/MMR/hypermutation review using MSIsensor-pro and strict somatic filtering
 - Integrated patient-level genotype/phenotype interpretation
+
+For students starting with a normalized RNA expression matrix, the complete expression-to-phenotype walkthrough is in the existing [pipeline details](pipelines.md) and the READMEs under `pipelines/immune_infiltration`, `pipelines/pathway_scoring` and `pipelines/phenotype_assignment`. The pathway README also explains that a GMT is a separate gene-set definition file rather than a value calculated from patient expression.
 
 ## Documentation Pages
 

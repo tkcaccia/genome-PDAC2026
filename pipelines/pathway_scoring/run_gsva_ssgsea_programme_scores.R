@@ -29,7 +29,9 @@ parse_args <- function() {
   while (i <= length(args)) {
     key <- args[[i]]
     if (!startsWith(key, "--")) stop("Unexpected argument: ", key)
-    name <- sub("^--", "", key)
+    # Documentation uses standard hyphenated CLI flags (for example,
+    # --gene-column); map them to the underscore-based option names above.
+    name <- gsub("-", "_", sub("^--", "", key))
     if (!name %in% names(out)) stop("Unknown argument: --", name)
     if (i == length(args)) stop("Missing value for argument: ", key)
     out[[name]] <- args[[i + 1]]
@@ -179,4 +181,3 @@ main <- function() {
 }
 
 main()
-

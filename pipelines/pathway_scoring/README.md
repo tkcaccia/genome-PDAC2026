@@ -1,33 +1,63 @@
 # GSVA/ssGSEA Pathway and Programme Scoring
 
-This folder contains patient-data-safe code documenting how RNA-seq expression matrices can be converted into pathway and programme activity scores such as:
+This folder shows how the RNA expression matrix was converted into one activity score per biological programme and tumour. The inputs and outputs are RNA-derived. WES mutation calls do not enter this calculation.
 
-- PDAC classical/progenitor, basal/squamous, epithelial, mesenchymal and stromal-rich programmes
-- CAF and extracellular matrix (ECM) programmes
-- epithelial-mesenchymal transition (EMT), invasion, hypoxia and angiogenesis programmes
-- metabolic programmes
-- cytolytic, antigen-presentation, checkpoint and interferon-gamma immune programmes
+The scored programmes include PDAC classical/progenitor and basal/squamous expression, cancer-associated fibroblast (CAF) and extracellular matrix (ECM), epithelial-mesenchymal transition (EMT), invasion, hypoxia, angiogenesis, metabolism, cytolytic activity, antigen presentation and immune checkpoints.
 
-In the PDAC2026 analysis, these scores were used as tumour-level features for interpretation and phenotype assignment. They are not raw expression values, not percentages and not clinical diagnostic classes.
+## Start Here: What You Need
 
-## Inputs
-
-The example script expects:
-
-1. A gene-by-sample expression matrix in TSV format.
-2. A GMT gene-set file containing curated programme gene sets.
-3. Optionally, a metadata table identifying tumour samples.
-
-The expression matrix should look like this:
+Use a tab-separated gene-by-sample expression matrix:
 
 | gene | sample_1 | sample_2 | sample_3 |
-| --- | --- | --- | --- |
+| --- | ---: | ---: | ---: |
 | KRT19 | 10.2 | 8.8 | 14.1 |
 | COL1A1 | 6.3 | 11.5 | 4.2 |
 
-The first column must contain gene symbols unless you change `--gene-column`.
+Requirements:
 
-## Run
+1. The first column contains HGNC gene symbols. If the matrix uses Ensembl IDs, map them to gene symbols first and document the annotation release.
+2. Every other column is one RNA-seq sample.
+3. Values are normalized and on a continuous log-like scale, for example limma-voom log2 counts per million, DESeq2 variance-stabilizing transformation, or log2(TPM + 1).
+4. Do not gene-wise z-scale the matrix before scoring. The script needs the expression ranking across genes within each sample.
+5. Do not supply raw integer counts to this template, because its GSVA mode uses the Gaussian kernel.
+
+The normalized/log expression output produced by `../rnaseq/run_standard_de_from_star_readspergene.R` can therefore be used directly after confirming that the first column contains gene symbols.
+
+Install the required packages in the analysis environment if they are absent:
+
+```r
+install.packages("data.table")
+if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+BiocManager::install("GSVA")
+```
+
+## What The GMT File Is
+
+A GMT file is a biological reference, not a result calculated from the expression matrix. Each tab-separated line contains:
+
+```text
+PROGRAMME_NAME    description_or_source    GENE1    GENE2    GENE3    ...
+```
+
+For this repository, the patient-data-safe curated fallback is:
+
+```text
+../../templates/pdac_programme_gene_sets_example.gmt
+```
+
+That file is version-controlled and can be opened in any text editor. It was assembled from transparent PDAC, stromal, EMT, metabolic and immune marker lists; no R script creates it from patient data. The scoring script `run_gsva_ssgsea_programme_scores.R` **reads** this GMT and matches its HGNC symbols to the expression-matrix row names.
+
+This distinction matters:
+
+- The expression matrix says how strongly each gene is expressed in each sample.
+- The GMT says which genes define each biological programme.
+- GSVA/ssGSEA combines those two inputs to produce programme-by-sample scores.
+
+The bundled GMT is an explicit curated fallback, not a claim that the listed markers reproduce every full published subtype classifier. For broader public pathway collections, retrieve Hallmark, Reactome or other Molecular Signatures Database (MSigDB) collections with `msigdbr`, record its database version, and convert the selected `gs_name`/`gene_symbol` pairs to GMT. Do not mix an updated MSigDB collection with the curated fallback without recording which sets were used.
+
+## Which R Script To Run
+
+Run `run_gsva_ssgsea_programme_scores.R`. It is the script that reads both the normalized/log expression matrix and the GMT file and calculates the scores:
 
 ```bash
 Rscript run_gsva_ssgsea_programme_scores.R \
@@ -40,21 +70,41 @@ Rscript run_gsva_ssgsea_programme_scores.R \
   --out-prefix results/pdac_programme_scores
 ```
 
-If metadata are supplied, only tumour samples are scored by default. If no metadata are supplied, all expression-matrix columns are scored.
+Metadata are optional. When they are supplied, only columns whose metadata condition is `Tumour` are scored. Without metadata, every sample column is scored.
 
 ## Outputs
 
 The script writes:
 
-- `<out-prefix>.ssgsea_scores.tsv`: ssGSEA score matrix, programme by sample.
-- `<out-prefix>.gsva_scores.tsv`: GSVA score matrix, programme by sample, if GSVA mode succeeds.
-- `<out-prefix>.programme_classes.tsv`: per-sample low/intermediate/high calls by cohort tertiles.
-- `<out-prefix>.programme_summary.tsv`: median, min, max and high/intermediate/low counts per programme.
-- `<out-prefix>.method_notes.txt`: package versions and notes about which mode ran.
+- `<out-prefix>.ssgsea_scores.tsv`: programme-by-sample single-sample gene-set enrichment analysis (ssGSEA) scores.
+- `<out-prefix>.gsva_scores.tsv`: programme-by-sample gene set variation analysis (GSVA) scores, if that mode succeeds.
+- `<out-prefix>.programme_classes.tsv`: low/intermediate/high calls made separately for each programme using cohort tertiles.
+- `<out-prefix>.programme_summary.tsv`: programme-level score summaries and class counts.
+- `<out-prefix>.method_notes.txt`: input paths, dimensions, R version and GSVA version.
 
-## Create A Manuscript-Style Table And Heatmap
+The score values are relative enrichment/activity measures. They are not RNA counts, percentages, immune-cell fractions or clinical diagnostic classes.
 
-After programme scores have been integrated into a tumour-level table, use:
+## How The Scores Reach Phenotype Assignment
+
+The programme score matrix must be merged with the method-specific immune/stromal matrices. The supplied assembler accepts both feature-by-sample outputs from the reusable runners and archived sample-by-feature tables, transposes where required, and performs the join:
+
+```bash
+python ../phenotype_assignment/assemble_tme_score_table.py \
+  --programme-table results/pdac_programme_scores.ssgsea_scores.tsv \
+  --score-table estimate=results/immune/estimate_scores.tsv \
+  --score-table mcp_counter=results/immune/mcp_counter_scores.tsv \
+  --score-table epic=results/immune/epic_scores.tsv \
+  --score-table xcell=results/immune/xcell_scores.tsv \
+  --score-table quantiseq=results/immune/quantiseq_scores.tsv \
+  --metadata path/to/sample_metadata.tsv \
+  --output results/tumour_score_table.tsv
+```
+
+Then `../phenotype_assignment/assign_tme_phenotype_groups.py` standardizes selected score columns across tumours and assigns the exploratory tumour-microenvironment groups.
+
+## Manuscript Table And Heatmap
+
+After the programme scores and phenotype labels have been integrated into a tumour-level table, use:
 
 ```bash
 Rscript create_programme_score_table_figure.R \
@@ -65,37 +115,14 @@ Rscript create_programme_score_table_figure.R \
   --out-dir results/programme_score_summary
 ```
 
-This writes:
+This writes a programme summary table, a long-format score table, and PNG/PDF heatmaps. The heatmap can include tumour phenotype and microsatellite-instability/mismatch-repair annotation bars.
 
-- `programme_score_summary.tsv`
-- `programme_scores_long.tsv`
-- `programme_score_heatmap.png`
-- `programme_score_heatmap.pdf`
+## Interpretation
 
-This is the safe template corresponding to the manuscript's GSVA/ssGSEA programme-score summary table and heatmap.
-If `--phenotype-column` is present, the heatmap includes a tumour microenvironment phenotype annotation bar. If `--msi-column` is supplied, it also includes an MSI/MMR annotation bar.
+- Low/intermediate/high calls are cohort-relative tertiles, not universal cutoffs.
+- GSVA/ssGSEA scores should not be numerically averaged with raw ESTIMATE, MCP-counter, CIBERSORT, EPIC, xCell or quanTIseq outputs before method-aware standardization.
+- With a small cohort, these scores support descriptive biology and hypothesis generation rather than clinical classification.
 
-## Important Interpretation Notes
+See also `../immune_infiltration/README.md`, `../phenotype_assignment/README.md` and `../rnaseq/phenotype_group_comparison_limma_template.R`.
 
-- Scores are relative to the expression matrix and gene sets used.
-- Low/intermediate/high classes are cohort-relative tertiles, not clinical cutoffs.
-- ssGSEA/GSVA values should not be compared directly with ESTIMATE, MCP-counter, CIBERSORT, EPIC, xCell or quanTIseq scores without method-specific interpretation.
-- In small cohorts, programme scores are best used for descriptive biology, heatmaps and hypothesis generation.
-
-## Relationship To Phenotype Assignment
-
-The downstream tumour phenotype labels were assigned after these programme scores were integrated with immune/stromal deconvolution outputs:
-
-```text
-expression matrix
-  -> GSVA/ssGSEA programme scores
-  -> immune/stromal deconvolution scores
-  -> immune/stromal/EMT phenotype assignment
-  -> limma-voom phenotype-group comparison
-```
-
-See also:
-
-- `../phenotype_assignment/assign_tme_phenotype_groups.py`
-- `../immune_infiltration/paired_tumour_normal_immune_comparison.R`
-- `../rnaseq/phenotype_group_comparison_limma_template.R`
+Official software documentation: [Bioconductor GSVA](https://bioconductor.org/packages/GSVA/) and [msigdbr](https://igordot.github.io/msigdbr/).

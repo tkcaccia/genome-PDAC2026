@@ -21,10 +21,11 @@ Files:
 | `de_diagnostics_sensitivity.R` | Do limma-voom and DESeq2 agree in effect size and significance? | Count matrix, metadata, limma table, DESeq2 table | QC tables, PCA, limma-vs-DESeq2 comparison, discordant genes |
 | `phenotype_group_comparison_limma_template.R` | Among tumours only, which genes differ between pre-defined phenotype groups? | Count matrix plus metadata containing `phenotype_group` | Tumour-normal limma table, tumour phenotype-group limma table or skipped-file explanation |
 
-The paired tumour-normal immune-infiltration comparison is not performed in this
-RNA-seq folder. It is implemented in
-`../immune_infiltration/paired_tumour_normal_immune_comparison.R`, after
-deconvolution scores have already been calculated from the expression matrix.
+The immune-infiltration calculations are not performed in this RNA-seq folder.
+Starting from TPM-like expression, use
+`../immune_infiltration/run_immune_stromal_scores_from_expression.R`; then use
+`../immune_infiltration/paired_tumour_normal_immune_comparison.R` for the
+matched tumour-normal statistics.
 
 ## Important: Scoring Is Upstream of Group Comparison
 
@@ -35,7 +36,9 @@ Where the labels come from:
 - The starting point is the normalized RNA-seq expression matrix generated from the nf-core/rnaseq/STAR gene-count outputs.
 - Immune/stromal context was estimated with tools such as ESTIMATE, MCP-counter, CIBERSORT and immunedeconv methods where available.
 - CAF, EMT, hypoxia, angiogenesis and pathway programmes were scored from curated gene sets using the expression matrix. A patient-data-safe GSVA/ssGSEA implementation is provided in `../pathway_scoring/run_gsva_ssgsea_programme_scores.R`.
-- Those score tables were integrated at tumour level. Tumours with high stromal/CAF/EMT signal and relatively low immune signal were labelled `StromalHigh_EMTHigh_ImmuneLow`; tumours with stronger immune signal and low stromal signal were labelled `ImmuneHigh_StromalLow`; unclear cases were labelled `Intermediate`.
+- The GMT gene-set input is `../../templates/pdac_programme_gene_sets_example.gmt`. It is a separate curated gene-list file, not an output generated from the expression matrix.
+- `../phenotype_assignment/assemble_tme_score_table.py` merged the method-specific matrices by RNA sample ID, and `../phenotype_assignment/assign_tme_phenotype_groups.py` standardized selected features and calculated the labels.
+- Tumours with high stromal/CAF/EMT signal and relatively low immune signal were labelled `StromalHigh_EMTHigh_ImmuneLow`; tumours with stronger immune signal and low stromal signal were labelled `ImmuneHigh_StromalLow`; unclear cases were labelled `Intermediate`.
 
 The labels are therefore derived phenotype summaries used for an exploratory tumour-only comparison. They are not raw percentages, and they are not calculated inside the limma script itself.
 

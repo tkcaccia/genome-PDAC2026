@@ -17,7 +17,7 @@ Main pages:
 
 - `pipelines/rnaseq/`: nf-core/rnaseq launcher/configuration and differential-expression templates
 - `pipelines/pathway_scoring/`: GSVA/ssGSEA programme scoring from normalized RNA-seq expression matrices
-- `pipelines/immune_infiltration/`: paired tumour-normal immune/stromal score comparison template
+- `pipelines/immune_infiltration/`: expression-to-immune/stromal scoring plus paired tumour-normal comparison
 - `pipelines/phenotype_assignment/`: documented immune/stromal/EMT phenotype group assignment logic
 - `pipelines/driver_mutation_review/`: safe example showing how TP53 mutation evidence was extracted from VEP-annotated Sarek somatic calls
 - `pipelines/sarek_tumor_normal/`: nf-core/sarek tumour-normal WES calling
@@ -35,17 +35,23 @@ Main pages:
 
 RNA-seq downstream analysis has two different layers that should not be mixed up. First, expression matrices are used to calculate immune, stromal, EMT, CAF and pathway-related scores. Those scores are then integrated to assign broad tumour phenotype groups. Only after those groups exist does the limma-voom phenotype comparison test which genes differ between groups.
 
-The reproducible tumour-normal and phenotype-comparison code is in:
+The reproducible RNA data flow is implemented in:
 
 - `pipelines/rnaseq/differential_expression_limma_template.R`
 - `pipelines/rnaseq/phenotype_group_comparison_limma_template.R`
 - `pipelines/rnaseq/run_standard_de_from_star_readspergene.R`
+- `pipelines/immune_infiltration/run_immune_stromal_scores_from_expression.R`
 - `pipelines/immune_infiltration/paired_tumour_normal_immune_comparison.R`
+- `pipelines/pathway_scoring/run_gsva_ssgsea_programme_scores.R`
+- `pipelines/phenotype_assignment/assemble_tme_score_table.py`
+- `pipelines/phenotype_assignment/assign_tme_phenotype_groups.py`
 - `docs/pipelines.md`
 
 For reporting, the defensible phrasing is: RNA-seq quantification was performed with nf-core/rnaseq; downstream tumour-normal and phenotype comparisons were performed with limma-voom/edgeR-based scripts in this repository, with DESeq2 used as a sensitivity analysis where explicitly stated. Historical fallback outputs should be labelled exploratory and not described as DESeq2.
 
-Important distinction for students: the phenotype-group limma script does not calculate immune, stromal or EMT scores. Those scores are upstream inputs used to assign tumours to groups such as `StromalHigh_EMTHigh_ImmuneLow` or `ImmuneHigh_StromalLow`. The limma script only compares expression between groups after that assignment exists in the metadata.
+Important distinction for students: the phenotype-group limma script does not calculate immune, stromal or EMT scores. Starting with RNA expression, `run_immune_stromal_scores_from_expression.R` calculates method-specific deconvolution scores, while `run_gsva_ssgsea_programme_scores.R` combines normalized/log expression with the version-controlled GMT file in `templates/pdac_programme_gene_sets_example.gmt`. `assemble_tme_score_table.py` merges those outputs by sample, and `assign_tme_phenotype_groups.py` creates the labels. Only after that assignment exists in metadata does the limma script compare expression between groups.
+
+The GMT is not generated from the patient's expression matrix. It is a separate biological reference in which each row names a programme and lists its member genes. The expression matrix supplies measured expression, the GMT supplies biological membership, and GSVA/ssGSEA produces programme activity scores from their intersection.
 
 Tumour-normal immune/stromal comparisons are a separate analysis. The immune script takes deconvolution score matrices from ESTIMATE, MCP-counter, CIBERSORT LM22, EPIC, xCell or quanTIseq, matches tumour and normal samples by patient, calculates tumour-minus-normal deltas, and performs paired Wilcoxon tests with FDR correction across features within each method.
 
