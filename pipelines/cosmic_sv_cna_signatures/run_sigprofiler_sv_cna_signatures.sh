@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-BASE="/media/user/SEQ"
-RESULTS_ROOT="/media/user/PDAC_SEQ_analysis/results"
+BASE="${PDAC2026_RUNTIME_ROOT:?Set PDAC2026_RUNTIME_ROOT to a restricted runtime directory}"
+RESULTS_ROOT="${PDAC2026_RESULTS_ROOT:?Set PDAC2026_RESULTS_ROOT outside this repository}"
 SAREK_ROOT="${SAREK_SV_CNA_ROOT:-$RESULTS_ROOT/sarek_tumor_normal_sv_cna}"
 RUN_ROOT="${1:-$RESULTS_ROOT/cosmic_sv_cna_signatures_sigprofiler_assignment_1_1_3}"
 VENV_DIR="$BASE/venvs/sigprofilerassignment-1.1.3"
@@ -37,7 +37,6 @@ require_cmd() {
 }
 
 require_cmd python3
-require_cmd pip3
 
 if [[ ! -d "$VENV_DIR" ]]; then
   log "Creating virtual environment at $VENV_DIR"

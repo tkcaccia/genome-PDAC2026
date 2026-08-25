@@ -7,14 +7,6 @@ import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-from matplotlib.patches import Wedge, PathPatch, Patch
-from matplotlib.path import Path as MplPath
-
-
 ALT_BREAKEND_RE = re.compile(r"[\[\]]([^:\[\]]+):([0-9]+)[\[\]]")
 CHROM_ORDER = [f"chr{i}" for i in range(1, 23)] + ["chrX", "chrY"]
 PDAC_GENES = [
@@ -67,6 +59,22 @@ def parse_args():
     parser.add_argument("--bin-size", type=int, default=5_000_000)
     parser.add_argument("--samples", nargs="*", default=[])
     return parser.parse_args()
+
+
+def load_plotting_dependencies():
+    global plt, Line2D, Wedge, PathPatch, Patch, MplPath
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        from matplotlib.lines import Line2D
+        from matplotlib.patches import Wedge, PathPatch, Patch
+        from matplotlib.path import Path as MplPath
+    except ImportError as exc:
+        raise SystemExit(
+            "matplotlib is required to generate circos-style plots. Install "
+            "the environment documented in env/environment.yml."
+        ) from exc
 
 
 def read_fai(path: Path):
@@ -637,6 +645,7 @@ def draw_sample(
 
 def main():
     args = parse_args()
+    load_plotting_dependencies()
     output_dir = Path(args.output_dir)
     chrom_lengths = read_fai(Path(args.fai))
     layout = build_genome_layout(chrom_lengths)

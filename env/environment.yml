@@ -1,0 +1,22 @@
+name: pdac2026-downstream
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.12
+  - pandas
+  - pyyaml
+  - r-base=4.5
+  - r-data.table
+  - r-ggplot2
+  - r-patchwork
+  - r-circlize
+  - bioconductor-deseq2
+  - bioconductor-edger
+  - bioconductor-limma
+  - bioconductor-gsva
+  - bioconductor-genomicranges
+  - bioconductor-complexheatmap
+  - bioconductor-mcpcounter
+  - r-remotes
+  - pip

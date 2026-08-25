@@ -5,6 +5,7 @@ import argparse
 import csv
 import hashlib
 import json
+import os
 import shutil
 from collections import defaultdict
 from dataclasses import dataclass
@@ -325,9 +326,7 @@ def launch_drafts_markdown(
 ) -> str:
     scripts_dir = workspace_base / "scripts"
     samplesheets_dir = workspace_base / "samplesheets"
-    bulk_results_root = Path("/media/user/PDAC_SEQ_analysis/results")
-    if not bulk_results_root.exists():
-        bulk_results_root = workspace_base / "results"
+    bulk_results_root = Path(os.environ.get("PDAC2026_RESULTS_ROOT", workspace_base / "results"))
     interval_path = interval_consensus.link_path if interval_consensus and interval_consensus.link_path else (
         interval_consensus.source_path if interval_consensus else "/REVIEW_ME/EXOME_CAPTURE_INTERVALS.bed"
     )
@@ -348,7 +347,7 @@ def launch_drafts_markdown(
             "- Review the generated samplesheets before launching.",
             "- Keep patient data in place. These commands read directly from the source FASTQs.",
             f"- Suggested bulk-analysis output root: `{bulk_results_root}`",
-            "- Keep RNA fusion `--outdir` on `/media/user/SEQ/results` or another Linux-native filesystem.",
+            "- Keep every `--outdir` on a restricted Linux-native filesystem outside the public repository.",
             "",
             "## WES Tumor-Normal",
             "",

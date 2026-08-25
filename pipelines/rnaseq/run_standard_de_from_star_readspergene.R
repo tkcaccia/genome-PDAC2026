@@ -10,7 +10,7 @@ suppressPackageStartupMessages({
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) < 2) {
   stop(
-    "Usage: run_standard_de_from_star_readspergene.R <star_analysis_dir> <outdir> [phenotype_assignment.tsv]\n",
+    "Usage: run_standard_de_from_star_readspergene.R <star_analysis_dir> <outdir> [phenotype_assignment.tsv|-] [annotation.gtf.gz]\n",
     "star_analysis_dir should contain sample subfolders with *ReadsPerGene.out.tab files.",
     call. = FALSE
   )
@@ -18,7 +18,8 @@ if (length(args) < 2) {
 
 star_dir <- normalizePath(args[[1]], mustWork = TRUE)
 outdir <- args[[2]]
-phenotype_file <- if (length(args) >= 3) args[[3]] else NA_character_
+phenotype_file <- if (length(args) >= 3 && args[[3]] != "-") args[[3]] else NA_character_
+gtf_file <- if (length(args) >= 4) normalizePath(args[[4]], mustWork = TRUE) else NA_character_
 dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
 
 read_star_counts <- function(path) {
@@ -56,6 +57,30 @@ normalize_phenotype_group <- function(x) {
   )] <- "StromalHigh_EMTHigh_ImmuneLow"
   x[key == "intermediate"] <- "Intermediate"
   x
+}
+
+read_gene_symbol_map <- function(path) {
+  if (is.na(path)) return(data.table(gene_id = character(), gene_symbol = character()))
+  gtf <- fread(
+    path,
+    sep = "\t",
+    header = FALSE,
+    quote = "",
+    select = c(3, 9),
+    col.names = c("feature", "attributes"),
+    showProgress = FALSE
+  )
+  gtf <- gtf[feature == "gene"]
+  gtf[, gene_id := sub('.*gene_id "([^"]+)".*', "\\1", attributes)]
+  gtf[, gene_symbol := sub('.*gene_name "([^"]+)".*', "\\1", attributes)]
+  gtf[, gene_id := sub("\\..*$", "", gene_id)]
+  unique(gtf[gene_id != attributes & gene_symbol != attributes, .(gene_id, gene_symbol)], by = "gene_id")
+}
+
+add_gene_symbols <- function(result, gene_map) {
+  result[, gene_symbol := gene_map$gene_symbol[match(sub("\\..*$", "", gene_id), gene_map$gene_id)]]
+  setcolorder(result, c("gene_id", "gene_symbol", setdiff(names(result), c("gene_id", "gene_symbol"))))
+  result
 }
 
 count_list <- lapply(files, read_star_counts)
@@ -107,8 +132,9 @@ fwrite(metadata, file.path(outdir, "rnaseq_metadata_for_standard_DE.tsv"), sep =
 
 keep <- filterByExpr(counts, group = metadata$condition)
 filtered_counts <- counts[keep, , drop = FALSE]
+gene_map <- read_gene_symbol_map(gtf_file)
 
-# Primary paired tumour-normal model:
+# Paired tumour-normal model used by all three count-analysis frameworks:
 #   ~ patient_id + condition
 # The patient term absorbs baseline differences between matched individuals.
 # The conditionTumour coefficient then estimates tumour versus matched normal.
@@ -120,13 +146,26 @@ fit <- eBayes(lmFit(voom_fit, design))
 
 limma_res <- topTable(fit, coef = "conditionTumour", number = Inf, sort.by = "P")
 limma_res <- data.table(gene_id = rownames(limma_res), limma_res)
+limma_res <- add_gene_symbols(limma_res, gene_map)
 limma_res[, significant_FDR_0_05_logFC_1 := adj.P.Val < 0.05 & abs(logFC) > 1]
 fwrite(limma_res, file.path(outdir, "DE_tumour_vs_normal_paired_limma_voom.tsv"), sep = "\t")
 fwrite(data.table(gene_id = rownames(voom_fit$E), voom_fit$E), file.path(outdir, "limma_voom_logCPM.tsv"), sep = "\t")
 
-# DESeq2 is run as a sensitivity analysis from the same filtered integer-count
-# matrix and the same paired design. It should only be described as DESeq2 when
-# this section completes successfully.
+# edgeR quasi-likelihood provides an independent negative-binomial count model
+# with robust dispersion estimation. It uses exactly the same filtered counts
+# and paired design as DESeq2 and limma-voom.
+dge_ql <- estimateDisp(dge, design, robust = TRUE)
+edge_fit <- glmQLFit(dge_ql, design, robust = TRUE)
+edge_test <- glmQLFTest(edge_fit, coef = "conditionTumour")
+edge_res <- as.data.table(topTags(edge_test, n = Inf, sort.by = "PValue")$table, keep.rownames = "gene_id")
+edge_res <- add_gene_symbols(edge_res, gene_map)
+edge_res[, significant_FDR_0_05_logFC_1 := FDR < 0.05 & abs(logFC) > 1]
+fwrite(edge_res, file.path(outdir, "DE_tumour_vs_normal_paired_edgeR_QL.tsv"), sep = "\t")
+
+# DESeq2 is the prespecified primary count model. edgeR quasi-likelihood and
+# limma-voom above are sensitivity analyses fitted to the same filtered
+# integer-count matrix and paired design. The result should only be described
+# as DESeq2 when this section completes successfully.
 dds <- DESeqDataSetFromMatrix(
   countData = filtered_counts,
   colData = as.data.frame(metadata),
@@ -135,8 +174,50 @@ dds <- DESeqDataSetFromMatrix(
 dds <- DESeq(dds, quiet = TRUE)
 deseq_res <- as.data.table(results(dds, contrast = c("condition", "Tumour", "Normal")), keep.rownames = "gene_id")
 setnames(deseq_res, old = c("log2FoldChange", "pvalue", "padj"), new = c("DESeq2_log2FoldChange", "DESeq2_pvalue", "DESeq2_padj"))
+deseq_res <- add_gene_symbols(deseq_res, gene_map)
 deseq_res[, significant_FDR_0_05_logFC_1 := DESeq2_padj < 0.05 & abs(DESeq2_log2FoldChange) > 1]
 fwrite(deseq_res, file.path(outdir, "DE_tumour_vs_normal_paired_DESeq2.tsv"), sep = "\t")
+
+# A conservative consensus table makes the method sensitivity explicit. A
+# gene is called consensus-significant only when both negative-binomial count
+# models pass FDR and effect-size thresholds with the same effect direction.
+consensus <- merge(
+  deseq_res[, .(
+    gene_id,
+    gene_symbol,
+    DESeq2_log2FoldChange,
+    DESeq2_pvalue,
+    DESeq2_padj
+  )],
+  edge_res[, .(
+    gene_id,
+    edgeR_log2FoldChange = logFC,
+    edgeR_PValue = PValue,
+    edgeR_FDR = FDR
+  )],
+  by = "gene_id",
+  all = FALSE
+)
+consensus <- merge(
+  consensus,
+  limma_res[, .(
+    gene_id,
+    limma_voom_log2FoldChange = logFC,
+    limma_voom_PValue = P.Value,
+    limma_voom_FDR = adj.P.Val
+  )],
+  by = "gene_id",
+  all = FALSE
+)
+consensus[, effect_direction_concordant :=
+  sign(DESeq2_log2FoldChange) == sign(edgeR_log2FoldChange) &
+  sign(DESeq2_log2FoldChange) == sign(limma_voom_log2FoldChange)]
+consensus[, significant_DESeq2_edgeR_consensus :=
+  effect_direction_concordant &
+  DESeq2_padj < 0.05 & abs(DESeq2_log2FoldChange) > 1 &
+  edgeR_FDR < 0.05 & abs(edgeR_log2FoldChange) > 1]
+setorder(consensus, DESeq2_padj, edgeR_FDR)
+fwrite(consensus, file.path(outdir, "DE_tumour_vs_normal_paired_count_model_consensus.tsv"), sep = "\t")
 
 norm_counts <- counts(dds, normalized = TRUE)
 fwrite(data.table(gene_id = rownames(norm_counts), norm_counts), file.path(outdir, "DESeq2_normalized_counts.tsv"), sep = "\t")
@@ -157,6 +238,7 @@ if (nrow(tumour_meta) >= 4 && length(unique(tumour_meta$phenotype_group)) == 2) 
   tumour_fit <- eBayes(lmFit(tumour_voom, tumour_design))
   tumour_res <- topTable(tumour_fit, coef = "phenotype_groupStromalHigh_EMTHigh_ImmuneLow", number = Inf, sort.by = "P")
   tumour_res <- data.table(gene_id = rownames(tumour_res), tumour_res)
+  tumour_res <- add_gene_symbols(tumour_res, gene_map)
   tumour_res[, significant_FDR_0_05_logFC_1 := adj.P.Val < 0.05 & abs(logFC) > 1]
   fwrite(tumour_res, file.path(outdir, "DE_tumour_phenotype_stromal_EMT_high_vs_immune_high_limma_voom.tsv"), sep = "\t")
 } else {
@@ -175,7 +257,9 @@ summary <- data.table(
     "input_genes",
     "filtered_genes",
     "limma_significant_FDR_0_05_abs_logFC_1",
-    "deseq2_significant_FDR_0_05_abs_logFC_1"
+    "edger_ql_significant_FDR_0_05_abs_logFC_1",
+    "deseq2_significant_FDR_0_05_abs_logFC_1",
+    "deseq2_edger_consensus_significant_FDR_0_05_abs_logFC_1"
   ),
   value = c(
     length(files),
@@ -184,7 +268,9 @@ summary <- data.table(
     nrow(counts),
     nrow(filtered_counts),
     sum(limma_res$significant_FDR_0_05_logFC_1, na.rm = TRUE),
-    sum(deseq_res$significant_FDR_0_05_logFC_1, na.rm = TRUE)
+    sum(edge_res$significant_FDR_0_05_logFC_1, na.rm = TRUE),
+    sum(deseq_res$significant_FDR_0_05_logFC_1, na.rm = TRUE),
+    sum(consensus$significant_DESeq2_edgeR_consensus, na.rm = TRUE)
   )
 )
 fwrite(summary, file.path(outdir, "standard_DE_summary.tsv"), sep = "\t")
@@ -193,8 +279,11 @@ sink(file.path(outdir, "standard_DE_session_info.txt"))
 cat("Command:", paste(commandArgs(), collapse = " "), "\n\n")
 cat("STAR input directory:", star_dir, "\n")
 cat("Output directory:", normalizePath(outdir), "\n")
-cat("Primary model: limma-voom with design ~ patient_id + condition\n")
-cat("Confirmation model: DESeq2 with design ~ patient_id + condition\n\n")
+cat("GENCODE annotation:", if (is.na(gtf_file)) "not supplied" else gtf_file, "\n")
+cat("GENCODE annotation MD5:", if (is.na(gtf_file)) "not supplied" else unname(tools::md5sum(gtf_file)), "\n")
+cat("Primary model: DESeq2 with design ~ patient_id + condition\n")
+cat("Sensitivity models: edgeR quasi-likelihood and limma-voom with the same design\n")
+cat("Consensus rule: DESeq2 and edgeR FDR < 0.05, absolute log2FC > 1, concordant direction\n\n")
 print(sessionInfo())
 sink()
 

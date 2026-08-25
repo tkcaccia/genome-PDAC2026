@@ -11,12 +11,13 @@ scores. This mirrors the logic used to define the exploratory PDAC2026 groups:
 
 * StromalHigh_EMTHigh_ImmuneLow
 * ImmuneHigh_StromalLow
-* Intermediate
+* Intermediate_or_mixed
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 from pathlib import Path
 
 import numpy as np
@@ -25,7 +26,7 @@ import pandas as pd
 
 GROUP_STROMAL_EMT = "StromalHigh_EMTHigh_ImmuneLow"
 GROUP_IMMUNE = "ImmuneHigh_StromalLow"
-GROUP_INTERMEDIATE = "Intermediate"
+GROUP_INTERMEDIATE = "Intermediate_or_mixed"
 
 
 def comma_list(value: str) -> list[str]:
@@ -38,6 +39,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--scores", required=True, type=Path, help="Tumour-level score table in TSV format.")
     parser.add_argument("--sample-column", default="sample_id", help="Column containing tumour/sample IDs.")
+    parser.add_argument("--patient-column", default="patient_id", help="Optional patient-ID column retained in output.")
     parser.add_argument("--immune-columns", required=True, help="Comma-separated immune score columns.")
     parser.add_argument("--stromal-columns", required=True, help="Comma-separated stromal/CAF/ECM score columns.")
     parser.add_argument("--emt-columns", required=True, help="Comma-separated EMT/invasion score columns.")
@@ -64,6 +66,14 @@ def check_columns(df: pd.DataFrame, columns: list[str], label: str) -> None:
     missing = [col for col in columns if col not in df.columns]
     if missing:
         raise SystemExit(f"Missing {label} columns: {', '.join(missing)}")
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 def zscore(series: pd.Series) -> pd.Series:
@@ -137,8 +147,16 @@ def main() -> None:
     check_columns(scores, immune_columns, "immune")
     check_columns(scores, stromal_columns, "stromal")
     check_columns(scores, emt_columns, "EMT")
+    if args.target_per_extreme is not None:
+        if args.target_per_extreme < 1:
+            raise SystemExit("--target-per-extreme must be at least 1")
+        if 2 * args.target_per_extreme > len(scores):
+            raise SystemExit("--target-per-extreme is too large for non-overlapping extreme groups")
 
-    out = scores[[args.sample_column]].copy()
+    identity_columns = [args.sample_column]
+    if args.patient_column in scores.columns:
+        identity_columns.append(args.patient_column)
+    out = scores[identity_columns].copy()
     work = scores.copy()
     out["immune_meta_score"] = add_meta_score(work, immune_columns, "immune")
     out["stromal_meta_score"] = add_meta_score(work, stromal_columns, "stromal")
@@ -147,6 +165,12 @@ def main() -> None:
     out["stromal_emt_high_immune_low_score"] = (
         out[["stromal_meta_score", "emt_meta_score"]].mean(axis=1) - out["immune_meta_score"]
     )
+    out["immune_contrast_rank"] = out["immune_high_stromal_low_score"].rank(
+        method="first", ascending=False
+    ).astype(int)
+    out["stromal_emt_contrast_rank"] = out["stromal_emt_high_immune_low_score"].rank(
+        method="first", ascending=False
+    ).astype(int)
 
     if args.target_per_extreme is not None:
         out["phenotype_group"] = assign_by_rank(out, args.target_per_extreme)
@@ -158,6 +182,8 @@ def main() -> None:
     args.out_prefix.parent.mkdir(parents=True, exist_ok=True)
     assignment_path = args.out_prefix.with_suffix(".assignments.tsv")
     counts_path = args.out_prefix.with_suffix(".group_counts.tsv")
+    feature_path = args.out_prefix.with_suffix(".feature_manifest.tsv")
+    notes_path = args.out_prefix.with_suffix(".method_notes.txt")
 
     out.to_csv(assignment_path, sep="\t", index=False)
     (
@@ -167,11 +193,38 @@ def main() -> None:
         .reset_index(name="n")
         .to_csv(counts_path, sep="\t", index=False)
     )
+    pd.DataFrame(
+        [
+            *({"meta_score": "immune_meta_score", "source_column": column} for column in immune_columns),
+            *({"meta_score": "stromal_meta_score", "source_column": column} for column in stromal_columns),
+            *({"meta_score": "emt_meta_score", "source_column": column} for column in emt_columns),
+        ]
+    ).to_csv(feature_path, sep="\t", index=False)
+    notes_path.write_text(
+        "\n".join(
+            [
+                f"scores_file: {args.scores.resolve()}",
+                f"scores_sha256: {sha256(args.scores)}",
+                f"sample_column: {args.sample_column}",
+                f"patient_column: {args.patient_column if args.patient_column in scores.columns else 'not_present'}",
+                f"tumours_classified: {len(scores)}",
+                f"immune_columns: {','.join(immune_columns)}",
+                f"stromal_columns: {','.join(stromal_columns)}",
+                f"emt_columns: {','.join(emt_columns)}",
+                f"assignment_method: {out['assignment_method'].iloc[0]}",
+                "feature_scaling: population z-score across the supplied tumour cohort",
+                "interpretation: exploratory cohort-relative expression phenotype, not a clinical class",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
     print(f"Wrote assignments: {assignment_path}")
     print(f"Wrote group counts: {counts_path}")
+    print(f"Wrote feature manifest: {feature_path}")
+    print(f"Wrote method notes: {notes_path}")
 
 
 if __name__ == "__main__":
     main()
-

@@ -6,7 +6,7 @@ The manuscript-facing cohort labels were:
 
 - `StromalHigh_EMTHigh_ImmuneLow`: 3 tumours
 - `ImmuneHigh_StromalLow`: 3 tumours
-- `Intermediate`: 8 tumours
+- `Intermediate_or_mixed`: 8 tumours
 
 These labels are cohort-relative exploratory summaries. They are not percentages, clinical diagnostic classes or formal PDAC transcriptional subtypes.
 
@@ -52,11 +52,11 @@ Rscript ../immune_infiltration/run_immune_stromal_scores_from_expression.R \
 
 If the available matrix is exactly `log2(TPM + 1)`, use `--input-scale log2_plus_one`. Do not use that conversion for DESeq2 VST/rlog or an unknown log transformation.
 
-The score layer used in this project included:
+The score layer supported by the reusable code includes:
 
 - ESTIMATE ImmuneScore, StromalScore and combined ESTIMATEScore.
 - MCP-counter immune/stromal population scores, including fibroblasts.
-- CIBERSORT LM22 immune-cell estimates.
+- optional CIBERSORT LM22 immune-cell estimates when the licensed files are available.
 - EPIC, xCell and quanTIseq outputs through `immunedeconv`.
 
 These methods use different scales and assumptions. Their raw output values were not treated as a common percentage scale.
@@ -86,7 +86,6 @@ The GMT is the text file containing the gene members of each programme. It is no
 python assemble_tme_score_table.py \
   --score-table estimate=results/immune_scores/estimate_scores.tsv \
   --score-table mcp_counter=results/immune_scores/mcp_counter_scores.tsv \
-  --score-table cibersort=results/immune_scores/cibersort_scores.tsv \
   --score-table epic=results/immune_scores/epic_scores.tsv \
   --score-table xcell=results/immune_scores/xcell_scores.tsv \
   --score-table quantiseq=results/immune_scores/quantiseq_scores.tsv \
@@ -118,14 +117,14 @@ An illustrative command is:
 python assign_tme_phenotype_groups.py \
   --scores results/tumour_score_table.tsv \
   --sample-column sample_id \
-  --immune-columns estimate_immune_score,mcp_counter_t_cells,mcp_counter_cd8_t_cells,cibersort_t_cells_cd8,quantiseq_t_cell_cd8_plus \
+  --immune-columns estimate_immune_score,mcp_counter_t_cells,xcell_immune_score,programme_cytolytic_activity,programme_ifng_response \
   --stromal-columns estimate_stromal_score,mcp_counter_fibroblasts,epic_cancer_associated_fibroblast,xcell_stroma_score,programme_caf_ecm \
-  --emt-columns programme_emt_invasion,programme_hypoxia \
+  --emt-columns programme_emt_invasion,programme_pdac_mesenchymal \
   --target-per-extreme 3 \
   --out-prefix results/tme_phenotype_assignment
 ```
 
-The column list above is illustrative. Use the exact machine-safe names in `tumour_score_table.tsv`. The project-facing 3/3/8 split corresponds to `--target-per-extreme 3`; the script prevents the same tumour from entering both extreme groups.
+The column list above reflects the biological feature families used in the audited workflow but remains illustrative because package feature labels can change. Inspect the exact machine-safe names in `tumour_score_table.tsv`. The project-facing 3/3/8 split corresponds to `--target-per-extreme 3`; the script prevents the same tumour from entering both extreme groups.
 
 The outputs are:
 

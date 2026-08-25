@@ -15,13 +15,13 @@ Use a tab-separated gene-by-sample expression matrix:
 
 Requirements:
 
-1. The first column contains HGNC gene symbols. If the matrix uses Ensembl IDs, map them to gene symbols first and document the annotation release.
+1. The first column contains HGNC gene symbols or Ensembl gene IDs. For Ensembl IDs, supply the matching GTF with `--gtf`; the script records its checksum and performs the mapping.
 2. Every other column is one RNA-seq sample.
-3. Values are normalized and on a continuous log-like scale, for example limma-voom log2 counts per million, DESeq2 variance-stabilizing transformation, or log2(TPM + 1).
+3. Values are normalized counts or a continuous log-like expression measure, for example limma-voom log2 counts per million, DESeq2 variance-stabilizing transformation, or log2(TPM + 1). `--transform auto` applies log2(x + 1) when the input scale resembles non-negative normalized counts.
 4. Do not gene-wise z-scale the matrix before scoring. The script needs the expression ranking across genes within each sample.
-5. Do not supply raw integer counts to this template, because its GSVA mode uses the Gaussian kernel.
+5. Do not supply unnormalized raw integer counts. Run library-size/composition normalization first.
 
-The normalized/log expression output produced by `../rnaseq/run_standard_de_from_star_readspergene.R` can therefore be used directly after confirming that the first column contains gene symbols.
+The `DESeq2_normalized_counts.tsv` output produced by `../rnaseq/run_standard_de_from_star_readspergene.R` can be used with the GTF that matches the RNA-seq annotation. The script collapses multiple Ensembl IDs mapping to one symbol by summing normalized expression before transformation.
 
 Install the required packages in the analysis environment if they are absent:
 
@@ -61,8 +61,11 @@ Run `run_gsva_ssgsea_programme_scores.R`. It is the script that reads both the n
 
 ```bash
 Rscript run_gsva_ssgsea_programme_scores.R \
-  --expression path/to/log_expression_matrix.tsv \
+  --expression path/to/DESeq2_normalized_counts.tsv \
   --gmt ../../templates/pdac_programme_gene_sets_example.gmt \
+  --gtf path/to/matching_annotation.gtf \
+  --gene-column gene_id \
+  --transform auto \
   --metadata path/to/sample_metadata.tsv \
   --sample-column sample_id \
   --condition-column condition \
@@ -80,7 +83,9 @@ The script writes:
 - `<out-prefix>.gsva_scores.tsv`: programme-by-sample gene set variation analysis (GSVA) scores, if that mode succeeds.
 - `<out-prefix>.programme_classes.tsv`: low/intermediate/high calls made separately for each programme using cohort tertiles.
 - `<out-prefix>.programme_summary.tsv`: programme-level score summaries and class counts.
-- `<out-prefix>.method_notes.txt`: input paths, dimensions, R version and GSVA version.
+- `<out-prefix>.gene_set_coverage.tsv`: the total and expression-matched gene count for every GMT programme.
+- `<out-prefix>.expression_used.tsv`: symbol-mapped, collapsed and transformed expression used by GSVA/ssGSEA.
+- `<out-prefix>.method_notes.txt`: input paths and MD5 checksums, annotation, transformation, dimensions, R version and GSVA version.
 
 The score values are relative enrichment/activity measures. They are not RNA counts, percentages, immune-cell fractions or clinical diagnostic classes.
 

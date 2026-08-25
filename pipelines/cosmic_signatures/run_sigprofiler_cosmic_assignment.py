@@ -2,9 +2,6 @@
 import argparse
 from pathlib import Path
 
-from SigProfilerAssignment import Analyzer as Analyze
-
-
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Run COSMIC mutational signature assignment on a folder of PASS-only somatic VCFs."
@@ -31,6 +28,14 @@ def parse_args():
 
 
 def run_context(samples: str, output_root: Path, context: str, cosmic_version: float, genome_build: str, cpu: int, make_plots: bool):
+    try:
+        from SigProfilerAssignment import Analyzer as Analyze
+    except ImportError as exc:
+        raise SystemExit(
+            "SigProfilerAssignment is required to run signature assignment. "
+            "Install the environment documented in env/environment.yml."
+        ) from exc
+
     context_name = {
         "96": "SBS96",
         "DINUC": "DBS",

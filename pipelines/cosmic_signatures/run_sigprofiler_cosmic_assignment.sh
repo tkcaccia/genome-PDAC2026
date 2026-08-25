@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-BASE="/media/user/SEQ"
-RESULTS_ROOT="/media/user/PDAC_SEQ_analysis/results"
-SOMATIC_ROOT="$RESULTS_ROOT/sarek_tumor_normal/variant_calling/mutect2"
+BASE="${PDAC2026_RUNTIME_ROOT:?Set PDAC2026_RUNTIME_ROOT to a restricted runtime directory}"
+RESULTS_ROOT="${PDAC2026_RESULTS_ROOT:?Set PDAC2026_RESULTS_ROOT outside this repository}"
+SOMATIC_ROOT="${SOMATIC_VCF_ROOT:-$RESULTS_ROOT/sarek_tumor_normal/variant_calling/mutect2}"
 RUN_ROOT="${1:-$RESULTS_ROOT/cosmic_signatures_sigprofiler_assignment_1_1_3}"
 PASS_VCF_DIR="$RUN_ROOT/input/pass_mutect2_vcfs_plain"
 VENV_DIR="$BASE/venvs/sigprofilerassignment-1.1.3"
@@ -31,7 +31,6 @@ require_cmd() {
 }
 
 require_cmd python3
-require_cmd pip3
 require_cmd bcftools
 
 if [[ ! -d "$VENV_DIR" ]]; then
@@ -41,7 +40,7 @@ fi
 
 source "$VENV_DIR/bin/activate"
 
-log "Installing latest stable SigProfilerAssignment from PyPI"
+log "Installing the analysis-pinned SigProfilerAssignment 1.1.3 release from PyPI"
 python -m pip install --upgrade pip >>"$LOG_FILE" 2>&1
 python -m pip install "SigProfilerAssignment==1.1.3" >>"$LOG_FILE" 2>&1
 

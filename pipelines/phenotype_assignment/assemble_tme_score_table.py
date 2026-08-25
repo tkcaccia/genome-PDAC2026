@@ -33,6 +33,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--metadata", type=Path, help="Optional sample metadata used to retain tumours only.")
     parser.add_argument("--sample-column", default="sample_id")
+    parser.add_argument("--patient-column", default="patient_id")
     parser.add_argument("--condition-column", default="condition")
     parser.add_argument("--tumour-label", default="Tumour")
     parser.add_argument("--output", required=True, type=Path)
@@ -118,13 +119,18 @@ def main() -> None:
         missing = required.difference(metadata.columns)
         if missing:
             raise SystemExit(f"Metadata is missing columns: {', '.join(sorted(missing))}")
-        tumour_samples = set(
-            metadata.loc[
-                metadata[args.condition_column] == args.tumour_label,
-                args.sample_column,
-            ]
+        metadata = metadata.loc[
+            metadata[args.condition_column] == args.tumour_label
+        ].copy()
+        metadata_columns = [args.sample_column, args.condition_column]
+        if args.patient_column in metadata.columns:
+            metadata_columns.insert(1, args.patient_column)
+        merged = metadata[metadata_columns].merge(
+            merged,
+            on=args.sample_column,
+            how="inner",
+            validate="one_to_one",
         )
-        merged = merged.loc[merged[args.sample_column].isin(tumour_samples)].copy()
 
     merged = merged.sort_values(args.sample_column)
     args.output.parent.mkdir(parents=True, exist_ok=True)

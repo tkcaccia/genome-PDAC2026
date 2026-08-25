@@ -1,0 +1,13 @@
+data.table
+DESeq2
+edgeR
+limma
+GSVA
+GenomicRanges
+ComplexHeatmap
+circlize
+ggplot2
+patchwork
+circlize
+MCPcounter
+immunedeconv

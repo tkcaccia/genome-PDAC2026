@@ -4,16 +4,17 @@ set -euo pipefail
 # Reproduce the enhanced per-patient circos plots on the remote PDAC workstation.
 # Result PNGs are patient-derived outputs and should not be committed to GitHub.
 
-MUTECT2_ROOT="/media/user/PDAC_SEQ_analysis/results/sarek_tumor_normal/variant_calling/mutect2"
-VEP_ROOT="/media/user/PDAC_SEQ_analysis/results/sarek_tumor_normal/annotation/mutect2"
-ASCAT_ROOT="/media/user/PDAC_SEQ_analysis/results/sarek_tumor_normal_sv_cna/variant_calling/ascat"
-MANTA_ROOT="/media/user/PDAC_SEQ_analysis/results/sarek_tumor_normal_sv_cna/variant_calling/manta"
-STAR_ROOT="/home/user/PDAC_SEQ_native_results/rnafusion_pdac/star"
-GTF="/media/user/SEQ/refs/annotation/gencode.v46.primary_assembly.annotation.gtf"
-FAI="/media/user/SEQ/refs/gatk_bundle/Homo_sapiens_assembly38.fasta.fai"
-CYTOBAND="/media/user/SEQ/refs/ucsc/hg38.cytoBand.txt"
-OUTDIR="/media/user/PDAC_SEQ_analysis/results/sarek_tumor_normal_sv_cna/circos_plots_enhanced"
-SCRIPT="/media/user/SEQ/scripts/make_patient_circos.py"
+MUTECT2_ROOT="${MUTECT2_ROOT:?Set MUTECT2_ROOT}"
+VEP_ROOT="${VEP_ROOT:?Set VEP_ROOT}"
+ASCAT_ROOT="${ASCAT_ROOT:?Set ASCAT_ROOT}"
+MANTA_ROOT="${MANTA_ROOT:?Set MANTA_ROOT}"
+STAR_ROOT="${STAR_ROOT:?Set STAR_ROOT}"
+GTF="${GTF:?Set GTF to the matching gene annotation}"
+FAI="${FAI:?Set FAI to the reference FASTA index}"
+CYTOBAND="${CYTOBAND:?Set CYTOBAND to the hg38 cytoband path}"
+OUTDIR="${OUTDIR:?Set OUTDIR outside this repository}"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT="$SCRIPT_DIR/make_patient_circos.py"
 
 mkdir -p "$(dirname "$CYTOBAND")" "$OUTDIR"
 

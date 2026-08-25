@@ -101,6 +101,38 @@ run_one <- function(expr, method, opt) {
     ))
   }
 
+  if (method == "epic") {
+    if (!requireNamespace("EPIC", quietly = TRUE)) stop("The EPIC R package is not installed")
+    reference_name <- if (opt$tumour_mode) "TRef" else "BRef"
+    reference <- getExportedValue("EPIC", reference_name)
+    return(immunedeconv::deconvolute(
+      expr,
+      method = "epic",
+      tumor = opt$tumour_mode,
+      arrays = FALSE,
+      reference = reference
+    ))
+  }
+
+  if (method == "xcell") {
+    if (!requireNamespace("xCell", quietly = TRUE)) stop("The xCell R package is not installed")
+    xcell_data <- new.env(parent = emptyenv())
+    utils::data("xCell.data", package = "xCell", envir = xcell_data)
+    if (!exists("xCell.data", envir = xcell_data, inherits = FALSE)) {
+      stop("The installed xCell package does not provide its xCell.data dataset")
+    }
+    reference <- get("xCell.data", envir = xcell_data, inherits = FALSE)
+    return(immunedeconv::deconvolute(
+      expr,
+      method = "xcell",
+      tumor = opt$tumour_mode,
+      arrays = FALSE,
+      signatures = reference$signatures,
+      genes = reference$genes,
+      spill = reference$spill
+    ))
+  }
+
   immunedeconv::deconvolute(
     expr,
     method = method,
@@ -136,18 +168,22 @@ main <- function() {
   writeLines(
     c(
       paste("expression_file:", opt$expression),
+      paste("expression_md5:", unname(tools::md5sum(opt$expression))),
       paste("input_scale:", opt$input_scale),
       paste("genes_used:", nrow(expr)),
       paste("samples_scored:", ncol(expr)),
       paste("tumour_mode_for_EPIC_quanTIseq:", opt$tumour_mode),
       paste("R_version:", R.version.string),
-      paste("immunedeconv_version:", as.character(utils::packageVersion("immunedeconv")))
+      paste("immunedeconv_version:", as.character(utils::packageVersion("immunedeconv"))),
+      paste("EPIC_version:", if (requireNamespace("EPIC", quietly = TRUE)) as.character(utils::packageVersion("EPIC")) else "not_installed"),
+      paste("xCell_version:", if (requireNamespace("xCell", quietly = TRUE)) as.character(utils::packageVersion("xCell")) else "not_installed")
     ),
     file.path(opt$out_dir, "method_notes.txt")
   )
 
   if (!all(status$completed)) {
     warning("One or more methods failed. See method_status.tsv; successful independent methods were retained.")
+    quit(save = "no", status = 4)
   }
   message("Immune/stromal scoring complete: ", normalizePath(opt$out_dir))
 }

@@ -5,12 +5,6 @@ import gzip
 import shutil
 from pathlib import Path
 
-import pandas as pd
-from SigProfilerAssignment import Analyzer as Analyze
-from SigProfilerMatrixGenerator.scripts.CNVMatrixGenerator import generateCNVMatrix
-from SigProfilerMatrixGenerator.scripts.SVMatrixGenerator import generateSVMatrix
-
-
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Generate CNV48 and SV32 COSMIC assignments from Sarek ASCAT and Manta outputs."
@@ -53,6 +47,14 @@ def is_completed(output_root: Path, context_name: str) -> bool:
 
 
 def collect_ascat_segments(sarek_root: Path, merged_segments_path: Path):
+    try:
+        import pandas as pd
+    except ImportError as exc:
+        raise SystemExit(
+            "pandas is required to normalize ASCAT segments. Install the "
+            "environment documented in env/environment.yml."
+        ) from exc
+
     segment_files = sorted(sarek_root.rglob("*.segments.txt"))
     if not segment_files:
         raise SystemExit(f"No ASCAT segment files found under {sarek_root}")
@@ -121,6 +123,15 @@ def collect_manta_vcfs(sarek_root: Path, output_dir: Path):
 
 
 def run_cnv_assignment(sarek_root: Path, output_root: Path, project: str, genome_build: str, cosmic_version: float, cpu: int, make_plots: bool):
+    try:
+        from SigProfilerAssignment import Analyzer as Analyze
+        from SigProfilerMatrixGenerator.scripts.CNVMatrixGenerator import generateCNVMatrix
+    except ImportError as exc:
+        raise SystemExit(
+            "SigProfilerAssignment and SigProfilerMatrixGenerator are required "
+            "for CNV48 assignment. Install the documented environment."
+        ) from exc
+
     matrix_root = output_root / "CNV48_matrix"
     merged_segments = matrix_root / f"{project}.ascat_segments.tsv"
     collect_ascat_segments(sarek_root, merged_segments)
@@ -148,6 +159,15 @@ def run_cnv_assignment(sarek_root: Path, output_root: Path, project: str, genome
 
 
 def run_sv_assignment(sarek_root: Path, output_root: Path, project: str, genome_build: str, cosmic_version: float, cpu: int, make_plots: bool):
+    try:
+        from SigProfilerAssignment import Analyzer as Analyze
+        from SigProfilerMatrixGenerator.scripts.SVMatrixGenerator import generateSVMatrix
+    except ImportError as exc:
+        raise SystemExit(
+            "SigProfilerAssignment and SigProfilerMatrixGenerator are required "
+            "for SV32 assignment. Install the documented environment."
+        ) from exc
+
     matrix_root = output_root / "SV32_matrix"
     manta_input = collect_manta_vcfs(sarek_root, matrix_root / "manta_vcfs_plain")
     generateSVMatrix(str(manta_input), project, str(matrix_root))

@@ -113,7 +113,7 @@ tests <- paired[, test_one_feature(.SD), by = feature_col]
 # The manuscript interpreted nominal trends separately from FDR-significant
 # findings because these methods test multiple immune/stromal features.
 tests[, fdr := p.adjust(wilcoxon_p, method = "BH")]
-setorder(tests, wilcoxon_p, get(feature_col))
+setorderv(tests, c("wilcoxon_p", feature_col), na.last = TRUE)
 
 fwrite(
   tests,

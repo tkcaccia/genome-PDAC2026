@@ -82,17 +82,19 @@ run_pipeline() {
   need_cmd zip
   need_cmd nextflow
 
-  source /media/user/SEQ/configs/resources.env
+  local resource_env="${PDAC2026_RESOURCES_ENV:?Set PDAC2026_RESOURCES_ENV to the private reference environment file}"
+  # shellcheck disable=SC1090
+  source "$resource_env"
 
-  local seq_base="${SEQ_BASE:-/media/user/SEQ}"
+  local seq_base="${SEQ_BASE:?Set SEQ_BASE in the private resource environment}"
   local seq_tmp="$seq_base/tmp"
-  local samplesheet="/media/user/SEQ/samplesheets/sarek_samplesheet.PDAC_WES_fastq_autodraft.csv"
-  local input_override="${PDAC_SV_CNA_INPUT:-/media/user/PDAC_SEQ_analysis/results/sarek_tumor_normal_sv_cna/csv/recalibrated_restart_full.csv}"
+  local samplesheet="${PDAC_SV_CNA_SAMPLESHEET:?Set PDAC_SV_CNA_SAMPLESHEET}"
+  local input_override="${PDAC_SV_CNA_INPUT:-}"
   local start_step="${PDAC_SV_CNA_STEP:-variant_calling}"
-  local intervals="/media/user/SEQ/refs/optional/PDAC_Twist_ILMN_Exome_2.5_Plus_Panel.hg38.majority.bed"
-  local outdir="/media/user/PDAC_SEQ_analysis/results/sarek_tumor_normal_sv_cna"
-  local workdir="/media/user/PDAC_SEQ_analysis/work"
-  local ref_base="/media/user/New_Volume3/Lion/PDAC/SEQ_refs/ascat_wes_hg38"
+  local intervals="${PDAC_SV_CNA_INTERVALS:?Set PDAC_SV_CNA_INTERVALS to the capture BED}"
+  local outdir="${PDAC_SV_CNA_OUTDIR:?Set PDAC_SV_CNA_OUTDIR outside this repository}"
+  local workdir="${PDAC_SV_CNA_WORKDIR:?Set PDAC_SV_CNA_WORKDIR outside this repository}"
+  local ref_base="${PDAC_ASCAT_REFERENCE_ROOT:?Set PDAC_ASCAT_REFERENCE_ROOT}"
   local profile="${SEQ_RUNTIME_PROFILE:-singularity}"
   local local_igenomes_base="${SEQ_SAREK_IGENOMES_BASE:-$seq_base/refs/igenomes_stub}"
   local local_snpeff_cache="${SEQ_SAREK_SNPEFF_CACHE:-$seq_base/refs/annotation/snpeff_cache}"
@@ -211,8 +213,10 @@ if [[ "${1:-}" == "--foreground" ]]; then
   exit 0
 fi
 
-source /media/user/SEQ/configs/resources.env
-remote_logdir="${LOGDIR:-/media/user/SEQ/logs/pdac_sarek_sv_cna_$(date +%Y%m%d_%H%M%S)}"
+resource_env="${PDAC2026_RESOURCES_ENV:?Set PDAC2026_RESOURCES_ENV to the private reference environment file}"
+# shellcheck disable=SC1090
+source "$resource_env"
+remote_logdir="${LOGDIR:-${SEQ_BASE:?}/logs/pdac_sarek_sv_cna_$(date +%Y%m%d_%H%M%S)}"
 mkdir -p "$remote_logdir"
 
 nohup bash -lc "export LOGDIR='$remote_logdir'; $(declare -f log); $(declare -f die); $(declare -f need_cmd); $(declare -f download_if_missing); $(declare -f prepare_ascat_bundle_zip); $(declare -f run_pipeline); run_pipeline" \

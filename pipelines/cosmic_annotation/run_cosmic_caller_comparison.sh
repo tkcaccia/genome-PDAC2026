@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-MUTECT2="${1:-/media/user/PDAC_SEQ_analysis/results/cosmic_annotation_mutect2_v103/mutect2_pass_cosmic_annotation.tsv}"
-STRELKA="${2:-/media/user/PDAC_SEQ_analysis/results/cosmic_annotation_strelka_v103/strelka_pass_cosmic_annotation.tsv}"
-OUT_DIR="${3:-/media/user/PDAC_SEQ_analysis/results/cosmic_annotation_caller_comparison_v103}"
+MUTECT2="${1:-${COSMIC_MUTECT2_TABLE:-}}"
+STRELKA="${2:-${COSMIC_STRELKA_TABLE:-}}"
+OUT_DIR="${3:-${COSMIC_COMPARISON_OUTDIR:-}}"
+if [[ -z "$MUTECT2" || -z "$STRELKA" || -z "$OUT_DIR" ]]; then
+  echo "Usage: $0 MUTECT2_TABLE STRELKA_TABLE OUT_DIR" >&2
+  exit 2
+fi
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PY_SCRIPT="$SCRIPT_DIR/compare_cosmic_callers.py"
 

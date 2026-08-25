@@ -1,78 +1,64 @@
-# PDAC2026
+# PDAC2026 Pipeline Index
 
-Code, configuration, and launch notes for the pancreatic ductal adenocarcinoma short-read analysis completed in 2026.
+This folder contains reusable, patient-data-safe code for the pancreatic and
+periampullary multi-omics study. It preserves scientific methods, not private
+inputs, result tables, machine administration or credentials.
 
-## Summary
+## Current Audit Status
 
-This repository captures the code that was used to prepare, launch, monitor, resume, and recover four production analyses on the remote Ubuntu workstation:
+The August 2026 audit verified the following analyses from current source
+files:
 
-1. `nf-core/rnaseq` for bulk RNA-seq expression quantification
-2. `nf-core/sarek` germline calling on WES data
-3. `nf-core/sarek` tumor-normal somatic calling on WES data
-4. `nf-core/rnafusion` for fusion detection on RNA-seq data
-5. `SigProfilerAssignment` for COSMIC mutational signature assignment on the tumor-normal WES callset
-6. COSMIC database-driven annotation of the completed somatic callsets
-7. `SigProfilerAssignment` for COSMIC `CNV48` and `SV32` assignment on the completed `ASCAT` and `Manta` outputs
-8. Per-patient circos-style visualization of SNV burden, CNV segments, SV links, and interchromosomal translocations
+- paired tumour-normal RNA differential expression with DESeq2, edgeR and
+  limma-voom;
+- documented gene-level TPM construction from STAR counts and GENCODE v46;
+- GSVA and ssGSEA scoring of 19 curated programmes;
+- ESTIMATE, MCP-counter, EPIC, xCell and quanTIseq;
+- paired tumour-normal immune/stromal statistics;
+- cohort-relative tumour-microenvironment phenotype assignment;
+- anonymized manuscript plots and technical-validation summaries.
 
-The production run finished successfully. Final status:
+The connected storage contained recovered patient-level summaries, but not the
+primary Sarek VCF/MAF files, detailed ASCAT segments, Manta calls,
+nf-core/rnafusion outputs/logs or SigProfiler output directories. The WES,
+fusion and signature code remains here so those analyses can be reproduced
+when their required inputs are restored. Do not treat the presence of code as
+evidence that a historical result was independently re-audited.
 
-| Analysis | Pipeline | Status |
+## Analysis Folders
+
+| Folder | Purpose | Main input |
 | --- | --- | --- |
-| RNA expression | `nf-core/rnaseq 3.24.0` | Complete |
-| Germline WES | `nf-core/sarek 3.8.1` | Complete |
-| Tumor-normal WES | `nf-core/sarek 3.8.1` | Complete |
-| RNA fusion | `nf-core/rnafusion 4.1.0` | Complete |
-| COSMIC signatures | `SigProfilerAssignment 1.1.3` | Complete |
-| COSMIC CNV/SV signatures | `SigProfilerAssignment 1.1.3` | Complete |
-| COSMIC annotation (Mutect2) | Local COSMIC v103 tables | Complete |
-| COSMIC annotation (Strelka) | Local COSMIC v103 tables | Complete |
-| Per-patient circos plots | Local Matplotlib renderer | Complete |
+| `rnaseq` | nf-core/rnaseq launch and paired DE | RNA FASTQ or STAR gene counts |
+| `pathway_scoring` | GSVA/ssGSEA programme activity | normalized/log expression plus GMT |
+| `immune_infiltration` | immune/stromal inference and paired tests | linear TPM-like expression |
+| `phenotype_assignment` | RNA score integration and TME labels | method-specific score tables |
+| `driver_mutation_review` | safe TP53 filtering example | VEP-annotated somatic variants |
+| `sarek_germline` | nf-core/sarek germline WES | normal WES samplesheet |
+| `sarek_tumor_normal` | nf-core/sarek tumour-normal WES | matched WES samplesheet |
+| `sarek_sv_cna` | WES-compatible ASCAT/Manta summaries and circos plots | Sarek CNA/SV outputs |
+| `rnafusion` | nf-core/rnafusion wrapper | RNA FASTQ samplesheet |
+| `cosmic_annotation` | licensed local COSMIC annotation | annotated somatic calls |
+| `cosmic_signatures` | SBS/DBS/ID assignment | PASS somatic VCFs |
+| `cosmic_sv_cna_signatures` | exploratory CNV48/SV32 assignment | ASCAT/Manta outputs |
+| `integrated_analysis` | anonymized multi-omics figures | harmonized safe summaries |
+| `validation` | KRAS/MSI/TMB summary figure | harmonized safe summaries |
 
-## What This Repo Contains
+## Interpretation Boundaries
 
-- `workspace_setup/`: bootstrap and system setup scripts used to prepare the remote workspace
-- `cohort_autodraft/`: cohort-specific samplesheet/autodraft generation code
-- `shared_runtime/`: shared shell and samplesheet validation helpers used by the pipeline launchers
-- `rnaseq/`: RNA-seq wrapper, config, and launch example
-- `pathway_scoring/`: normalized/log expression plus curated GMT to GSVA/ssGSEA programme scores
-- `immune_infiltration/`: TPM-like expression to method-specific immune/stromal scores, followed by paired tumour-normal comparison
-- `phenotype_assignment/`: merge score matrices, calculate meta-scores and assign immune/stromal/EMT tumour phenotypes
-- `driver_mutation_review/`: patient-data-safe TP53 mutation-identification example from VEP-annotated somatic calls
-- `sarek_germline/`: germline Sarek wrapper, config, and launch example
-- `sarek_tumor_normal/`: tumor-normal Sarek wrapper, config, and launch example
-- `rnafusion/`: RNA fusion wrapper, config, and launch example
-- `cosmic_signatures/`: COSMIC signature assignment code built on the completed somatic WES output
-- `cosmic_sv_cna_signatures/`: COSMIC `CNV48`/`SV32` assignment code built on the completed `ASCAT` and `Manta` output
-- `sarek_sv_cna/`: SV/CNA Sarek recovery code plus per-patient circos visualization and translocation summary scripts
-- `cosmic_annotation/`: COSMIC database-driven post-processing for somatic variant and fusion interpretation
-- `monitoring_and_recovery/`: watchdog, recovery, and remote orchestration code
+- The cohort contains pancreatic-head and ampullary/periampullary cancers and
+  should not be described as a histologically uniform classic-PDAC cohort.
+- WES-derived CNA and SV calls have lower and less uniform structural
+  resolution than whole-genome sequencing.
+- RNA deconvolution outputs use method-specific scales and are not all
+  percentages.
+- The 3/3/8 TME labels are cohort-relative exploratory groups created from RNA
+  scores, not clinical diagnoses or independent validation.
+- CIBERSORT requires its licensed script and LM22 matrix. It is optional and
+  was excluded from the audited rerun because those files were unavailable.
+- Signature, fusion and detailed event-level claims require restoration of the
+  primary output files and execution logs.
 
-## Reference/Runtime Summary
-
-- Reference build: `GRCh38`
-- RNA annotation: `GENCODE v46`
-- VEP cache: `Ensembl VEP 115`
-- Container runtime used in production: `Singularity`
-- Work directory during production: `/media/user/PDAC_SEQ_analysis/work`
-
-## Production Output Locations
-
-These outputs are not stored in GitHub; the repository contains only code and documentation.
-
-- RNA-seq expression: `/home/user/PDAC_SEQ_archive/rnaseq_expression`
-- Germline WES: `/media/user/PDAC_SEQ_analysis/results/sarek_germline`
-- Tumor-normal WES: `/media/user/PDAC_SEQ_analysis/results/sarek_tumor_normal`
-- RNA fusion: `/home/user/PDAC_SEQ_native_results/rnafusion_pdac`
-- COSMIC signatures: `/media/user/PDAC_SEQ_analysis/results/cosmic_signatures_sigprofiler_assignment_1_1_3`
-- COSMIC CNV/SV signatures: `/media/user/PDAC_SEQ_analysis/results/cosmic_sv_cna_signatures_sigprofiler_assignment_1_1_3`
-- COSMIC annotation (Mutect2): `/media/user/PDAC_SEQ_analysis/results/cosmic_annotation_mutect2_v103`
-- COSMIC annotation (Strelka): `/media/user/PDAC_SEQ_analysis/results/cosmic_annotation_strelka_v103`
-- Per-patient circos plots: `/media/user/PDAC_SEQ_analysis/results/sarek_tumor_normal_sv_cna/circos_plots_enhanced`
-
-## Important Notes
-
-- Raw patient data are not included here.
-- Result files are not included here.
-- Passwords, credentialed SSH helpers, and machine-specific secrets were intentionally excluded.
-- Several scripts contain the exact production paths used on the remote workstation because the goal of this repo is to preserve the real operational code.
+All runtime paths must be supplied through command-line arguments,
+configuration or environment variables. No retired workstation path is a
+valid default.

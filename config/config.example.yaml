@@ -1,0 +1,30 @@
+project:
+  output_root: /path/to/restricted/results/rna_downstream_reproducible
+  log_dir: /path/to/restricted/logs/rna_downstream_reproducible
+inputs:
+  star_analysis_dir: /path/to/nfcore_rnaseq_star_outputs
+  gtf: /path/to/gencode.v46.primary_assembly.annotation.gtf.gz
+  metadata: ""
+  phenotype_assignment: ""
+  tme_score_table: ""
+  programme_gmt: templates/pdac_programme_gene_sets_example.gmt
+  cibersort_script: ""
+  cibersort_lm22: ""
+runtime:
+  memory_gate: ""
+  minimum_available_gb: 10
+  maximum_swap_percent: 85
+steps:
+  standard_de: true
+  gene_tpm: true
+  pathway_scoring: true
+  immune_deconvolution: true
+  phenotype_assignment: false
+immune:
+  methods: estimate,mcp_counter,epic,xcell,quantiseq
+  cibersort_permutations: 100
+phenotype:
+  immune_columns: ""
+  stromal_columns: ""
+  emt_columns: ""
+  target_per_extreme: 3

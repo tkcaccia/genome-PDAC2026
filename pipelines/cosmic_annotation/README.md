@@ -1,6 +1,7 @@
 # COSMIC Annotation
 
-This folder contains post-processing code that uses locally downloaded COSMIC databases to annotate completed PDAC outputs on the remote workstation.
+This folder contains post-processing code that can use locally licensed COSMIC
+databases to annotate PDAC somatic calls on the analysis workstation.
 
 Current implemented workflow:
 
@@ -11,7 +12,7 @@ Current implemented workflow:
   - `Cosmic_ResistanceMutations`
 - annotate `Strelka` tumor-normal `PASS` somatic variants with the same COSMIC resources for caller-to-caller comparison
 
-Produced outputs:
+Outputs produced when the required variant calls and databases are supplied:
 
 - combined variant-level annotation table across the cohort
 - recurrent gene summary
@@ -32,3 +33,9 @@ Files:
 - `run_cosmic_strelka_annotation.sh`: remote launcher for the Strelka comparison workflow
 - `compare_cosmic_callers.py`: summarizes caller-level and sample-level differences between Mutect2 and Strelka COSMIC annotations
 - `run_cosmic_caller_comparison.sh`: remote launcher for the Mutect2-versus-Strelka comparison summary
+
+Audit boundary: the August 2026 connected storage contained the local COSMIC
+database collection and recovered summary fields but not the primary annotated
+variant tables. The code is preserved, but historical variant-level COSMIC
+matches cannot be independently re-audited until source calls are restored or
+the annotation is regenerated.

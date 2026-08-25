@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-BASE="/media/user/SEQ"
+BASE="${PDAC2026_RUNTIME_ROOT:?Set PDAC2026_RUNTIME_ROOT to a restricted runtime directory}"
+RESULTS_ROOT="${PDAC2026_RESULTS_ROOT:?Set PDAC2026_RESULTS_ROOT outside this repository}"
 COSMIC_ARCHIVE_DIR="${1:-$BASE/refs/cosmic_archives_v103}"
 COSMIC_EXTRACT_DIR="${2:-$BASE/refs/cosmic_v103}"
-VCF_DIR="/media/user/PDAC_SEQ_analysis/results/sarek_tumor_normal/annotation/strelka"
-OUT_DIR="${3:-/media/user/PDAC_SEQ_analysis/results/cosmic_annotation_strelka_v103}"
+VCF_DIR="${STRELKA_ANNOTATION_DIR:-$RESULTS_ROOT/sarek_tumor_normal/annotation/strelka}"
+OUT_DIR="${3:-$RESULTS_ROOT/cosmic_annotation_strelka_v103}"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PY_SCRIPT="$SCRIPT_DIR/annotate_strelka_with_cosmic.py"
 LOG_DIR="$OUT_DIR/logs"

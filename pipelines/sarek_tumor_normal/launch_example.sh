@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
-/media/user/SEQ/scripts/run_sarek.sh \
+set -Eeuo pipefail
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+: "${SAREK_SAMPLESHEET:?Set SAREK_SAMPLESHEET}"
+: "${SAREK_INTERVALS:?Set SAREK_INTERVALS}"
+: "${SAREK_TUMOUR_NORMAL_OUTDIR:?Set SAREK_TUMOUR_NORMAL_OUTDIR outside this repository}"
+
+"$SCRIPT_DIR/run_sarek.sh" \
   --mode tumor-normal \
-  --samplesheet /media/user/SEQ/samplesheets/sarek_samplesheet.PDAC_WES_fastq_autodraft.csv \
-  --intervals /media/user/SEQ/refs/optional/PDAC_Twist_ILMN_Exome_2.5_Plus_Panel.hg38.majority.bed \
-  --outdir /media/user/PDAC_SEQ_analysis/results/sarek_tumor_normal \
+  --samplesheet "$SAREK_SAMPLESHEET" \
+  --intervals "$SAREK_INTERVALS" \
+  --outdir "$SAREK_TUMOUR_NORMAL_OUTDIR" \
   -resume

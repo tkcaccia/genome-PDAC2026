@@ -2,7 +2,7 @@
 
 ## Overview
 
-All production analyses were performed on the remote Ubuntu workstation. This repository contains reusable code and documentation only. Patient data and result tables are excluded.
+The study analyses ran on a remote Ubuntu workstation. This repository contains reusable code and documentation only; patient data and result tables are excluded. An August 2026 audit verified the current RNA reruns but found that several primary genomic, fusion and signature output trees were no longer present on connected storage. Method documentation therefore describes either a current audited rerun or a reproducible historical/configured workflow and must not be read as proof that every primary result remains available.
 
 The project combined standard nf-core pipelines with downstream R/Python/Bash scripts:
 
@@ -44,17 +44,17 @@ Main tools/resources:
 
 Important scripts:
 
-- `run_rnaseq.sh`: production wrapper
+- `run_rnaseq.sh`: nf-core/rnaseq launcher wrapper
 - `rnaseq.config`: resource and process configuration
 - `validate_samplesheet.py`: input samplesheet validation
 - `differential_expression_limma_template.R`: paired tumour-normal limma-voom template
 - `phenotype_group_comparison_limma_template.R`: phenotype-group and interaction comparison template
-- `run_standard_de_from_star_readspergene.R`: end-to-end STAR gene-count matrix construction with paired limma-voom and paired DESeq2 sensitivity analysis
+- `run_standard_de_from_star_readspergene.R`: end-to-end STAR gene-count matrix construction with primary paired DESeq2 and paired edgeR/limma-voom sensitivity analyses
 - `../pathway_scoring/run_gsva_ssgsea_programme_scores.R`: GSVA/ssGSEA pathway and programme scoring template from normalized expression matrices
 
 ## Differential Expression
 
-The statistically preferred downstream workflow is `limma-voom` with TMM normalization from `edgeR`, with `DESeq2` used as a sensitivity analysis when raw integer counts are available. For matched tumour-normal comparisons, the model is:
+The audited paired tumour-normal workflow uses `DESeq2` as the primary raw-count model, with robust `edgeR` quasi-likelihood and `limma-voom` using the same paired design as sensitivity analyses. For matched tumour-normal comparisons, the model is:
 
 ```r
 ~ patient_id + condition
@@ -68,7 +68,7 @@ For phenotype-group analyses, the recommended approach is:
 - Paired tumour-normal delta comparison when both tumour and normal exist
 - Optional interaction model when sample size is sufficient
 
-The historical Python fallback should be treated as exploratory and not described as DESeq2.
+The historical Python fallback should be treated as exploratory and not described as DESeq2, edgeR or limma.
 
 ## Immune/Stromal/EMT Scoring and Phenotype Assignment
 
@@ -88,13 +88,14 @@ nf-core/rnaseq expression outputs
 
 The scoring layer used gene-by-sample expression tables generated after RNA-seq processing, not VCF, CNV or SV files. Gene symbols must be in rows and RNA samples in columns. GSVA/ssGSEA accepts normalized/log expression such as log2-CPM, VST or log2(TPM + 1). The `immunedeconv` interface instead recommends non-log TPM-like expression, particularly for fraction-oriented EPIC, quanTIseq and CIBERSORT. A matrix known to equal `log2(TPM + 1)` can be returned to linear TPM as `2^x - 1`; DESeq2 VST/rlog or an unknown transformation must not be back-transformed as though it were TPM.
 
-The scoring step combined several method families:
+The audited primary scoring step combined several method families:
 
 - ESTIMATE for relative immune, stromal and combined ESTIMATE scores.
 - MCP-counter for immune and stromal population abundance-like scores, including fibroblast-related signal.
-- CIBERSORT LM22 for model-derived immune-cell fractions.
 - EPIC, xCell and quanTIseq through immunedeconv for additional immune/stromal deconvolution.
 - Curated gene-set scoring for CAF, EMT, hypoxia, angiogenesis, pathway and PDAC-related programmes using GSVA/ssGSEA-style scoring. The safe reusable script is `pipelines/pathway_scoring/run_gsva_ssgsea_programme_scores.R`, and an example non-patient GMT file is provided at `templates/pdac_programme_gene_sets_example.gmt`.
+
+The code also supports CIBERSORT LM22 when its licensed script and signature matrix are supplied. The August 2026 audited rerun excluded CIBERSORT because those licensed files were unavailable; it was not included in the revised cross-method statistical conclusions.
 
 These outputs were interpreted on their own method-specific scales. They were not treated as the same kind of number and were not all interpreted as percentages.
 
@@ -120,13 +121,13 @@ The broad group labels used by downstream scripts are:
 
 - `StromalHigh_EMTHigh_ImmuneLow`
 - `ImmuneHigh_StromalLow`
-- `Intermediate`
+- `Intermediate_or_mixed`
 
 For the PDAC2026 cohort, the final reviewed tumour phenotype split was:
 
 - 3 tumours classified as `StromalHigh_EMTHigh_ImmuneLow`.
 - 3 tumours classified as `ImmuneHigh_StromalLow`.
-- 8 tumours classified as `Intermediate` or mixed.
+- 8 tumours classified as `Intermediate_or_mixed`.
 
 The reproducible, patient-data-safe example is provided in `pipelines/phenotype_assignment/assign_tme_phenotype_groups.py`. It takes tumour-level immune, stromal and EMT score columns, z-scales each feature across tumours, averages related features into meta-scores, calculates immune-high/stromal-low and stromal/EMT-high/immune-low contrast scores, and assigns the broad phenotype groups either by cohort-relative quantile thresholds or by ranked top-N extremes. The manuscript-facing 3/3/8 split corresponds to `--target-per-extreme 3`; tumours not selected for either non-overlapping extreme remain intermediate.
 
@@ -201,7 +202,7 @@ Important scripts:
 - `make_patient_circos.py`
 - `run_enhanced_circos_remote.sh`
 
-Outputs generated during the study included gene-level CNA summaries, SV burden summaries, translocation summaries and circos-style plots. The output files themselves are not included here.
+Recovered summaries indicate that the historical workflow produced gene-level CNA, SV-burden, translocation and circos-style outputs. The August 2026 audit did not recover the detailed ASCAT/Manta source files needed to regenerate or independently verify those event-level outputs.
 
 Interpretation limits:
 
@@ -223,13 +224,7 @@ Main pipeline:
 
 - `nf-core/rnafusion 4.1.0`
 
-Final successful tools:
-
-- Arriba
-- FusionCatcher
-- Salmon
-
-`fusionreport` was not used in the completed workflow because its database step failed despite local database availability. This should be documented as a limitation of the fusion workflow rather than hidden.
+The code can run Arriba, FusionCatcher, Salmon and other configured modules. During the August 2026 audit, the primary nf-core/rnafusion output directory and execution logs were absent from connected storage. Module completion and candidate-fusion claims therefore cannot be re-audited from the current files and must be reported as historical until those outputs are recovered.
 
 Candidate filtering/prioritization:
 
@@ -301,11 +296,11 @@ Interpretation:
 
 ## Immune and Stromal Deconvolution
 
-Methods used in the downstream study:
+Supported methods and current audit status:
 
 - ESTIMATE
 - MCP-counter
-- CIBERSORT LM22 with 100 permutations and quantile normalization disabled
+- CIBERSORT LM22 is optional; it was excluded from the audited rerun because its licensed files were unavailable
 - EPIC
 - xCell
 - quanTIseq
@@ -360,4 +355,4 @@ The final integrated interpretation combined:
 - CAF/EMT/hypoxia/pathway scores
 - Exploratory potentially clinically relevant annotations
 
-These outputs are research-grade and hypothesis-generating. They should not be used as clinical reports or treatment recommendations; any candidate finding may warrant orthogonal validation and appropriate clinical review before further use.
+These outputs support hypothesis generation rather than treatment recommendations. Any candidate finding may warrant orthogonal validation and appropriate clinical review before further use.

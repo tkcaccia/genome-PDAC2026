@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
-/media/user/SEQ/scripts/run_sarek.sh \
+set -Eeuo pipefail
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+: "${SAREK_SAMPLESHEET:?Set SAREK_SAMPLESHEET}"
+: "${SAREK_INTERVALS:?Set SAREK_INTERVALS}"
+: "${SAREK_GERMLINE_OUTDIR:?Set SAREK_GERMLINE_OUTDIR outside this repository}"
+
+"$SCRIPT_DIR/run_sarek.sh" \
   --mode germline \
-  --samplesheet /media/user/SEQ/samplesheets/sarek_samplesheet.PDAC_WES_fastq_autodraft.csv \
-  --intervals /media/user/SEQ/refs/optional/PDAC_Twist_ILMN_Exome_2.5_Plus_Panel.hg38.majority.bed \
-  --outdir /media/user/PDAC_SEQ_analysis/results/sarek_germline \
+  --samplesheet "$SAREK_SAMPLESHEET" \
+  --intervals "$SAREK_INTERVALS" \
+  --outdir "$SAREK_GERMLINE_OUTDIR" \
   -resume

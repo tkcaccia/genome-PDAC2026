@@ -19,11 +19,15 @@ This GitHub Pages site documents the pipelines and code used for the analysis in
 - COSMIC somatic annotation using local COSMIC database tables
 - SBS/DBS/ID, CNV and SV signature workflows using SigProfilerAssignment
 - Immune/stromal deconvolution using ESTIMATE, MCP-counter, CIBERSORT, EPIC, xCell and quanTIseq
-- KRAS-focused algorithmic review
+- KRAS-focused computational evidence review
 - MSI/MMR/hypermutation review using MSIsensor-pro and strict somatic filtering
 - Integrated patient-level genotype/phenotype interpretation
 
 For students starting with a normalized RNA expression matrix, the complete expression-to-phenotype walkthrough is in the existing [pipeline details](pipelines.md) and the READMEs under `pipelines/immune_infiltration`, `pipelines/pathway_scoring` and `pipelines/phenotype_assignment`. The pathway README also explains that a GMT is a separate gene-set definition file rather than a value calculated from patient expression.
+
+## Audit Boundary
+
+The current code repository does not imply that all historical primary outputs remain recoverable. The August 2026 storage audit re-ran and verified the RNA downstream layer. It found only recovered patient-summary fields for several genomic analyses; primary Sarek, rnafusion and SigProfiler output trees were absent from the connected drives. The corresponding code remains useful, but those historical outputs require source recovery before event-level re-audit.
 
 ## Documentation Pages
 
