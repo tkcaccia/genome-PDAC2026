@@ -29,17 +29,26 @@ MARKDOWN_LINK = re.compile(r"(?<!!)\[[^]]+\]\(([^)]+)\)")
 
 
 def repository_files() -> list[Path]:
-    output = subprocess.check_output(
-        ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
-        cwd=ROOT,
-        text=True,
-    )
+    try:
+        output = subprocess.check_output(
+            ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+            cwd=ROOT,
+            text=True,
+            stderr=subprocess.DEVNULL,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return sorted(
+            path for path in ROOT.rglob("*")
+            if path.is_file() and ".git" not in path.relative_to(ROOT).parts
+        )
     return [ROOT / line for line in output.splitlines() if line and (ROOT / line).is_file()]
 
 
 def audit_file(path: Path) -> list[str]:
     relative = path.relative_to(ROOT)
     problems: list[str] = []
+    if path.is_symlink():
+        return [f"unexpected symbolic link: {relative}"]
     lower_name = str(relative).lower()
     if any(word in lower_name for word in ("manuscript", "reviewer_comment", "review_comments")):
         problems.append(f"disallowed publication document name: {relative}")
