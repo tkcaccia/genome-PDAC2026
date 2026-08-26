@@ -37,7 +37,8 @@ cp config/config.example.yaml config/config.yaml
 - `pipelines/sarek_tumor_normal/`: nf-core/sarek tumour-normal WES calling
 - `pipelines/sarek_germline/`: nf-core/sarek germline WES calling
 - `pipelines/sarek_sv_cna/`: SV/CNA recovery, interchromosomal translocation summaries and circos-style plotting
-- `pipelines/rnafusion/`: nf-core/rnafusion launcher/configuration
+- `pipelines/rnafusion/`: pinned nf-core/rnafusion 4.1.0 reference,
+  samplesheet, bounded-workstation, sequential-resume and verification workflow
 - `pipelines/cosmic_signatures/`: SigProfilerAssignment SBS/DBS/ID signature assignment
 - `pipelines/cosmic_sv_cna_signatures/`: SigProfilerAssignment CNV/SV signature assignment
 - `pipelines/cosmic_annotation/`: local COSMIC database annotation of somatic calls
@@ -51,7 +52,7 @@ Machine administration, credentials, remote watchdogs, mount repair and retired 
 
 ## Provenance Status
 
-The repository documents methods; it is not evidence that every historical result file remains available. The August 2026 audit verified the current RNA reruns (paired differential expression, gene-level TPM, GSVA/ssGSEA, ESTIMATE, MCP-counter, EPIC, xCell, quanTIseq and phenotype assignment). Primary Sarek VCF/MAF files, detailed ASCAT/Manta outputs, nf-core/rnafusion outputs and SigProfiler result directories were not present on the connected storage during that audit. Their code is retained for reproducibility, but biological claims from those unrecovered primary outputs must not be described as independently re-audited.
+The repository documents methods; it is not evidence that every historical result file remains available. The August 2026 audit verified the current RNA reruns (paired differential expression, gene-level TPM, GSVA/ssGSEA, ESTIMATE, MCP-counter, EPIC, xCell, quanTIseq and phenotype assignment). Primary Sarek VCF/MAF files, detailed ASCAT/Manta outputs, historical nf-core/rnafusion outputs and SigProfiler result directories were not present on the connected storage during that audit. The RNA-fusion folder now provides a safe reconstruction workflow from retained RNA FASTQs, but no fusion result is considered complete until its Nextflow report, trace and caller outputs pass the documented checks. Other biological claims from unrecovered primary outputs must not be described as independently re-audited.
 
 ## RNA-seq Downstream Analysis
 

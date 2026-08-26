@@ -19,11 +19,12 @@ files:
 - anonymized manuscript plots and technical-validation summaries.
 
 The connected storage contained recovered patient-level summaries, but not the
-primary Sarek VCF/MAF files, detailed ASCAT segments, Manta calls,
-nf-core/rnafusion outputs/logs or SigProfiler output directories. The WES,
-fusion and signature code remains here so those analyses can be reproduced
-when their required inputs are restored. Do not treat the presence of code as
-evidence that a historical result was independently re-audited.
+primary Sarek VCF/MAF files, detailed ASCAT segments, Manta calls, historical
+nf-core/rnafusion outputs/logs or SigProfiler output directories. Retained RNA
+FASTQs allow the RNA-fusion workflow to be regenerated using the bounded,
+sequential method documented in `rnafusion/README.md`; the missing WES primary
+evidence does not. Do not treat the presence of code, or an incomplete rerun,
+as evidence that a historical result was independently re-audited.
 
 ## Analysis Folders
 

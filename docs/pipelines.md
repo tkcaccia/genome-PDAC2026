@@ -222,9 +222,24 @@ Purpose:
 
 Main pipeline:
 
-- `nf-core/rnafusion 4.1.0`
+- `nf-core/rnafusion 4.1.0`, pinned to Git commit
+  `eabd3f2d60d3e70d5e80d6c62b81d7d3473c36d1`
 
-The code can run Arriba, FusionCatcher, Salmon and other configured modules. During the August 2026 audit, the primary nf-core/rnafusion output directory and execution logs were absent from connected storage. Module completion and candidate-fusion claims therefore cannot be re-audited from the current files and must be reported as historical until those outputs are recovered.
+The reconstructed workflow starts from the original paired RNA FASTQs and uses
+existing STAR `ReadsPerGene.out.tab` files only to verify strandedness. It runs
+Arriba, FusionCatcher and STAR-Fusion for fusion detection, with Salmon for
+transcript quantification. It excludes separately named trimmed FASTQ copies
+when building the samplesheet so each library is analysed once. It also uses
+`--no_cosmic`; local licensed COSMIC annotation is a separate downstream step.
+
+The former workstation configuration could request 48 GB on a host with 31 GiB
+physical RAM. The corrected configuration permits one task and four CPUs at a
+time, caps all tasks at 29 GB, waits for at least 24 GiB available RAM and 150
+GiB free disk before each sample, resumes failed work, and cleans only
+successfully completed work. Historical outputs and logs were absent during
+the August 2026 storage audit. A regenerated sample is complete only when
+Nextflow exits successfully, its execution report and trace exist, and the
+requested caller outputs pass review.
 
 Candidate filtering/prioritization:
 
@@ -233,6 +248,9 @@ Candidate filtering/prioritization:
 - Prioritize PDAC-relevant or potentially clinically relevant genes including NTRK1, NTRK2, NTRK3, ALK, RET, ROS1, FGFR2, NRG1, ERBB2, BRAF and RAF1.
 - Cross-check RNA fusion candidates against DNA structural-variant calls where available.
 - Treat unvalidated calls as exploratory candidates, not confirmed clinical fusions.
+
+Detailed preparation, reference download, execution and completion checks are
+documented in `pipelines/rnafusion/README.md`.
 
 ## COSMIC Annotation
 
