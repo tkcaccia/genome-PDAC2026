@@ -6,7 +6,9 @@
 # and a metadata file supplied by the user, then writes only derived statistics.
 # It does not contain patient data, sample identifiers from the PDAC cohort, or
 # absolute private paths. The same approach was used for ESTIMATE, MCP-counter,
-# CIBERSORT LM22, EPIC, xCell and quanTIseq score tables in the manuscript.
+# EPIC, xCell and quanTIseq in the audited manuscript analysis. CIBERSORT is
+# supported only when its licensed script and LM22 matrix are supplied; it was
+# excluded from the audited rerun.
 #
 # Required input files:
 #   1. scores.tsv

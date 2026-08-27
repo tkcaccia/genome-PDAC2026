@@ -14,7 +14,8 @@ These labels are cohort-relative exploratory summaries. They are not percentages
 
 ```text
 normalized RNA expression
-  |-- linear TPM-like matrix -> ESTIMATE/MCP-counter/EPIC/xCell/quanTIseq/CIBERSORT
+  |-- linear TPM-like matrix -> ESTIMATE/MCP-counter/EPIC/xCell/quanTIseq
+  |                              (optional CIBERSORT only with licensed inputs)
   |-- normalized log matrix + curated GMT -> GSVA/ssGSEA programme scores
   -> merge every score table by RNA sample ID
   -> z-standardize selected features across tumours
@@ -61,6 +62,12 @@ The score layer supported by the reusable code includes:
 
 These methods use different scales and assumptions. Their raw output values were not treated as a common percentage scale.
 
+In the audited PDAC2026 rerun, ESTIMATE, MCP-counter, EPIC, xCell and quanTIseq
+all completed. CIBERSORT did not run and did not contribute to classification.
+quanTIseq contributed to the separate tumour-normal immune comparison, but the
+final phenotype meta-score used the prespecified ESTIMATE, MCP-counter, EPIC,
+xCell and ssGSEA columns listed in the feature manifest.
+
 ## Step 2: Calculate CAF/ECM/EMT And Other Programme Scores
 
 Follow `../pathway_scoring/README.md` and run:
@@ -77,6 +84,14 @@ Rscript ../pathway_scoring/run_gsva_ssgsea_programme_scores.R \
 ```
 
 The GMT is the text file containing the gene members of each programme. It is not another R script and it is not inferred from this cohort. `run_gsva_ssgsea_programme_scores.R` is the R script that reads it and calculates the sample scores.
+
+Starting from only a normalized/log matrix requires checking its scale. GSVA
+and ssGSEA can use log2-CPM, DESeq2 VST, or `log2(TPM + 1)` directly. Immune
+deconvolution instead requires non-negative linear TPM-like abundance. Only a
+matrix known to equal `log2(TPM + 1)` may be inverted with `2^x - 1`. A VST,
+rlog, generic log-CPM, or unknown transform must not be inverted as TPM; recover
+Salmon TPM or create the documented gene-level TPM fallback from raw counts and
+the matching GTF with `../rnaseq/make_gene_tpm_from_counts.R`.
 
 ## Step 3: Merge Score Matrices By Sample
 
@@ -130,6 +145,34 @@ The outputs are:
 
 - `tme_phenotype_assignment.assignments.tsv`: sample-level meta-scores, contrast scores and phenotype labels.
 - `tme_phenotype_assignment.group_counts.tsv`: group sizes.
+
+## Robustness Audit
+
+The 3/3/8 rule deliberately selects three ranked tumours at each extreme; it
+does not discover three natural clusters. Run the supplied audit to confirm
+exact reconstruction and quantify sensitivity to the 75th-percentile rule,
+leaving out one feature, and leaving out one method family:
+
+```bash
+python audit_tme_phenotype_robustness.py \
+  --scores results/tumour_score_table.tsv \
+  --assignments results/tme_phenotype_assignment.assignments.tsv \
+  --feature-manifest results/tme_phenotype_assignment.feature_manifest.tsv \
+  --target-per-extreme 3 \
+  --upper-quantile 0.75 \
+  --out-prefix results/tme_phenotype_robustness
+```
+
+The sample-level robustness table is a private result and must not be committed
+to this public repository.
+
+In the corrected PDAC2026 audit, the recorded ranked labels reproduced exactly
+with no missing selected features. All 12 leave-one-feature-out tests retained
+the labels. Excluding ESTIMATE, EPIC or xCell also retained every label;
+excluding MCP-counter changed two labels. The 75th-percentile alternative
+produced a 4/4/6 split and agreed with 12/14 ranked labels. These results support
+the descriptive extremes while confirming that the exact 3/3/8 split is a
+prespecified ranking rule rather than a naturally inferred cluster solution.
 
 ## Step 5: Compare Expression Between Phenotype Groups
 

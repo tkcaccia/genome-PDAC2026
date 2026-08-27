@@ -21,7 +21,14 @@ Requirements:
 4. Do not gene-wise z-scale the matrix before scoring. The script needs the expression ranking across genes within each sample.
 5. Do not supply unnormalized raw integer counts. Run library-size/composition normalization first.
 
-The `DESeq2_normalized_counts.tsv` output produced by `../rnaseq/run_standard_de_from_star_readspergene.R` can be used with the GTF that matches the RNA-seq annotation. The script collapses multiple Ensembl IDs mapping to one symbol by summing normalized expression before transformation.
+The `DESeq2_normalized_counts.tsv` output produced by `../rnaseq/run_standard_de_from_star_readspergene.R` can be used with the GTF that matches the RNA-seq annotation. The script collapses multiple Ensembl IDs mapping to one symbol by summing normalized expression before transformation. Always inspect `<out-prefix>.gene_set_coverage.tsv`; expression filtering can remove biologically important marker genes even when identifier mapping succeeds.
+
+For the corrected PDAC2026 audit, the same documented gene-level TPM fallback
+used for immune deconvolution was supplied here with `--gene-column
+gene_symbol --transform log2p1`. This retained 61,510 mapped gene symbols and
+scored 14 tumours. It improved classical/progenitor coverage from 5/15 to 15/15
+genes and basal/squamous coverage from 6/14 to 14/14 genes. The corrected
+scores did not change any of the 14 final 3/3/8 phenotype labels.
 
 Install the required packages in the analysis environment if they are absent:
 
@@ -61,11 +68,10 @@ Run `run_gsva_ssgsea_programme_scores.R`. It is the script that reads both the n
 
 ```bash
 Rscript run_gsva_ssgsea_programme_scores.R \
-  --expression path/to/DESeq2_normalized_counts.tsv \
+  --expression path/to/gene_tpm.tsv \
   --gmt ../../templates/pdac_programme_gene_sets_example.gmt \
-  --gtf path/to/matching_annotation.gtf \
-  --gene-column gene_id \
-  --transform auto \
+  --gene-column gene_symbol \
+  --transform log2p1 \
   --metadata path/to/sample_metadata.tsv \
   --sample-column sample_id \
   --condition-column condition \
@@ -88,6 +94,10 @@ The script writes:
 - `<out-prefix>.method_notes.txt`: input paths and MD5 checksums, annotation, transformation, dimensions, R version and GSVA version.
 
 The score values are relative enrichment/activity measures. They are not RNA counts, percentages, immune-cell fractions or clinical diagnostic classes.
+
+If gene-level TPM must first be reconstructed from STAR gene counts, run
+`../rnaseq/make_gene_tpm_from_counts.R` with the matching GTF. Complete Salmon
+transcript-level TPM remains preferable when it is available for every sample.
 
 ## How The Scores Reach Phenotype Assignment
 

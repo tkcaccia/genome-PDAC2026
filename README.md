@@ -76,11 +76,11 @@ Limma-voom and DESeq2 can disagree in FDR significance even when their fold chan
 
 Important distinction for students: the phenotype-group limma script does not calculate immune, stromal or EMT scores. Starting with RNA expression, `run_immune_stromal_scores_from_expression.R` calculates method-specific deconvolution scores, while `run_gsva_ssgsea_programme_scores.R` combines normalized/log expression with the version-controlled GMT file in `templates/pdac_programme_gene_sets_example.gmt`. `assemble_tme_score_table.py` merges those outputs by sample, and `assign_tme_phenotype_groups.py` creates the labels. Only after that assignment exists in metadata does the limma script compare expression between groups.
 
-The GMT is not generated from the patient's expression matrix. It is a separate biological reference in which each row names a programme and lists its member genes. The expression matrix supplies measured expression, the GMT supplies biological membership, and GSVA/ssGSEA produces programme activity scores from their intersection.
+The GMT is not generated from the patient's expression matrix. It is a separate biological reference in which each row names a programme and lists its member genes. The expression matrix supplies measured expression, the GMT supplies biological membership, and GSVA/ssGSEA produces programme activity scores from their intersection. In the corrected audited workflow, `make_gene_tpm_from_counts.R` first created linear gene-level TPM; the immune runner used that linear matrix, while the GSVA/ssGSEA runner used its `log2(TPM + 1)` transformation.
 
 When the expression matrix contains Ensembl IDs, the scoring script requires the matching GTF and records the expression, GMT and GTF checksums. This prevents an example GMT or later code revision from being mistaken for the reference used to produce an archived result.
 
-Tumour-normal immune/stromal comparisons are a separate analysis. The immune script takes deconvolution score matrices from ESTIMATE, MCP-counter, CIBERSORT LM22, EPIC, xCell or quanTIseq, matches tumour and normal samples by patient, calculates tumour-minus-normal deltas, and performs paired Wilcoxon tests with FDR correction across features within each method.
+Tumour-normal immune/stromal comparisons are a separate analysis. The immune script takes deconvolution score matrices from ESTIMATE, MCP-counter, EPIC, xCell or quanTIseq, matches tumour and normal samples by patient, calculates tumour-minus-normal deltas, and performs paired Wilcoxon tests with FDR correction across features within each method. CIBERSORT is optional when licensed inputs are supplied; it was excluded from the audited rerun and phenotype assignment.
 
 ## Safety
 

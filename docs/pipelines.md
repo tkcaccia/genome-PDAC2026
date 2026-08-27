@@ -86,7 +86,7 @@ nf-core/rnaseq expression outputs
   -> limma-voom phenotype-group comparison
 ```
 
-The scoring layer used gene-by-sample expression tables generated after RNA-seq processing, not VCF, CNV or SV files. Gene symbols must be in rows and RNA samples in columns. GSVA/ssGSEA accepts normalized/log expression such as log2-CPM, VST or log2(TPM + 1). The `immunedeconv` interface instead recommends non-log TPM-like expression, particularly for fraction-oriented EPIC, quanTIseq and CIBERSORT. A matrix known to equal `log2(TPM + 1)` can be returned to linear TPM as `2^x - 1`; DESeq2 VST/rlog or an unknown transformation must not be back-transformed as though it were TPM.
+The scoring layer used gene-by-sample expression tables generated after RNA-seq processing, not VCF, CNV or SV files. Gene symbols must be in rows and RNA samples in columns. GSVA/ssGSEA accepts normalized/log expression such as log2-CPM, VST or log2(TPM + 1). The `immunedeconv` interface instead recommends non-log TPM-like expression, particularly for fraction-oriented EPIC, quanTIseq and CIBERSORT. A matrix known to equal `log2(TPM + 1)` can be returned to linear TPM as `2^x - 1`; DESeq2 VST/rlog or an unknown transformation must not be back-transformed as though it were TPM. The corrected PDAC2026 audit used the documented linear gene-level TPM fallback for deconvolution and its `log2(TPM + 1)` transformation for GSVA/ssGSEA, while retaining the same final phenotype labels.
 
 The audited primary scoring step combined several method families:
 
@@ -108,6 +108,7 @@ The executable order is:
 3. `pipelines/phenotype_assignment/assemble_tme_score_table.py` accepts feature-by-sample runner outputs or archived sample-by-feature tables and merges them into one tumour-level score table with method-prefixed columns.
 4. `pipelines/phenotype_assignment/assign_tme_phenotype_groups.py` z-standardizes selected features across tumours, calculates immune/stromal/EMT meta-scores and assigns the two extremes plus the intermediate group.
 5. `pipelines/rnaseq/phenotype_group_comparison_limma_template.R` compares raw-count expression between the already assigned extreme groups; it does not calculate the phenotype scores.
+6. `pipelines/phenotype_assignment/audit_tme_phenotype_robustness.py` verifies exact label reconstruction and tests quantile, leave-one-feature and leave-one-method-family sensitivity.
 
 For paired tumour-normal immune-infiltration analysis, each method-specific score table was analysed separately with `pipelines/immune_infiltration/paired_tumour_normal_immune_comparison.R`. The script matches each tumour sample to its normal sample by `patient_id`, calculates tumour-minus-normal deltas for every immune, stromal or tumour-microenvironment feature, then performs paired Wilcoxon signed-rank tests and paired t-tests. Benjamini-Hochberg FDR correction is applied across features within each method. This is the analysis referred to in the manuscript when describing tumour-normal immune/stromal contrasts.
 

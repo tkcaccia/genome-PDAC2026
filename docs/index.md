@@ -19,7 +19,9 @@ This GitHub Pages site documents the pipelines and code used for the analysis in
   methods and a bounded sequential workstation queue
 - COSMIC somatic annotation using local COSMIC database tables
 - SBS/DBS/ID, CNV and SV signature workflows using SigProfilerAssignment
-- Immune/stromal deconvolution using ESTIMATE, MCP-counter, CIBERSORT, EPIC, xCell and quanTIseq
+- Immune/stromal deconvolution using ESTIMATE, MCP-counter, EPIC, xCell and
+  quanTIseq, with optional licensed CIBERSORT support documented but excluded
+  from the audited rerun
 - KRAS-focused computational evidence review
 - MSI/MMR/hypermutation review using MSIsensor-pro and strict somatic filtering
 - Integrated patient-level genotype/phenotype interpretation
