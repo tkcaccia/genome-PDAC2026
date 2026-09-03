@@ -70,6 +70,30 @@ For phenotype-group analyses, the recommended approach is:
 
 The historical Python fallback should be treated as exploratory and not described as DESeq2, edgeR or limma.
 
+## External Validation and Anatomical Sensitivity
+
+Code location: `pipelines/external_validation/`
+
+The internal DESeq2, edgeR and limma-voom tables are first intersected by gene ID to
+verify a common tested universe. Pearson and Spearman correlations and directional
+agreement are then calculated from complete, unselected log2 fold-change vectors.
+FDR-significant-gene overlap is reported separately so a threshold-dependent gene
+count is not mistaken for overall effect concordance.
+
+Independently processed paired limma results from GSE15471 and GSE62452 are joined
+to the internal DESeq2 table by HGNC gene symbol. The workflow reports genome-wide
+effect correlations, directional agreement among internal significant genes and
+the number of genes significant in every cohort. It also performs preranked GSEA
+for each cohort using the exact same version-controlled 19-programme GMT used in
+the internal study. Gene-level replication and pathway-level biological agreement
+remain distinct validation endpoints.
+
+The anatomical sensitivity workflow compares the complete primary result with an
+independent rerun restricted to pancreatic-head pairs. It similarly compares
+tumour-minus-normal immune/TME feature deltas when supplied. This analysis asks
+whether the main direction of effect depends on inclusion of ampullary/periampullary
+cases; it is not powered as a formal tumour-site comparison.
+
 ## Immune/Stromal/EMT Scoring and Phenotype Assignment
 
 The immune/stromal/EMT phenotype groups were not created by the limma differential-expression scripts. They came from upstream RNA-seq score integration. They are derived tumour-phenotype labels used to organise the cohort for exploratory expression comparisons; they are not separate raw measurements, not percentages, and not formal PDAC transcriptional subtype names.

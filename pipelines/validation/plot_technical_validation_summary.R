@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
-# Summarize computational validation evidence without exposing source patient IDs.
-# This is a sequencing-data review figure, not orthogonal clinical validation.
+# Summarize final sequencing-derived KRAS, MSI and TMB results without exposing
+# source patient identifiers.
 
 suppressPackageStartupMessages({
   library(data.table)
@@ -28,10 +28,7 @@ hypermutation <- fread(hypermutation_file, colClasses = list(character = "patien
 msi <- fread(msi_file, colClasses = list(character = "patient_id"))
 
 required_kras <- c("patient_id", "validation_verdict", "tumour_kras_region_median_depth")
-required_hyper <- c(
-  "patient_id", "previous_TMB_per_Mb_38Mb",
-  "mutect2_strict_rare_TMB_per_Mb_38Mb", "relaxed_consensus_TMB_per_Mb_38Mb"
-)
+required_hyper <- c("patient_id", "mutect2_strict_rare_TMB_per_Mb_38Mb")
 required_msi <- c("patient_id", "msi_score_percent", "msisensor_interpretation")
 if (!all(required_kras %in% names(kras))) stop("KRAS validation input is missing required columns")
 if (!all(required_hyper %in% names(hypermutation))) stop("Hypermutation input is missing required columns")
@@ -72,7 +69,7 @@ p_kras <- ggplot(kras, aes(anonymous_patient, tumour_kras_region_median_depth, f
   annotate("text", x = Inf, y = 20, label = "20x", hjust = 1.1, vjust = -0.4, size = 3) +
   scale_fill_manual(values = kras_colours) +
   labs(
-    title = "A  KRAS coding-region review",
+    title = "A  KRAS coding-region assessment",
     subtitle = "Median tumour depth and VCF evidence category",
     x = NULL, y = "Median KRAS-region depth", fill = NULL
   ) +
@@ -111,45 +108,20 @@ p_msi <- ggplot(msi, aes(anonymous_patient, msi_score_percent, fill = msi_label)
     legend.text = element_text(size = 7.5)
   )
 
-tmb_long <- melt(
+p_tmb <- ggplot(
   hypermutation,
-  id.vars = c("patient_id", "anonymous_patient"),
-  measure.vars = c(
-    "previous_TMB_per_Mb_38Mb",
-    "mutect2_strict_rare_TMB_per_Mb_38Mb",
-    "relaxed_consensus_TMB_per_Mb_38Mb"
-  ),
-  variable.name = "filtering_strategy",
-  value.name = "tmb_per_mb"
-)
-tmb_long[, filtering_strategy := factor(
-  filtering_strategy,
-  levels = c(
-    "previous_TMB_per_Mb_38Mb",
-    "relaxed_consensus_TMB_per_Mb_38Mb",
-    "mutect2_strict_rare_TMB_per_Mb_38Mb"
-  ),
-  labels = c("Initial summary", "Mutect2-Strelka consensus", "Strict rare Mutect2")
-)]
-
-p_tmb <- ggplot(tmb_long, aes(filtering_strategy, tmb_per_mb, group = anonymous_patient)) +
-  geom_line(colour = "#B9B5AC", linewidth = 0.45) +
-  geom_point(aes(colour = filtering_strategy), size = 2.2) +
-  scale_y_log10() +
-  scale_colour_manual(values = c(
-    "Initial summary" = "#8D8780",
-    "Mutect2-Strelka consensus" = "#397C86",
-    "Strict rare Mutect2" = "#B84337"
-  )) +
+  aes(anonymous_patient, mutect2_strict_rare_TMB_per_Mb_38Mb)
+) +
+  geom_col(fill = "#397C86", colour = "#303030", linewidth = 0.25, width = 0.78) +
   labs(
-    title = "C  Mutation-burden sensitivity to filtering",
-    subtitle = "Each line connects estimates for one anonymized tumour; y-axis is logarithmic",
-    x = NULL, y = "Exploratory mutations per Mb (38-Mb denominator)", colour = NULL
+    title = "C  Strict rare-coding tumour mutational burden",
+    subtitle = "Exploratory estimate using a fixed nominal 38-Mb denominator",
+    x = NULL, y = "Exploratory mutations per Mb"
   ) +
   theme_minimal(base_family = "serif", base_size = 9.5) +
   theme(
     plot.title = element_text(face = "bold"), panel.grid.minor = element_blank(),
-    axis.text.x = element_text(angle = 18, hjust = 1), legend.position = "none"
+    axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none"
   )
 
 combined <- (p_kras | p_msi) / p_tmb + plot_layout(heights = c(1.0, 0.9))
@@ -157,7 +129,7 @@ ggsave(file.path(outdir, "technical_validation_summary.png"), combined, width = 
 ggsave(file.path(outdir, "technical_validation_summary.pdf"), combined, width = 14.5, height = 10.2)
 
 aggregate_summary <- rbindlist(list(
-  kras[, .(analysis = "KRAS review", category = verdict_label, n = .N), by = verdict_label][, verdict_label := NULL],
+  kras[, .(analysis = "KRAS assessment", category = verdict_label, n = .N), by = verdict_label][, verdict_label := NULL],
   msi[, .(analysis = "MSIsensor-pro", category = msi_label, n = .N), by = msi_label][, msi_label := NULL]
 ), use.names = TRUE)
 fwrite(aggregate_summary, file.path(outdir, "technical_validation_aggregate_summary.tsv"), sep = "\t")
@@ -166,13 +138,13 @@ writeLines(
     paste("kras_validation_md5:", unname(tools::md5sum(kras_file))),
     paste("hypermutation_validation_md5:", unname(tools::md5sum(hypermutation_file))),
     paste("msisensor_summary_md5:", unname(tools::md5sum(msi_file))),
-    "scope: computational sequencing-data review; not orthogonal pathology or clinical validation",
-    "TMB_denominator: fixed exploratory 38-Mb exome denominator supplied by the source table",
+    "scope: computational sequencing assessment; not orthogonal pathology or clinical validation",
+    "TMB_denominator: fixed exploratory nominal 38-Mb denominator supplied by the source table; target-specific callable territory was unavailable",
     "MSI_threshold: dashed 20% line is the common MSIsensor threshold encoded by the source interpretation",
-    "interpretation: mutation burden changed substantially with caller/filtering strategy and should not support broad hypermutation claims",
+    "interpretation: strict rare-coding TMB was used for cohort-level interpretation",
     paste("R_version:", R.version.string)
   ),
   file.path(outdir, "technical_validation_method_notes.txt")
 )
 
-message("Wrote technical validation figure to: ", normalizePath(outdir))
+message("Wrote genomic assessment figure to: ", normalizePath(outdir))

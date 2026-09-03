@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-# Compare genomic and technical features between RNA-defined extreme TME groups.
+# Compare genomic and sequencing features between RNA-defined extreme TME groups.
 # With three tumours per extreme, results are exploratory and are corrected
 # across the displayed metrics rather than interpreted as confirmatory tests.
 
@@ -110,7 +110,7 @@ plot <- ggplot(long, aes(group_label, value, colour = group_label)) +
   facet_wrap(~metric_label, scales = "free_y", ncol = 3) +
   scale_colour_manual(values = group_colours) +
   labs(
-    title = "Genomic and technical features across expression-defined TME extremes",
+    title = "Genomic and sequencing features across expression-defined TME extremes",
     subtitle = "Three tumours per group; Wilcoxon tests with BH correction across displayed metrics",
     x = NULL, y = NULL, colour = NULL
   ) +

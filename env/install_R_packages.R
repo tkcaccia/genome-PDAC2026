@@ -1,9 +1,10 @@
 #!/usr/bin/env Rscript
 
-cran_packages <- c("data.table", "ggplot2", "patchwork", "circlize", "remotes")
+cran_packages <- c("data.table", "ggplot2", "matrixStats", "patchwork", "circlize", "remotes")
 bioconductor_packages <- c(
-  "DESeq2", "edgeR", "limma", "GSVA", "GenomicRanges",
-  "ComplexHeatmap", "MCPcounter"
+  "AnnotationDbi", "Biobase", "DESeq2", "edgeR", "fgsea", "GEOquery",
+  "GSVA", "hgu133plus2.db", "hugene10sttranscriptcluster.db", "limma",
+  "GenomicRanges", "ComplexHeatmap", "MCPcounter"
 )
 
 missing_cran <- setdiff(cran_packages, rownames(installed.packages()))

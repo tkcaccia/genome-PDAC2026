@@ -13,10 +13,17 @@ dependencies:
   - r-circlize
   - bioconductor-deseq2
   - bioconductor-edger
+  - bioconductor-fgsea
+  - bioconductor-geoquery
   - bioconductor-limma
+  - bioconductor-annotationdbi
+  - bioconductor-biobase
   - bioconductor-gsva
+  - bioconductor-hgu133plus2.db
+  - bioconductor-hugene10sttranscriptcluster.db
   - bioconductor-genomicranges
   - bioconductor-complexheatmap
   - bioconductor-mcpcounter
+  - r-matrixstats
   - r-remotes
   - pip

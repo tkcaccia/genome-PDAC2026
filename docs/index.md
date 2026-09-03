@@ -25,6 +25,8 @@ This GitHub Pages site documents the pipelines and code used for the analysis in
 - KRAS-focused computational evidence review
 - MSI/MMR/hypermutation review using MSIsensor-pro and strict somatic filtering
 - Integrated patient-level genotype/phenotype interpretation
+- Direct transcriptomic validation against independently processed public paired cohorts, with exact-GMT pathway comparison
+- Pancreatic-head-only sensitivity checks for expression and tumour-microenvironment effects
 
 For students starting with a normalized RNA expression matrix, the complete expression-to-phenotype walkthrough is in the existing [pipeline details](pipelines.md) and the READMEs under `pipelines/immune_infiltration`, `pipelines/pathway_scoring` and `pipelines/phenotype_assignment`. The pathway README also explains that a GMT is a separate gene-set definition file rather than a value calculated from patient expression.
 

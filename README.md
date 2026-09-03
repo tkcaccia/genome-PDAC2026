@@ -33,6 +33,7 @@ cp config/config.example.yaml config/config.yaml
 - `pipelines/pathway_scoring/`: GSVA/ssGSEA programme scoring from normalized RNA-seq expression matrices
 - `pipelines/immune_infiltration/`: expression-to-immune/stromal scoring plus paired tumour-normal comparison
 - `pipelines/phenotype_assignment/`: documented immune/stromal/EMT phenotype group assignment logic
+- `pipelines/external_validation/`: internal method concordance, public-cohort validation, exact-GMT GSEA and anatomical sensitivity checks
 - `pipelines/driver_mutation_review/`: safe example showing how TP53 mutation evidence was extracted from VEP-annotated Sarek somatic calls
 - `pipelines/sarek_tumor_normal/`: nf-core/sarek tumour-normal WES calling
 - `pipelines/sarek_germline/`: nf-core/sarek germline WES calling
@@ -73,6 +74,8 @@ The reproducible RNA data flow is implemented in:
 For reporting, the audited paired tumour-normal analysis used DESeq2 as the prespecified primary count model with edgeR robust quasi-likelihood and limma-voom as sensitivity analyses. Historical custom logCPM/t-test fallback outputs must remain labelled exploratory and must not be described as DESeq2, edgeR or limma.
 
 Limma-voom and DESeq2 can disagree in FDR significance even when their fold changes are highly correlated. Report both prespecified outputs, filtering rules and diagnostic concordance rather than selecting the method with the larger significant-gene count.
+
+Direct external validation and the pancreatic-head-only sensitivity analysis are documented in `pipelines/external_validation/`. The validation script keeps gene-level effect agreement, overlap at a fixed FDR/effect-size threshold and exact-GMT pathway enrichment as separate endpoints. This avoids presenting pathway replication as though every individual gene replicated.
 
 Important distinction for students: the phenotype-group limma script does not calculate immune, stromal or EMT scores. Starting with RNA expression, `run_immune_stromal_scores_from_expression.R` calculates method-specific deconvolution scores, while `run_gsva_ssgsea_programme_scores.R` combines normalized/log expression with the version-controlled GMT file in `templates/pdac_programme_gene_sets_example.gmt`. `assemble_tme_score_table.py` merges those outputs by sample, and `assign_tme_phenotype_groups.py` creates the labels. Only after that assignment exists in metadata does the limma script compare expression between groups.
 
