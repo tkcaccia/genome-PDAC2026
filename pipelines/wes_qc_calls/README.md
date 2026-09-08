@@ -84,6 +84,26 @@ default threshold is 2.5 and can be changed with `--outlier-robust-z`.
 - `wes_qc_and_call_audit_summary.md`: concise audit narrative.
 - `output_manifest.tsv`: generated output inventory.
 
+## Publication figure
+
+`plot_wes_qc_audit.py` converts `wes_matched_pair_qc.tsv` and
+`patient_level_wes_genomics_summary.tsv` into a three-panel figure showing
+target depth, paired callable territory and strict read-evidence call burden.
+It uses anonymized sequential tumour labels by default. An optional two-column
+`patient_id`/`display_label` TSV can supply a prespecified anonymization map.
+
+```bash
+python3 plot_wes_qc_audit.py \
+  --pair-qc /path/to/wes_matched_pair_qc.tsv \
+  --patient-summary /path/to/patient_level_wes_genomics_summary.tsv \
+  --output-prefix /path/to/figure_wes_qc_audit
+```
+
+The third panel remains labelled as call burden rather than TMB. Persistence of
+an extreme value after the strict read-evidence filter demonstrates robustness
+to that filter only; it does not overcome caller-mode, purity, FFPE, callable-
+denominator or orthogonal-validation limitations.
+
 ## Interpretation safeguards
 
 - WES depth is reported only for the capture target, not across the genome.

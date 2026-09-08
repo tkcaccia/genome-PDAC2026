@@ -239,6 +239,11 @@ identifier. If a final somatic VCF is absent, the patient is marked missing and
 requires recovery of the original caller work directory or a reproducible
 targeted rerun from compatible alignments and reference resources.
 
+`plot_wes_qc_audit.py` turns the pair-level and patient-level audit tables into
+a publication figure. Sequential anonymized tumour labels are used by default,
+and an optional explicit label map can be supplied. The call-burden panel is
+kept separate from depth and callability and is never labelled as clinical TMB.
+
 ### TP53 Mutation Identification Example
 
 Code location: `pipelines/driver_mutation_review/`
