@@ -18,13 +18,14 @@ files:
 - cohort-relative tumour-microenvironment phenotype assignment;
 - anonymized manuscript plots and technical-validation summaries.
 
-The connected storage contained recovered patient-level summaries, but not the
-primary Sarek VCF/MAF files, detailed ASCAT segments, Manta calls, historical
-nf-core/rnafusion outputs/logs or SigProfiler output directories. Retained RNA
-FASTQs allow the RNA-fusion workflow to be regenerated using the bounded,
-sequential method documented in `rnafusion/README.md`; the missing WES primary
-evidence does not. Do not treat the presence of code, or an incomplete rerun,
-as evidence that a historical result was independently re-audited.
+A September 2026 recovery found provider DRAGEN enrichment outputs for all 28
+WES specimens and SAGE/PURPLE outputs for 13 of 14 matched pairs. The
+`wes_qc_calls` workflow now audits capture-target depth, paired callable
+territory and caller-filtered somatic evidence. One Oncoanalyser run completed
+variant calling but failed during LINX plotting before final files were
+published; that pair remains explicitly missing rather than being reconstructed
+by subtracting separate germline VCFs. Detailed historical ASCAT/Manta,
+rnafusion and SigProfiler trees remain incomplete unless separately documented.
 
 ## Analysis Folders
 
@@ -37,6 +38,7 @@ as evidence that a historical result was independently re-audited.
 | `driver_mutation_review` | safe TP53 filtering example | VEP-annotated somatic variants |
 | `sarek_germline` | nf-core/sarek germline WES | normal WES samplesheet |
 | `sarek_tumor_normal` | nf-core/sarek tumour-normal WES | matched WES samplesheet |
+| `wes_qc_calls` | target depth, paired callability and genomic-call audit | DRAGEN enrichment and SAGE/PURPLE outputs |
 | `sarek_sv_cna` | WES-compatible ASCAT/Manta summaries and circos plots | Sarek CNA/SV outputs |
 | `rnafusion` | nf-core/rnafusion wrapper | RNA FASTQ samplesheet |
 | `cosmic_annotation` | licensed local COSMIC annotation | annotated somatic calls |

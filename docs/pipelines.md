@@ -2,7 +2,7 @@
 
 ## Overview
 
-The study analyses ran on a remote Ubuntu workstation. This repository contains reusable code and documentation only; patient data and result tables are excluded. An August 2026 audit verified the current RNA reruns but found that several primary genomic, fusion and signature output trees were no longer present on connected storage. Method documentation therefore describes either a current audited rerun or a reproducible historical/configured workflow and must not be read as proof that every primary result remains available.
+The study analyses ran on a remote Ubuntu workstation. This repository contains reusable code and documentation only; patient data and result tables are excluded. An August 2026 audit verified the current RNA reruns. A September 2026 storage recovery restored provider DRAGEN enrichment outputs for all 28 WES specimens and SAGE/PURPLE outputs for 13 of 14 matched pairs, allowing a new on-target WES depth and call-quality audit. Other genomic, fusion and signature trees remain incomplete unless separately documented, so method code must not be read as proof that every historical primary result is available.
 
 The project combined standard nf-core pipelines with downstream R/Python/Bash scripts:
 
@@ -20,6 +20,8 @@ The project combined standard nf-core pipelines with downstream R/Python/Bash sc
 | `nf-core/rnaseq 3.24.0` | STAR `ReadsPerGene.out.tab`, Salmon quantification outputs, RNA-seq QC summaries | Merge STAR gene-count files into a count matrix; generate normalized/log-expression matrices | Differential expression, RNA-seq QC, subtype scoring, pathway scoring, immune/stromal deconvolution and RNA-fusion context |
 | `nf-core/sarek 3.8.1` germline | Normal-sample germline VCF/annotation outputs and QC summaries | Filter/harmonize germline-relevant calls for driver, DDR and MMR panels | Germline-context review, DDR/MMR interpretation and integrated oncoprint annotations |
 | `nf-core/sarek 3.8.1` tumour-normal | Mutect2 and Strelka somatic VCFs, VEP annotations, alignment/QC outputs | Filter calls, convert to MAF-like tables and summarize by patient/sample | Somatic SNV/indel summary, driver review, KRAS validation, TMB estimation and COSMIC annotation |
+| Provider DRAGEN enrichment workflow | Per-sample target-depth metrics, mapping metrics, target BED, somatic-callable BED and BAM/VCF deliverables | Summarize target depth and quality for every specimen; intersect tumour and normal callable regions | Valid on-target WES QC and matched callable territory |
+| Hartwig Oncoanalyser SAGE/PURPLE | Tumour-normal SAGE and PURPLE somatic VCFs, PURPLE purity/QC and driver catalogues | Preserve caller filters; restrict to matched callable target; apply a documented strict read-evidence sensitivity filter | Audited somatic call counts, variant evidence and cautious exploratory burden summaries |
 | `nf-core/sarek 3.8.1` CNA/SV | ASCAT segments, purity/ploidy outputs, Manta candidate SV calls | Summarize ASCAT segments into gene-level CNA and burden features; convert Manta calls into affected-gene/SV-type tables | CNA burden, key-gene CNA status, purity/ploidy, SV burden, interchromosomal translocation summaries and exploratory CNA/SV signatures |
 | `nf-core/rnafusion 4.1.0` | Arriba and FusionCatcher candidate fusion calls; Salmon transcript-level outputs | Filter by gene-pair/breakpoint interpretability, caller support, artifact review and DNA-SV concordance where available | Exploratory RNA fusion review and potentially clinically relevant fusion-candidate prioritization |
 | `SigProfilerAssignment 1.1.3` | SBS96/DBS/ID catalogues from somatic variants; CNV48 and SV32-style matrices from ASCAT/Manta summaries | Fit COSMIC v3.5 signatures; use exome mode for SBS/DBS/ID analyses | Exploratory SBS, DBS, indel, CNA and SV signature contribution summaries |
@@ -184,6 +186,7 @@ Code locations:
 - `pipelines/sarek_germline/`
 - `pipelines/sarek_tumor_normal/`
 - `pipelines/driver_mutation_review/`
+- `pipelines/wes_qc_calls/`
 
 Purpose:
 
@@ -205,6 +208,36 @@ Downstream summaries:
 - KRAS/TP53/CDKN2A/SMAD4 review
 - DDR/MMR gene review
 - Exploratory germline/somatic integrated oncoprint
+
+### Targeted WES Depth and Genomic-Call Audit
+
+The reusable `summarize_wes_qc_and_calls.py` script reads provider DRAGEN
+enrichment summaries for each tumour and normal. It reports mean target depth,
+target bases at 1x/10x/15x/20x/50x/100x, mapping, duplicate, Q30, mismatch,
+uniformity, enrichment and callability metrics. Depth is calculated over the
+Twist ILMN Exome 2.5 Plus capture target, not over the whole genome.
+
+For every matched pair, the script intersects the tumour and normal
+`target_bed_somatic_callable_regions.bed` files. SAGE and PURPLE VCF records are
+then counted before filtering, after caller `PASS`, within the paired callable
+target, and after both restrictions. A strict sensitivity layer additionally
+requires tumour depth >=20, normal depth >=10, tumour alternate depth >=3,
+tumour variant allele frequency (VAF) >=0.05, normal alternate depth <=1 and
+normal VAF <=0.02. This layer is an audit filter, not an orthogonal assay.
+
+Oncoanalyser fields generated with `targeted=false` are retained only for
+provenance. The workflow does not relabel those values as valid WES tumour
+mutational burden (TMB). It instead reports transparent PASS and strict variant
+counts per megabase of the full matched callable capture target and labels that
+quantity as a call-burden measure, not clinical TMB. PURPLE purity, status and
+QC warnings remain alongside every patient summary, and driver-catalogue counts
+are explicitly marked unvalidated when low-purity or non-somatic states could
+inflate them.
+
+The audit must not substitute variants from an unrelated sample with a matching
+identifier. If a final somatic VCF is absent, the patient is marked missing and
+requires recovery of the original caller work directory or a reproducible
+targeted rerun from compatible alignments and reference resources.
 
 ### TP53 Mutation Identification Example
 

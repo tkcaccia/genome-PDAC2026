@@ -38,6 +38,7 @@ cp config/config.example.yaml config/config.yaml
 - `pipelines/driver_mutation_review/`: safe example showing how TP53 mutation evidence was extracted from VEP-annotated Sarek somatic calls
 - `pipelines/sarek_tumor_normal/`: nf-core/sarek tumour-normal WES calling
 - `pipelines/sarek_germline/`: nf-core/sarek germline WES calling
+- `pipelines/wes_qc_calls/`: on-target WES depth, matched callable territory and SAGE/PURPLE call-quality audit
 - `pipelines/sarek_sv_cna/`: SV/CNA recovery, interchromosomal translocation summaries and circos-style plotting
 - `pipelines/rnafusion/`: pinned nf-core/rnafusion 4.1.0 reference,
   samplesheet, bounded-workstation, sequential-resume and verification workflow
@@ -54,7 +55,7 @@ Machine administration, credentials, remote watchdogs, mount repair and retired 
 
 ## Provenance Status
 
-The repository documents methods; it is not evidence that every historical result file remains available. The August 2026 audit verified the current RNA reruns (paired differential expression, gene-level TPM, GSVA/ssGSEA, ESTIMATE, MCP-counter, EPIC, xCell, quanTIseq and phenotype assignment). Primary Sarek VCF/MAF files, detailed ASCAT/Manta outputs, historical nf-core/rnafusion outputs and SigProfiler result directories were not present on the connected storage during that audit. The RNA-fusion folder now provides a safe reconstruction workflow from retained RNA FASTQs, but no fusion result is considered complete until its Nextflow report, trace and caller outputs pass the documented checks. Other biological claims from unrecovered primary outputs must not be described as independently re-audited.
+The repository documents methods; it is not evidence that every historical result file remains available. The August 2026 audit verified the current RNA reruns (paired differential expression, gene-level TPM, GSVA/ssGSEA, ESTIMATE, MCP-counter, EPIC, xCell, quanTIseq and phenotype assignment). A September 2026 storage recovery found the provider DRAGEN enrichment outputs for all 28 WES specimens, including BAMs, target-depth metrics and callable-region BED files, together with Oncoanalyser SAGE/PURPLE outputs for 13 of 14 matched pairs. The `wes_qc_calls` workflow now documents the audited on-target depth and tumour-normal call-quality calculation. One Oncoanalyser result set failed during downstream LINX plotting before outputs were published, so its final somatic VCF remains missing. Detailed historical Sarek ASCAT/Manta and SigProfiler output trees remain only partially recovered and must not be described as fully re-audited.
 
 ## RNA-seq Downstream Analysis
 
