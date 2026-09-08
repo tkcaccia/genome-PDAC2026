@@ -73,3 +73,31 @@ The enhanced circos run uses these additional inputs:
 - Mutect2 and VEP roots supplied through `MUTECT2_ROOT` and `VEP_ROOT`.
 
 Audit boundary: the August 2026 connected storage did not contain the detailed ASCAT and Manta source files needed to regenerate these plots. Existing plot code is preserved, but figure/event claims require restoration of those primary inputs.
+
+## ASCAT Purity Quality Control
+
+ASCAT purity is an inferred aberrant-cell fraction, not a direct histological
+percentage. An estimate of exactly `1.00` is an upper-boundary model solution and
+must not automatically be interpreted as a tumour containing 100% malignant
+cells. Repeated boundary estimates should be investigated using the original
+LogR/BAF profiles, segmentation, fit plots, tumour-normal identity, reported sex,
+capture-panel coverage and an independent purity/ploidy method.
+
+[`audit_ascat_purity.py`](audit_ascat_purity.py) performs a first-pass audit when
+only retained summary tables are available. It compares ASCAT purity with a
+pathology tumour/stroma ratio and stratifies technical and CNA metrics by
+boundary versus interior fits. It also flags near-diploid boundary solutions and
+large disagreement with the pathology estimate. This diagnostic screen cannot
+replace review of the original ASCAT files or independent reanalysis from
+BAM/CRAM files.
+
+```bash
+python3 audit_ascat_purity.py \
+  --molecular-table /path/to/private_patient_summary.tsv \
+  --clinical-table /path/to/private_clinical_table.tsv \
+  --output-dir /path/to/private_results/ascat_purity_audit
+```
+
+The output directory contains a patient-level audit table, a boundary-versus-
+interior descriptive comparison and a Markdown summary. These outputs contain
+patient-level information and must remain outside the public repository.
