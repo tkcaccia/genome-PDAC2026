@@ -33,6 +33,7 @@ cp config/config.example.yaml config/config.yaml
 - `pipelines/pathway_scoring/`: GSVA/ssGSEA programme scoring from normalized RNA-seq expression matrices
 - `pipelines/immune_infiltration/`: expression-to-immune/stromal scoring plus paired tumour-normal comparison
 - `pipelines/phenotype_assignment/`: documented immune/stromal/EMT phenotype group assignment logic
+- `pipelines/preanalytical_qc/`: extraction-level DNA/RNA QC parsing and ASCAT boundary-fit comparison
 - `pipelines/external_validation/`: internal method concordance, public-cohort validation, exact-GMT GSEA and anatomical sensitivity checks
 - `pipelines/driver_mutation_review/`: safe example showing how TP53 mutation evidence was extracted from VEP-annotated Sarek somatic calls
 - `pipelines/sarek_tumor_normal/`: nf-core/sarek tumour-normal WES calling

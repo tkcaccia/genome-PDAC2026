@@ -16,6 +16,7 @@ The project combined standard nf-core pipelines with downstream R/Python/Bash sc
 
 | Source pipeline/tool | Main file classes used | Downstream transformation | Final analysis use |
 | --- | --- | --- | --- |
+| Service-provider nucleic-acid QC | Private PDF report containing concentration, absorbance ratios, DIN, RIN, DV200 and provider pass/fail labels | Parse 28 DNA and 28 RNA records; summarize aggregate extraction QC; optionally compare tumour DNA QC between ASCAT boundary and non-boundary fits | Preanalytical FFPE quality context only; not sequencing coverage, library complexity, tumour cellularity or purity |
 | `nf-core/rnaseq 3.24.0` | STAR `ReadsPerGene.out.tab`, Salmon quantification outputs, RNA-seq QC summaries | Merge STAR gene-count files into a count matrix; generate normalized/log-expression matrices | Differential expression, RNA-seq QC, subtype scoring, pathway scoring, immune/stromal deconvolution and RNA-fusion context |
 | `nf-core/sarek 3.8.1` germline | Normal-sample germline VCF/annotation outputs and QC summaries | Filter/harmonize germline-relevant calls for driver, DDR and MMR panels | Germline-context review, DDR/MMR interpretation and integrated oncoprint annotations |
 | `nf-core/sarek 3.8.1` tumour-normal | Mutect2 and Strelka somatic VCFs, VEP annotations, alignment/QC outputs | Filter calls, convert to MAF-like tables and summarize by patient/sample | Somatic SNV/indel summary, driver review, KRAS validation, TMB estimation and COSMIC annotation |
@@ -24,6 +25,22 @@ The project combined standard nf-core pipelines with downstream R/Python/Bash sc
 | `SigProfilerAssignment 1.1.3` | SBS96/DBS/ID catalogues from somatic variants; CNV48 and SV32-style matrices from ASCAT/Manta summaries | Fit COSMIC v3.5 signatures; use exome mode for SBS/DBS/ID analyses | Exploratory SBS, DBS, indel, CNA and SV signature contribution summaries |
 | `MSIsensor-pro` | Tumour-normal WES alignments and exome-filtered microsatellite site list | Calculate microsatellite instability scores per tumour and integrate with MMR-gene evidence | MSI/MMR classification, hypermutation review and patient-prioritization tables |
 | Custom R/Python/Bash scripts | Pipeline outputs, metadata, sample-pairing tables and curated PDAC gene sets | Harmonize identifiers, check pairing, run downstream statistics, score gene sets, integrate deconvolution outputs and generate figures | Integrated genotype-phenotype summaries, manuscript-style figures, exploratory annotations and safe reusable pipeline export |
+
+## Preanalytical Nucleic Acid QC
+
+Code location: `pipelines/preanalytical_qc/`
+
+The private service-provider report is converted into structured DNA and RNA
+tables by `summarize_provider_nucleic_acid_qc.py`. The script validates the
+expected record counts, calculates aggregate medians and ranges, and can compare
+tumour DNA extraction metrics between ASCAT upper-boundary and non-boundary
+fits. The PDF and all sample-level outputs must remain in restricted storage.
+
+DIN, RIN and DV200 describe nucleic-acid fragmentation before library
+preparation. Concentration and A260/A280 or A260/A230 describe yield and
+spectrophotometric purity. None of these values is an on-target WES coverage,
+duplication, library-complexity, tumour-cellularity or computational-purity
+measurement.
 
 ## RNA-seq Quantification
 
