@@ -1,10 +1,15 @@
-pandas>=2.2,<3
-PyYAML>=6,<7
-numpy>=2,<3
-scipy>=1.14,<2
-matplotlib>=3.9,<4
-seaborn>=0.13,<1
-statsmodels>=0.14,<1
-scikit-learn>=1.5,<2
-openpyxl>=3.1,<4
-pdfplumber>=0.11,<1
+# Declared imports in the current supplied scripts; not installed in this update.
+# Reconstruct exact versions from the private original environment/session logs.
+numpy
+pandas
+scipy
+matplotlib
+seaborn
+scikit-learn
+statsmodels
+h5py
+mofapy2
+gseapy
+mygene
+requests
+PyMuPDF

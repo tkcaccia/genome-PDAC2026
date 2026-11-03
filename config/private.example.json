@@ -1,0 +1,24 @@
+{
+  "paths": {
+    "project_root": "/path/to/private/project",
+    "figures_out": "/path/to/private/new_figure_export",
+    "study_tables": "/path/to/private/study_data",
+    "immune_tables": "/path/to/private/immune_tables",
+    "source_pdfs": "/path/to/private/supplied_figure_pdfs",
+    "salmon_quant_dir": "/path/to/private/salmon_quantifications",
+    "hallmark_gmt": "/path/to/public_references/Enrichr.MSigDB_Hallmark_2020.gmt"
+  },
+  "cohorts": {
+    "primary_pdac": [],
+    "periampullary": [],
+    "all": [],
+    "epic_converged": [],
+    "kras_hotspot_retained": [],
+    "kras_hotspot_not_retained": []
+  },
+  "values": {
+    "mofa_exclusion_scenarios": {"full": []},
+    "mofa_factor_annotations": {},
+    "pca_label_offsets": {}
+  }
+}

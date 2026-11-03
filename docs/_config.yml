@@ -1,3 +1,16 @@
 title: genome-PDAC2026
-description: Patient-data-safe pipeline documentation for the PDAC2026 African pancreatic cancer multi-omics analysis
+description: Current collaborator code for pancreatic cancer multi-omics figures and tables
 theme: minima
+url: https://tkcaccia.github.io
+baseurl: /genome-PDAC2026
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: false
+header_pages:
+  - index.md
+  - figures-and-tables.md
+  - workflow.md
+  - inputs.md
+  - source-coverage.md
