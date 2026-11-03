@@ -1,4 +1,4 @@
-"""Private input locations for the reorganized collaborator scripts.
+"""Private input locations for the PDAC2026 analysis scripts.
 
 This module provides configuration, not analysis. Keep the populated JSON outside
 the repository. Importing a plotting script can still load data or create folders;
@@ -53,7 +53,7 @@ def cohort(name: str) -> list[str]:
     values = [str(value) for value in values]
     if len(values) != len(set(values)):
         raise ValueError(f"Duplicate identifiers in cohorts.{name}")
-    # The supplied file parsers expect numeric identifiers and N/T suffixes.
+    # File parsers expect numeric identifiers and N/T tissue suffixes.
     if not all(value.isdigit() for value in values):
         raise ValueError(f"cohorts.{name} must contain numeric patient identifiers without tissue suffixes")
     return values

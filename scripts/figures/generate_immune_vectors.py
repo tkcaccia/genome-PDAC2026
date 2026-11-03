@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-# Current collaborator code export. Final supplied vector presentation scripts, consuming private derived tables.
-# Source: PDAC_Manuscript_Figs_Sne/Immune_rerun_NN/generate_vectors.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: Vector figure rendering from private derived tables.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 """Regenerate immune/TME figures as SVG and PDF from archived study tables."""
 
 from __future__ import annotations
@@ -149,7 +148,7 @@ def independent_programmes() -> None:
     ax_composite.set_xlabel("Immune composite (mean feature z-score)"); ax_composite.set_ylabel("Stromal composite (mean feature z-score)")
     ax_composite.legend(loc="upper left", bbox_to_anchor=(1.02, 1), fontsize=8, frameon=False); ax_composite.grid(color="#dddddd", linewidth=.5, zorder=0)
     fig.suptitle("Tumour programme and microenvironment profiles in 11 PDAC cases", fontsize=15, fontweight="bold", y=.99)
-    fig.text(.01, .005, "Independent exploratory replacement. Hallmark and immune/stromal heatmap cells are row z-scores across observed tumours, not inferential p-values. Cohort-relative groups are descriptive, not validated subtypes.", fontsize=8, va="bottom", wrap=True)
+    fig.text(.01, .005, "Tumour programme and microenvironment profiles. Hallmark and immune/stromal heatmap cells are row z-scores across observed tumours, not inferential p-values. Cohort-relative groups are descriptive, not validated subtypes.", fontsize=8, va="bottom", wrap=True)
     fig.subplots_adjust(left=.30, right=.82, top=.965, bottom=.055)
     save(fig, "Figure_D_independent_programmes_TME_11_pdac.png")
 

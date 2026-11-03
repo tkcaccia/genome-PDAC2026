@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
-# Current collaborator code export. VEP-annotated DeepSomatic calls, retained-variant summaries and paired MSI launcher.
-# Source: Original Source and Code/scripts/wes_somatic_01_wes_build_mutation_matrix_FIXED.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: VEP-annotated DeepSomatic calls, retained-variant summaries and paired MSI launcher.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 """Build a WES gene x patient mutation matrix from per-patient VEP-annotated
-DeepSomatic VCFs, with AD/VAF/DP quality filtering and oncoprint + TMB plots.
+DeepSomatic VCFs, with AD/VAF/DP quality filtering and mutation-count plots.
 
-This replaces the old single-joint-VCF version. DeepSomatic (unlike the old
-DeepVariant joint-calling setup) outputs ONE VCF PER PATIENT, with only the
-tumour sample as a column (normal-sample stats are folded into FORMAT fields
-NDP/NAD/NAF rather than a separate sample column) and somatic status already
-encoded in FILTER=="PASS" — so there is no normal_gt=="0/0" check to do here,
-and no genotype-based subtraction; DeepSomatic already did that.
+Each input VCF represents one patient and contains a tumour sample column.
+Matched-normal evidence can occur in FORMAT fields NDP/NAD/NAF.
+Somatic call status is read from FILTER; no genotype-based subtraction
+is performed by this downstream parser.
 
 Inputs:
 - A directory of per-patient VEP-annotated VCFs, one per patient, e.g.:
@@ -44,10 +41,7 @@ DEFAULT_VCF_DIR = PROJECT_ROOT / "vep_annotated"
 DEFAULT_OUTDIR = PROJECT_ROOT / "results" / "wes"
 DEFAULT_VCF_GLOB = "patient_*.vep.vcf.gz"
 
-# Quality filter defaults (NOT present in the original script — added here
-# since DeepSomatic's own FILTER=="PASS" already applies internal QC, but a
-# secondary depth/VAF floor is standard practice before building a matrix
-# used for downstream biomarker/burden/MOFA analysis).
+# Variant-level depth and allele-support thresholds for matrix construction.
 DEFAULT_MIN_DP = 10
 DEFAULT_MIN_ALT_READS = 3
 DEFAULT_MIN_VAF = 0.05
@@ -88,7 +82,7 @@ def parse_format_values(format_keys: list[str], sample_field: str) -> dict[str, 
 
 
 def passes_quality_filters(fmt: dict[str, str], min_dp: int, min_alt_reads: int, min_vaf: float) -> bool:
-    """AD/VAF/DP quality filtering — not present in the original script."""
+    """Apply depth, alternate-read and variant-allele-fraction criteria."""
     dp_str = fmt.get("DP", "")
     if dp_str in ("", "."):
         return False

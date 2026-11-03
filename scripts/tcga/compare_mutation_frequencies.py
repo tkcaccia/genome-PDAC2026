@@ -1,4 +1,4 @@
-# Current mutation-frequency comparison; no historical candidate-overlap analysis.
+# PDAC2026 mutation-frequency comparison with TCGA PAAD.
 #!/usr/bin/env python3
 
 from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path

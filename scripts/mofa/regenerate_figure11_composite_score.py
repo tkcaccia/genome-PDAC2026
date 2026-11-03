@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-# Current collaborator code export. Three-view MOFA, exported factors/loadings, candidate ranking and sensitivity summaries.
-# Source: Original Source and Code/scripts/regenerate_figure11_composite_score.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
-"""Rank cross-modal candidates by the supplied composite evidence score."""
+# PDAC2026 analysis: Three-view MOFA, exported factors/loadings, candidate ranking and sensitivity summaries.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
+"""Rank cross-modal candidates by their composite evidence score."""
 
 from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path
 from pathlib import Path

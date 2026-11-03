@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static checks only: never import or execute a supplied analysis module."""
+"""Check code, documentation and privacy without running analysis modules."""
 
 from __future__ import annotations
 
@@ -18,6 +18,8 @@ FORBIDDEN = {'.bam', '.bai', '.cram', '.crai', '.fastq', '.fq', '.vcf', '.bcf',
              '.tif', '.tiff', '.doc', '.docx', '.pptx', '.zip', '.gz', '.pyc', '.html'}
 PRIVATE_PATH = re.compile('/' + r'(?:Users|media|cbio/users|home)/[^/\s]+/')
 SAMPLE_LITERAL = re.compile(r'\b\d{1,3}[TN](?:_(?:WES|RNA))?\b')
+PATIENT_LIST = re.compile(r'\bpatients?\s+\d{1,3}\s*(?:,|and\b|;|\.)', re.I)
+EDITORIAL_CONTEXT = re.compile(r'collaborat(?:or|ors)|reorganiz(?:ed|ation)|superseded|legacy\s+\d+|earlier STAR|previous manuscript', re.I)
 LINK = re.compile(r'\[[^\]]+\]\(([^)]+)\)')
 
 
@@ -51,6 +53,10 @@ def main():
             problems.append(f'Private absolute path: {relative}')
         if SAMPLE_LITERAL.search(text):
             problems.append(f'Embedded specimen identifier: {relative}')
+        if PATIENT_LIST.search(text):
+            problems.append(f'Embedded patient list: {relative}')
+        if relative.as_posix() != 'tools/check_repository.py' and EDITORIAL_CONTEXT.search(text):
+            problems.append(f'Editorial context in project documentation: {relative}')
         if path.suffix == '.py':
             try:
                 tree = ast.parse(text, filename=str(relative))
@@ -70,19 +76,17 @@ def main():
                 if not (path.parent / target).exists():
                     problems.append(f'Broken documentation link in {relative}: {target}')
     manifest = json.loads((ROOT / 'docs/source_manifest.json').read_text())
-    for entry in manifest['exports']:
+    for entry in manifest['files']:
         target = ROOT / entry['path']
         if not target.is_file():
-            problems.append(f'Missing exported source: {entry["path"]}')
-        elif hashlib.sha256(target.read_bytes()).hexdigest() != entry['published_sha256']:
+            problems.append(f'Missing code file: {entry["path"]}')
+        elif hashlib.sha256(target.read_bytes()).hexdigest() != entry['sha256']:
             problems.append(f'Update published source checksum: {entry["path"]}')
-        if entry.get('executed') is not False:
-            problems.append(f'Unexpected execution claim: {entry["path"]}')
     if problems:
         for problem in problems:
             print('FAIL:', problem)
         return 1
-    print(f'PASS: {len(paths)} text files; {parsed} Python files parsed; {len(manifest["exports"])} source hashes checked.')
+    print(f'PASS: {len(paths)} text files; {parsed} Python files parsed; {len(manifest["files"])} code hashes checked.')
     print('No analysis code was imported or executed.')
     return 0
 

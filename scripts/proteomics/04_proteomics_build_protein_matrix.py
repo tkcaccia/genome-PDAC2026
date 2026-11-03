@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-# Current collaborator code export. Protein-group matrix assembly and integration/QC normalization; not the missing proteomics DE analysis.
-# Source: Original Source and Code/scripts/04_proteomics_build_protein_matrix.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: Protein-group abundance assembly and integration/QC normalization.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 """Build a sample-level proteomics protein-group abundance matrix.
 
 Inputs:

@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-# Current collaborator code export. Final supplied vector presentation scripts, consuming private derived tables.
-# Source: PDAC_Manuscript_Figs_Sne/convert_figures.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
-"""Create SVG counterparts and preserve PDF outputs for supplied figure PDFs."""
+# PDAC2026 analysis: Vector figure rendering from private derived tables.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
+"""Create SVG counterparts and preserve PDF outputs for source figure PDFs."""
 
 from __future__ import annotations
 

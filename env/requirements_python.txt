@@ -1,5 +1,5 @@
-# Declared imports in the current supplied scripts; not installed in this update.
-# Reconstruct exact versions from the private original environment/session logs.
+# Python dependencies for the project analyses.
+# Record exact package versions with the analysis environment/session logs.
 numpy
 pandas
 scipy

@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-# Current collaborator code export. Formatting of derived private tables; see the table index for source gaps.
-# Source: Original Source and Code/scripts/render_native_rna_pathway_top5_png.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: Formatting of derived private tables; see the table index for source gaps.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 """Render the native RNA DE pathway top-5 table as a PNG artefact."""
 
 from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path

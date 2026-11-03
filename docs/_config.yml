@@ -1,5 +1,5 @@
 title: genome-PDAC2026
-description: Current collaborator code for pancreatic cancer multi-omics figures and tables
+description: Transparent analysis code and methods for the PDAC2026 pancreatic cancer multi-omics study
 theme: minima
 url: https://tkcaccia.github.io
 baseurl: /genome-PDAC2026

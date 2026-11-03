@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-# Current collaborator code export. VEP-annotated DeepSomatic calls, retained-variant summaries and paired MSI launcher.
-# Source: All_figures/scripts/complete_wes_outputs.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
-"""Complete the revised WES-only outputs without touching legacy results."""
+# PDAC2026 analysis: VEP-annotated DeepSomatic calls, retained-variant summaries and paired MSI launcher.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
+"""Summarise filtered WES calls, gene-level exclusions and paired MSI scores."""
 from __future__ import annotations
 
 from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path

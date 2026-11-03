@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-# Current collaborator code export. VEP-annotated DeepSomatic calls, retained-variant summaries and paired MSI launcher.
-# Source: Original Source and Code/scripts/extract_deepsomatic_kras_fields.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: VEP-annotated DeepSomatic calls, retained-variant summaries and paired MSI launcher.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 """Extract genuine DeepSomatic-native KRAS hotspot fields for the 14-patient cohort.
 
 DeepSomatic VCFs never emit a TLOD field (that is Mutect2-only); this script reads

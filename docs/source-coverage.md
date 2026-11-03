@@ -1,65 +1,61 @@
 ---
 layout: default
-title: Source coverage
+title: Reproducibility
 ---
 
-# Source Coverage
+# Reproducibility
 
-[Overview](index.md) | [Figure and table index](figures-and-tables.md)
+[Overview](index.md) | [Figure and table index](figures-and-tables.md) | [Workflow](workflow.md)
 
-The source release selects current collaborator code from `Original Source and
-Code`, the supplied figure bundle, its immune/TME update, and the additional WES
-helpers in `All_figures/scripts`. Identical or superseded plot versions are not
-published as competing implementations.
+Reproducing an analysis requires its code, software environment, reference files,
+input data, sample matching and parameters. This repository provides public code
+and method descriptions; patient-level inputs and results remain private.
 
-## Export Changes
+## Implementation Coverage
 
-- Scripts are grouped by scientific purpose; original filenames and SHA-256 checksums are retained in [the source manifest](source_manifest.json).
-- Machine-specific absolute paths and actual cohort membership are replaced by private configuration readers. Population order, EPIC eligibility, KRAS groups and exclusion scenarios remain distinct inputs.
-- Patient-specific MSI fallback values are removed. Without an original file the public code does not invent or recover its result from a literal embedded in the script.
-- Result-dependent MOFA programme annotations and patient label offsets are private configuration, not public patient results.
-- The mixed TCGA plotting helper contributes only its current mutation-frequency function. Its older mutation/RNA-candidate overlap analysis is excluded.
-- The MSI table caption is aligned with the supplied categorization function: <5%, 5 to <20%, and >=20%, with exploratory interpretation retained.
-- Shared import paths are updated to the new folder structure. Headers explain whether a file analyses data or only renders existing results.
+| Component | Repository implementation | Additional requirements |
+| --- | --- | --- |
+| Downstream WES and KRAS | VEP-annotated VCF parsing, variant filtering, cohort summaries and evidence extraction | Annotated VCFs and sample configuration; raw-read alignment/calling/annotation job definitions are not included |
+| MSI | Paired MSIsensor-pro launcher, raw-summary aggregation and table formatting | Matched BAMs/indexes, executable version and microsatellite-list provenance; full-cohort table assembly extends beyond the subset formatter |
+| RNA differential expression | Salmon count import, paired R DESeq2, response-matrix assembly, PCA and enrichment | Gene quantifications, identifier mapping and the software/reference versions used for the analysis |
+| Immune/stromal inference | Five inference methods, paired tests and EPIC convergence sensitivity | Gene-symbol TPM, matched metadata, method references and fit diagnostics |
+| Programme and phenotype scoring | Named Hallmark sets, ssGSEA, feature standardisation, composites and median-based grouping | Selected GMT, mapped-gene coverage and complete tumour score matrices |
+| Protein abundance and normalization | Protein-report parsing and integration/QC normalization | Quantified protein report and aligned sample metadata |
+| Protein differential abundance, extraction-method figures and selected protein enrichment tables | Exact statistical/plotting producers are not included | Analysis scripts, numeric source tables, search/modification settings and extraction-method replicate definitions |
+| MOFA | Model fitting, factor/loadings export, candidate scoring, reconstruction and sensitivity calculations | Aligned molecular matrices, identifier maps, model files and configured exclusions |
+| TCGA context | Public matrix preparation, joint PCA, mutation frequencies, pathway themes and ancestry/modality summaries | Public expression/mutation/protein files and clinical metadata with ancestry labels |
+| Clinical summary | No table-generation implementation included | Private clinical metadata and table-assembly code |
+| Figure presentation | Vector rendering and PDF conversion | Numeric plotting inputs, or the source PDF for conversion-only panels |
 
-Statistical algorithms are otherwise preserved. A source-only organization does
-not establish numerical equivalence of a future rerun. No analysis functions,
-plotting functions, R workflows, Slurm jobs, package installers or data downloaders
-were executed during this update.
+The [figure/table index](figures-and-tables.md) gives panel-specific inputs and
+identifies conversion-only figures. Converting a PDF into SVG preserves its
+contents; it does not recover numeric data or reproduce the underlying statistics.
 
-## Missing Original Producers
+## Analytical Records
 
-The following were not recoverable as exact generating code from the supplied
-files: the primary/larger-cohort proteomics differential-analysis tables and their
-volcano producers; extraction-method CV/peptide/protein/hydrophobicity/pI plots;
-the additional peptide/protein supplementary panel; the clinical characteristics
-table generator; proteomics search-parameter tables; and the original selected
-proteomics enrichment table producers.
+Record the following with each execution in the private analysis environment:
 
-The protein-matrix, normalization and exploratory MOFA helpers are useful code,
-but do not substitute for those missing original analyses. Likewise, a public
-TCGA downloader does not provide the separate ancestry metadata automatically.
+- Input and reference checksums, genome build, annotation release and sample ordering.
+- Software and container versions, commands, thresholds and execution logs.
+- Gene-mapping coverage, tested-gene sets and enrichment background definitions.
+- Pairing, convergence flags, exclusions, multiple-testing families and score definitions.
+- Model inputs, preprocessing, diagnostic outputs and the tables used for plotting.
 
-The figure bundle's `convert_figures.py` only wraps supplied PDF contents into
-SVG/PDF outputs. Raster-backed source artwork remains raster-backed. Conversion
-does not prove that underlying statistics were reproduced.
+The [code manifest](source_manifest.json) identifies script filenames and SHA-256
+checksums. File hashes establish code identity, not the validity of a biological
+conclusion.
 
-The source index records presentation discrepancies visible in the supplied code,
-including volcano colouring versus formal DEG filtering, original versus current
-supplement numbering, the subset MSI formatter versus the full manuscript table,
-and enrichment top-five selection. These are documented, not silently reanalysed.
+## Private Configuration
 
-## What Was Retired
+Private input/output locations, cohort membership, KRAS comparison sets, EPIC
+eligibility, exclusion scenarios and result-dependent annotations are read from
+configuration outside the repository. The public template contains no patient
+identifiers or results. See [the input guide](inputs.md).
 
-The current branch no longer contains earlier manuscript/report builders,
-reviewer correspondence, custom differential-expression fallbacks, unrelated
-historical Sarek/COSMIC/rnafusion workflows, example GMT substitutions or earlier
-phenotype classifiers. Git history preserves the preceding repository state;
-there is no legacy directory in the current source layout.
+## Automated Checks
 
-## Checks
-
-`tools/check_repository.py` checks source parsing, configuration keys, provenance
-hashes, file types, private-literal patterns and local documentation links. It
-does not import the analysis modules or evaluate their results. The GitHub
-workflow has no execution step for the study code, even with `--help`.
+`tools/check_repository.py` checks source parsing, configuration keys, file types,
+privacy patterns, code checksums and documentation links. GitHub Actions runs
+these static checks and shell-syntax validation without importing analysis
+modules. These checks are distinct from executing or statistically validating
+an analysis.

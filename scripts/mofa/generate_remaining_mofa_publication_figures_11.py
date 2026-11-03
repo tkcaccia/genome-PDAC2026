@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-# Current collaborator code export. Three-view MOFA, exported factors/loadings, candidate ranking and sensitivity summaries.
-# Source: Original Source and Code/scripts/generate_remaining_mofa_publication_figures_11.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: Three-view MOFA, exported factors/loadings, candidate ranking and sensitivity summaries.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 """Generate the remaining publication-oriented MOFA figures for the revised 11-patient cohort."""
 
 from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path

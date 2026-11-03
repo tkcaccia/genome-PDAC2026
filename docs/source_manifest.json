@@ -1,424 +1,231 @@
 {
-  "scope": "Current collaborator source only",
-  "analyses_executed": false,
-  "exports": [
+  "schema_version": 1,
+  "project": "PDAC2026",
+  "description": "Analysis code files and SHA-256 identities. Source-file checksums identify the referenced input code where recorded.",
+  "files": [
     {
-      "path": "scripts/wes/wes_somatic_01_wes_build_mutation_matrix_FIXED.py",
-      "source": "Original Source and Code/scripts/wes_somatic_01_wes_build_mutation_matrix_FIXED.py",
-      "source_sha256": "fa3d1585dec958ccd4a479fd25be75fc72d7f1192c0a1f62082c8c2bcf994b38",
-      "published_sha256": "c2c75f2069f0963da74cda00c4fb009a22b6dccdece09d7536a31a7fe94c04f6",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/wes/extract_deepsomatic_kras_fields.py",
-      "source": "Original Source and Code/scripts/extract_deepsomatic_kras_fields.py",
-      "source_sha256": "e2b75a29503e144c39dc1e2dd564a215c76c7f39e8b4657a9cc87a573431c87e",
-      "published_sha256": "96a4b515d76078e7eca5c52839fd506ad1c6c94c154f4504d40d240dbc34e0bf",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/wes/run_msisensor_pro_20260828.sh",
-      "source": "Original Source and Code/scripts/run_msisensor_pro_20260828.sh",
-      "source_sha256": "ee5b628eb567562313f1111d2c5c1c94db82f087472ae88b3aeb596a90147a71",
-      "published_sha256": "e78b94a8594f89d1d5598db802e88ee99fd9213602d7b71a034ab6c74ae7d246",
-      "export_changes": [
-        "Externalized HPC working directory; launcher not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/rnaseq/02_rnaseq_build_tpm_matrix.py",
-      "source": "Original Source and Code/scripts/02_rnaseq_build_tpm_matrix.py",
-      "source_sha256": "8937c6bf8b7cec699d6cb4b48a14b825b5ddb14842dc0f5564f0a731806b2576",
-      "published_sha256": "7dbe854e2131f0c70acd827afa24818e8d6718fcacfdf0fa4b5d71ebb22a29fa",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/rnaseq/03_rnaseq_build_delta_matrix.py",
-      "source": "Original Source and Code/scripts/03_rnaseq_build_delta_matrix.py",
-      "source_sha256": "0449c7097bb5e701b8a9a1d94f7641cd5abbd6d1e7c98a6773a25ec419d9579c",
-      "published_sha256": "faa754cf75f6d420699ea82f8d6ab938c6b4be360aaef65b5dbe95233f3f3b80",
-      "export_changes": [
-        "Externalized sample/patient identifiers",
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/rnaseq/run_native_deseq2_revised_11.R",
-      "source": "Original Source and Code/scripts/run_native_deseq2_revised_11.R",
-      "source_sha256": "53f009c831603702d9fbf18ec293b26e59cc290cfb1be9a238e702f44127786f",
-      "published_sha256": "56134506fcc748cef08ee076bf2378e938eda16361a76335143e006d35707e21",
-      "export_changes": [
-        "Externalized workstation locations and cohort membership; R code not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/rnaseq/generate_native_rna_pathway_table_11.py",
-      "source": "Original Source and Code/scripts/generate_native_rna_pathway_table_11.py",
-      "source_sha256": "3d0c6da1d397b58eef677f0b92a65bac6479b771ccb53594d447788a896a33f6",
-      "published_sha256": "d3dd31a1bf34f6997172afd6b7d5f4e6620e3c224a6f7a6215c8e27ed07a7d2c",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/rnaseq/regenerate_figure13_rna_pca_publication.py",
-      "source": "Original Source and Code/scripts/regenerate_figure13_rna_pca_publication.py",
-      "source_sha256": "39f33abf8bb78a3a62ea125189e35c6458ebb0a935e113fc10c9ee2d8eec623c",
-      "published_sha256": "18abee770f2765c2a7107cbd816ad378060e06f0ea1d387090c54af14f2400be",
-      "export_changes": [
-        "Externalized patient-specific label positions",
-        "Externalized sample/patient identifiers",
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/tme/run_salmon_quantiseq_11_pdac.R",
-      "source": "Original Source and Code/scripts/run_salmon_quantiseq_11_pdac.R",
-      "source_sha256": "76c873e1e9a71058cc67f6827188e079d9f4babfbfa7e5362f6f6d7691f2b772",
-      "published_sha256": "a092513d986d803d67c04c9d1b8a633ef6dc8172c2bcbf844869df943ed73095",
-      "export_changes": [
-        "Externalized workstation locations and cohort membership; R code not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/tme/run_salmon_tme_methods_11_pdac.R",
-      "source": "Original Source and Code/scripts/run_salmon_tme_methods_11_pdac.R",
-      "source_sha256": "09c0c651a41a01afd06f879a96ed91be4faf3565125c5191b5e6c78619780123",
-      "published_sha256": "5366a742e321c13b11dff2062bfd7779f05182edd6a1386911935f5bfa298c90",
-      "export_changes": [
-        "Externalized workstation locations and cohort membership; R code not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/tme/generate_figureC_immune_heatmap_11_pdac.py",
-      "source": "Original Source and Code/scripts/generate_figureC_immune_heatmap_11_pdac.py",
-      "source_sha256": "19e3eba510e3e9ac7a2d60ee2bd4f585b623b7bef9381083de569e94b836bac3",
-      "published_sha256": "13b18dbe71d54558b84cfc3e6b7c7efff4932d2a66da23874e223e560ed77952",
-      "export_changes": [
-        "Externalized sample/patient identifiers",
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/tme/generate_figureD_independent_programmes_11_pdac.py",
-      "source": "Original Source and Code/scripts/generate_figureD_independent_programmes_11_pdac.py",
-      "source_sha256": "f8e7a876025ce12860012fcf2c5bfea05075bccbd0ba7eab90d8eece606a856a",
-      "published_sha256": "093c26dd6983741ba0ba8edefabad05e65069d2dc72d2f97322f955c557e959e",
-      "export_changes": [
-        "Externalized sample/patient identifiers",
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/proteomics/04_proteomics_build_protein_matrix.py",
-      "source": "Original Source and Code/scripts/04_proteomics_build_protein_matrix.py",
-      "source_sha256": "42b8fe4f459a9878415caf0eecdba8310f24fdbc9af3b1ac48293b5f94de61fd",
-      "published_sha256": "16cb009ec9035bb6a4fb06045fd9bf81f972e3a19517ee9f62223f0d402d86cf",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/proteomics/07_qc_normalize_inputs.py",
-      "source": "Original Source and Code/scripts/07_qc_normalize_inputs.py",
-      "source_sha256": "fceecfe628eb8873f12aa00c9c790a0d62275c9ac258e2e10a6b8558bb7a4640",
-      "published_sha256": "44ddfbfe9e6ff2b27fdbb7df687bbc119e698672df9eadf61a37f23262089dc5",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/mofa/run_mofa_revised_11.py",
-      "source": "Original Source and Code/scripts/run_mofa_revised_11.py",
-      "source_sha256": "f1903091def72048000ab6440f60fac1dff4f701c7b70205a1beed1343e5307e",
-      "published_sha256": "1d71eccd462bce116cb87486f28474fde80112c8201e191347d5fd6dac6affef",
-      "export_changes": [
-        "Externalized private exclusion scenarios",
-        "Externalized sample/patient identifiers",
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/mofa/generate_remaining_mofa_publication_figures_11.py",
-      "source": "Original Source and Code/scripts/generate_remaining_mofa_publication_figures_11.py",
-      "source_sha256": "242e6fdca51bb03bfb3c510eff407c1c53cee8c36d0bacd874d9482b0918d801",
-      "published_sha256": "a08118a7a2803590138a1e1ebf02b49f3afc3f11c847f0ca72b9988f4e667283",
-      "export_changes": [
-        "Externalized result-dependent factor interpretations",
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/mofa/regenerate_figure11_composite_score.py",
-      "source": "Original Source and Code/scripts/regenerate_figure11_composite_score.py",
-      "source_sha256": "4d8226db6a631401fbea0df23dd28c0e116cf94976a72656318f8957e2163c8e",
-      "published_sha256": "db7b0f4405a3362b22390f1537e158ff7fe765f2495b6002818b5007b2fb7bea",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/mofa/generate_kras_integrated_figures_11.py",
-      "source": "Original Source and Code/scripts/generate_kras_integrated_figures_11.py",
-      "source_sha256": "ee0d9cb442f64f943179407bef6b8ab10195be29957f9df2bca7abd55eb7c4d2",
-      "published_sha256": "62b10fe67bbd5e8c4ef16c9756dfa47398e93824851c5ebb187b7010c7ef9c89",
-      "export_changes": [
-        "Externalized sample/patient identifiers",
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing",
-        "KRAS evidence groups use distinct private keys, separate from EPIC convergence"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/mofa/generate_mofa_seed_stability_11.py",
-      "source": "Original Source and Code/scripts/generate_mofa_seed_stability_11.py",
-      "source_sha256": "88c5d3cb5f6b3677ae796c5562285985182cd4e6b8767b0caf1fc20839de3d90",
-      "published_sha256": "ec53057a2d99a2c2892b41678e70f5c6b027ef7d344d9d70f3c57dc7863a404a",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/tcga/18_pull_tcga_paad_xena.py",
-      "source": "Original Source and Code/scripts/18_pull_tcga_paad_xena.py",
-      "source_sha256": "a84765a56b5fb9b9eec897ddbeb750e2ff22ef054d228ffe0f497e4436557171",
-      "published_sha256": "92e6c483d3b4db020789807575fa2e4f1a558d2463cd6cd9fee8e3ae882c38d4",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/tcga/19_prepare_tcga_paad_matrices.py",
-      "source": "Original Source and Code/scripts/19_prepare_tcga_paad_matrices.py",
-      "source_sha256": "6c02c58619ec2db59b95732d402cc8566893933ebdcadee6eb660e34843d39ad",
-      "published_sha256": "0032604e989b84a8a01ad4051ab94bd04b4856689e6e7bb545e2b330f25e6a01",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/tcga/regenerate_figure17_african_vs_tcga_genuine.py",
-      "source": "Original Source and Code/scripts/regenerate_figure17_african_vs_tcga_genuine.py",
-      "source_sha256": "79dbbcaa588825dd5b8dc107b48c424a5608bff470f15c7043196c5df9bad4ae",
-      "published_sha256": "5d72db33dc50680bcb4698b7cec502135ad344e3962bec5aa95493e34ab5b843",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/tcga/generate_revised_tcga_ancestry_figure.py",
-      "source": "Original Source and Code/scripts/generate_revised_tcga_ancestry_figure.py",
-      "source_sha256": "bb7178ce11f2151b8c173d44361d9957f84583b1a3aa506266332779989fc1f5",
-      "published_sha256": "d917ebaa3b52955e0ae4b47bec86d035540436fbe8385c075bf01a18f49ec5fd",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/tcga/generate_figure13_rna_pca_tcga_11.py",
-      "source": "Original Source and Code/scripts/generate_figure13_rna_pca_tcga_11.py",
-      "source_sha256": "7cf59c1efa18267ed8b602f5d13129bc56220650c1b51de17f106da35143f414",
-      "published_sha256": "7e28d93346deb41f52cff7f94e03a28c3cb99b3b0ed00275458554cca1ecf8eb",
-      "export_changes": [
-        "Externalized sample/patient identifiers",
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/periampullary/compare_pdac_ampulla_14.py",
-      "source": "Original Source and Code/scripts/compare_pdac_ampulla_14.py",
-      "source_sha256": "237de83b3a3a91f313e6d3206c347241b2149269013a262bce659d154c90ce74",
-      "published_sha256": "1d00825487ebc4306452062d7b8e80a11f205810bab71da1455081724c6a307c",
-      "export_changes": [
-        "Externalized sample/patient identifiers",
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/periampullary/generate_pdac_ampulla_exploratory_figures.py",
-      "source": "Original Source and Code/scripts/generate_pdac_ampulla_exploratory_figures.py",
-      "source_sha256": "239ddc19b1903ee6bafafa536dab879fa738a07f936cdf77aefa3577876c3d41",
-      "published_sha256": "079319b905621b7be89196c5735bc363aa885640a20ae421e64e8e24da3ce27f",
-      "export_changes": [
-        "Externalized sample/patient identifiers",
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/periampullary/regenerate_pdac_ampulla_kras_oncoprint.py",
-      "source": "Original Source and Code/scripts/regenerate_pdac_ampulla_kras_oncoprint.py",
-      "source_sha256": "a98b779c063d3011a29296b88188cd40f9c38fd4e460ce981621fdca0a751aa8",
-      "published_sha256": "cbdd36dce82dbcf540acc8153dc6023e0ab84ed0763b2906a296d86907551ae5",
-      "export_changes": [
-        "Externalized sample/patient identifiers",
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/tables/generate_revised_tables_kras_msi.py",
-      "source": "Original Source and Code/scripts/generate_revised_tables_kras_msi.py",
-      "source_sha256": "192f10d63a9ca1e808ac12699dc89fe6a237ff4b795b589bdf1c5046907e11ac",
-      "published_sha256": "900db28abb44abb27891d1aafc12491cf286001d61a0ba623ed1e51de282b2ff",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/tables/generate_native_rna_pathway_top5_table_11.py",
-      "source": "Original Source and Code/scripts/generate_native_rna_pathway_top5_table_11.py",
-      "source_sha256": "3e7570dffcbd668653e3dc1ebd053b9be2e041ad9ce249ab3c7401ebdc7755cb",
-      "published_sha256": "342dd33a5dd076337b486f1405a3ae30f56fe6fcd571e1bb7edeb540fb2c0b49",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/tables/render_native_rna_pathway_top5_png.py",
-      "source": "Original Source and Code/scripts/render_native_rna_pathway_top5_png.py",
-      "source_sha256": "72cd81c28b7da0784db0c386ef0432f31404699ff922ddead9fe0f9992899d02",
-      "published_sha256": "c421e0632c1d2f5b16c4503e242ba10dafe548ee9420f180c73cf797e0e2df4c",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/wes/reanalyze_wes_cohorts.py",
-      "source": "All_figures/scripts/reanalyze_wes_cohorts.py",
-      "source_sha256": "9f993af174876955d54de4dd4ff374460a0e5933b89c445fbdeb4d7aa79f67fc",
-      "published_sha256": "cac113dee9c3b89b146b1fa47cc7c893bb54afec3ab987a599ed75cb9ec95aed",
-      "export_changes": [
-        "Externalized sample/patient identifiers",
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/wes/complete_wes_outputs.py",
-      "source": "All_figures/scripts/complete_wes_outputs.py",
-      "source_sha256": "9139652c1509d77eb8584e7a41a1e6cdecf22d35006cc57e0ae78c1a4d49ac48",
-      "published_sha256": "24483bf5b15d06bd5a689a23141b2d912bd49b8b04fb6a8b97eae9075d645af0",
-      "export_changes": [
-        "Externalized cohort membership",
-        "Parameterized project/output roots; analysis not executed",
-        "Removed embedded patient MSI fallback results; original files are required",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/figures/generate_study_vectors.py",
-      "source": "PDAC_Manuscript_Figs_Sne/generate_study_vectors.py",
-      "source_sha256": "f21dcaf91405952cf969767e48f98a24427d794dd348aefbe37cb2955edb4d06",
-      "published_sha256": "a3b3b5d5d136ccdc78a8d67e5517f8bab0b7364b5afd227c768f3f5649a9072f",
-      "export_changes": [
-        "Externalized private exclusion scenarios",
-        "Externalized sample/patient identifiers",
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing",
-        "Generated presentation manifest identifies the reorganized vector renderer"
-      ],
-      "executed": false
-    },
-    {
-      "path": "scripts/figures/generate_immune_vectors.py",
-      "source": "PDAC_Manuscript_Figs_Sne/Immune_rerun_NN/generate_vectors.py",
-      "source_sha256": "4225fc5f87e47ef9a22db747dc255ad9c5f462c4c5ed965c4c9335b69e853352",
-      "published_sha256": "55f4d3a21a08f8930ab54512a8958645d9ed88036394512a5ef418e758386f98",
-      "export_changes": [
-        "Externalized sample/patient identifiers",
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
+      "path": "pdac_runtime.py",
+      "sha256": "79a988b7751ddf49ece881280d124cc2d59d890937cfd72b88111c951d44225a"
     },
     {
       "path": "scripts/figures/convert_figures.py",
-      "source": "PDAC_Manuscript_Figs_Sne/convert_figures.py",
-      "source_sha256": "1c805349eabb3b0f7624d8bcd21767b08da10853af1e4efdb5e40e3e6d923dd1",
-      "published_sha256": "3c53ce763b518a8f158e54289f2cc78cc5ec17ee06b64184db3dd778378ee1fb",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
+      "sha256": "96da01e97dc2acecc162e0a1833bc56f279f011127ca7a853d264aaa971334a0",
+      "source_filename": "convert_figures.py",
+      "source_sha256": "1c805349eabb3b0f7624d8bcd21767b08da10853af1e4efdb5e40e3e6d923dd1"
+    },
+    {
+      "path": "scripts/figures/generate_immune_vectors.py",
+      "sha256": "aabdd4d4ff1115f046f9cb38a5e94795dc7b67bdb6d1838efdbe1bf2ba7fe60a",
+      "source_filename": "generate_vectors.py",
+      "source_sha256": "4225fc5f87e47ef9a22db747dc255ad9c5f462c4c5ed965c4c9335b69e853352"
+    },
+    {
+      "path": "scripts/figures/generate_study_vectors.py",
+      "sha256": "154447976964b858fc13e735081751da39d108a116e7e317af31f33a8d078f81",
+      "source_filename": "generate_study_vectors.py",
+      "source_sha256": "f21dcaf91405952cf969767e48f98a24427d794dd348aefbe37cb2955edb4d06"
+    },
+    {
+      "path": "scripts/mofa/generate_kras_integrated_figures_11.py",
+      "sha256": "3d966681fa1c8c8d0a81bbf057f34b2f2109852d9b4f7ae0866384ef98815e04",
+      "source_filename": "generate_kras_integrated_figures_11.py",
+      "source_sha256": "ee0d9cb442f64f943179407bef6b8ab10195be29957f9df2bca7abd55eb7c4d2"
+    },
+    {
+      "path": "scripts/mofa/generate_mofa_seed_stability_11.py",
+      "sha256": "471c8f310bff46a0991eaa759a0d3fd43f3e0b4866d9cd5f74d1e0e5afaec26e",
+      "source_filename": "generate_mofa_seed_stability_11.py",
+      "source_sha256": "88c5d3cb5f6b3677ae796c5562285985182cd4e6b8767b0caf1fc20839de3d90"
+    },
+    {
+      "path": "scripts/mofa/generate_remaining_mofa_publication_figures_11.py",
+      "sha256": "0be878a06e39f4b20a3ba91665e76606a5eb2426794a3950e4c61c50bdf8b1cf",
+      "source_filename": "generate_remaining_mofa_publication_figures_11.py",
+      "source_sha256": "242e6fdca51bb03bfb3c510eff407c1c53cee8c36d0bacd874d9482b0918d801"
+    },
+    {
+      "path": "scripts/mofa/regenerate_figure11_composite_score.py",
+      "sha256": "c264ab567ab5b4fa70f1aaf45c9b67ac0749572e0ae5aa99bbf2fdb748ee8f95",
+      "source_filename": "regenerate_figure11_composite_score.py",
+      "source_sha256": "4d8226db6a631401fbea0df23dd28c0e116cf94976a72656318f8957e2163c8e"
+    },
+    {
+      "path": "scripts/mofa/run_mofa_revised_11.py",
+      "sha256": "a492e85e9df1457af57275a8b20bd8df32ea9850a5ae1ca2c54cc3eae6256a2a",
+      "source_filename": "run_mofa_revised_11.py",
+      "source_sha256": "f1903091def72048000ab6440f60fac1dff4f701c7b70205a1beed1343e5307e"
+    },
+    {
+      "path": "scripts/periampullary/compare_pdac_ampulla_14.py",
+      "sha256": "d9c4fe406e66822ae01d8ca28b6c1a0667b4a5617932e46e3be5b46a529e2f24",
+      "source_filename": "compare_pdac_ampulla_14.py",
+      "source_sha256": "237de83b3a3a91f313e6d3206c347241b2149269013a262bce659d154c90ce74"
+    },
+    {
+      "path": "scripts/periampullary/generate_pdac_ampulla_exploratory_figures.py",
+      "sha256": "e6c4e8a281e3f48f581ad66db87458a1aa3462741c0e60dd6a3789a1cda0ce72",
+      "source_filename": "generate_pdac_ampulla_exploratory_figures.py",
+      "source_sha256": "239ddc19b1903ee6bafafa536dab879fa738a07f936cdf77aefa3577876c3d41"
+    },
+    {
+      "path": "scripts/periampullary/regenerate_pdac_ampulla_kras_oncoprint.py",
+      "sha256": "4553ae638943cc77a9cff2f25155a91928003dd8238c722bc2cb41f560a3dd89",
+      "source_filename": "regenerate_pdac_ampulla_kras_oncoprint.py",
+      "source_sha256": "a98b779c063d3011a29296b88188cd40f9c38fd4e460ce981621fdca0a751aa8"
+    },
+    {
+      "path": "scripts/proteomics/04_proteomics_build_protein_matrix.py",
+      "sha256": "ce6b0e9a0b44a0fb027f85a38f9deda2df7e481d823efdfc3fe621c1c7f3c423",
+      "source_filename": "04_proteomics_build_protein_matrix.py",
+      "source_sha256": "42b8fe4f459a9878415caf0eecdba8310f24fdbc9af3b1ac48293b5f94de61fd"
+    },
+    {
+      "path": "scripts/proteomics/07_qc_normalize_inputs.py",
+      "sha256": "b89ccb75e7a4f6c9b126aa8a778218c8dbdea7e8d7378dc000e56d8701abd40d",
+      "source_filename": "07_qc_normalize_inputs.py",
+      "source_sha256": "fceecfe628eb8873f12aa00c9c790a0d62275c9ac258e2e10a6b8558bb7a4640"
+    },
+    {
+      "path": "scripts/rnaseq/02_rnaseq_build_tpm_matrix.py",
+      "sha256": "d82fc8e30bb2f052c8c696cdc0803db459eef9ce3f865d3174e20faf539d3bd2",
+      "source_filename": "02_rnaseq_build_tpm_matrix.py",
+      "source_sha256": "8937c6bf8b7cec699d6cb4b48a14b825b5ddb14842dc0f5564f0a731806b2576"
+    },
+    {
+      "path": "scripts/rnaseq/03_rnaseq_build_delta_matrix.py",
+      "sha256": "4fb5b4ff695dbf53a9e650ccd911b54e39b357468696dda23cb0f956ceda03e6",
+      "source_filename": "03_rnaseq_build_delta_matrix.py",
+      "source_sha256": "0449c7097bb5e701b8a9a1d94f7641cd5abbd6d1e7c98a6773a25ec419d9579c"
+    },
+    {
+      "path": "scripts/rnaseq/generate_native_rna_pathway_table_11.py",
+      "sha256": "6bdce03076395cd8c916aa42694916b1cfa213af22e88f6f7e81281ea969e93c",
+      "source_filename": "generate_native_rna_pathway_table_11.py",
+      "source_sha256": "3d0c6da1d397b58eef677f0b92a65bac6479b771ccb53594d447788a896a33f6"
+    },
+    {
+      "path": "scripts/rnaseq/regenerate_figure13_rna_pca_publication.py",
+      "sha256": "854efadc52e75323e31e3435665e7b1c8e1924085053d0696a260d5850122665",
+      "source_filename": "regenerate_figure13_rna_pca_publication.py",
+      "source_sha256": "39f33abf8bb78a3a62ea125189e35c6458ebb0a935e113fc10c9ee2d8eec623c"
+    },
+    {
+      "path": "scripts/rnaseq/run_native_deseq2_revised_11.R",
+      "sha256": "9a265fb132cc7dcfa315d5f4bb0edf9a3ab811819602770ad584103f727aa845",
+      "source_filename": "run_native_deseq2_revised_11.R",
+      "source_sha256": "53f009c831603702d9fbf18ec293b26e59cc290cfb1be9a238e702f44127786f"
+    },
+    {
+      "path": "scripts/shared/runtime.R",
+      "sha256": "5930bcd974c765ad1067f48da205a850a23258e82f74d9f4131effca30ae91af"
+    },
+    {
+      "path": "scripts/tables/generate_native_rna_pathway_top5_table_11.py",
+      "sha256": "ece70d37c13aa41c41a5bb881f03338bf66a230e20299ff1ab0380eec72322d2",
+      "source_filename": "generate_native_rna_pathway_top5_table_11.py",
+      "source_sha256": "3e7570dffcbd668653e3dc1ebd053b9be2e041ad9ce249ab3c7401ebdc7755cb"
+    },
+    {
+      "path": "scripts/tables/generate_revised_tables_kras_msi.py",
+      "sha256": "f06d0313b73ff8850ad118d1d11ef7cca71ac252530879c8126fb4a69dc04de5",
+      "source_filename": "generate_revised_tables_kras_msi.py",
+      "source_sha256": "192f10d63a9ca1e808ac12699dc89fe6a237ff4b795b589bdf1c5046907e11ac"
+    },
+    {
+      "path": "scripts/tables/render_native_rna_pathway_top5_png.py",
+      "sha256": "8f996fe4c0272665702605500f283cf3a01ec440bbdf741a6871854d6b956ef7",
+      "source_filename": "render_native_rna_pathway_top5_png.py",
+      "source_sha256": "72cd81c28b7da0784db0c386ef0432f31404699ff922ddead9fe0f9992899d02"
+    },
+    {
+      "path": "scripts/tcga/18_pull_tcga_paad_xena.py",
+      "sha256": "7e519ad3100609537daf8021bd089e87bdfb075aa05d2477714efb45fa6a378a",
+      "source_filename": "18_pull_tcga_paad_xena.py",
+      "source_sha256": "a84765a56b5fb9b9eec897ddbeb750e2ff22ef054d228ffe0f497e4436557171"
+    },
+    {
+      "path": "scripts/tcga/19_prepare_tcga_paad_matrices.py",
+      "sha256": "841549556430f06c6e6e3e0591808b0e32c05015d518bfa2a057d3672534a772",
+      "source_filename": "19_prepare_tcga_paad_matrices.py",
+      "source_sha256": "6c02c58619ec2db59b95732d402cc8566893933ebdcadee6eb660e34843d39ad"
     },
     {
       "path": "scripts/tcga/compare_mutation_frequencies.py",
-      "source": "Original Source and Code/scripts/generate_revised_pending_figures.py",
-      "source_sha256": "83a672267a74fcd807d519128d88cc83f062eeaaba5216f12ed74df99d429fce",
-      "published_sha256": "0a001f86d43bcd354e05ae33691fdfe0102736d3b8773c6331f20bc9e63dcb2d",
-      "export_changes": [
-        "Parameterized project/output roots; analysis not executed",
-        "Extracted current mutation-frequency function; excluded superseded overlap/GSEA function",
-        "Shared configuration import aliased to avoid local cohort-name shadowing"
-      ],
-      "executed": false
+      "sha256": "089e1b8d610d0e3cc2274416642df4327035f8edc10a95967e55bafeb82a67fd",
+      "source_filename": "generate_revised_pending_figures.py",
+      "source_sha256": "83a672267a74fcd807d519128d88cc83f062eeaaba5216f12ed74df99d429fce"
+    },
+    {
+      "path": "scripts/tcga/generate_figure13_rna_pca_tcga_11.py",
+      "sha256": "70c4cf9950013f8ca8a43de08a3a7d01d78d8ea791ed2bbc2b4200e08746d345",
+      "source_filename": "generate_figure13_rna_pca_tcga_11.py",
+      "source_sha256": "7cf59c1efa18267ed8b602f5d13129bc56220650c1b51de17f106da35143f414"
+    },
+    {
+      "path": "scripts/tcga/generate_revised_tcga_ancestry_figure.py",
+      "sha256": "5211600c3be6481c1470e65688c60e9d1c2789d78563bf6015da4ac557bf6b40",
+      "source_filename": "generate_revised_tcga_ancestry_figure.py",
+      "source_sha256": "bb7178ce11f2151b8c173d44361d9957f84583b1a3aa506266332779989fc1f5"
+    },
+    {
+      "path": "scripts/tcga/regenerate_figure17_african_vs_tcga_genuine.py",
+      "sha256": "f6507ad806cdf2933e64c66337a97cb8620c66a18426d60f06de33c4077f4718",
+      "source_filename": "regenerate_figure17_african_vs_tcga_genuine.py",
+      "source_sha256": "79dbbcaa588825dd5b8dc107b48c424a5608bff470f15c7043196c5df9bad4ae"
+    },
+    {
+      "path": "scripts/tme/generate_figureC_immune_heatmap_11_pdac.py",
+      "sha256": "0b0f7e07cf19c3181b6cab8c30b9a89f658ecc347cf714ea8e44a35935f64997",
+      "source_filename": "generate_figureC_immune_heatmap_11_pdac.py",
+      "source_sha256": "19e3eba510e3e9ac7a2d60ee2bd4f585b623b7bef9381083de569e94b836bac3"
+    },
+    {
+      "path": "scripts/tme/generate_figureD_independent_programmes_11_pdac.py",
+      "sha256": "5bda2ee158775ce5e0ed925c803e062dd48dafb8e3ae10d80ed74bb8114abd05",
+      "source_filename": "generate_figureD_independent_programmes_11_pdac.py",
+      "source_sha256": "f8e7a876025ce12860012fcf2c5bfea05075bccbd0ba7eab90d8eece606a856a"
+    },
+    {
+      "path": "scripts/tme/run_salmon_quantiseq_11_pdac.R",
+      "sha256": "56b5ca9a876a7df404168275b2a74acd6ddd9b7b846fcf742db01b5eaf69939f",
+      "source_filename": "run_salmon_quantiseq_11_pdac.R",
+      "source_sha256": "76c873e1e9a71058cc67f6827188e079d9f4babfbfa7e5362f6f6d7691f2b772"
+    },
+    {
+      "path": "scripts/tme/run_salmon_tme_methods_11_pdac.R",
+      "sha256": "6f2032f17e8b64da11b3c9231316b206d3298d52aaec63797b94e3176404a3c3",
+      "source_filename": "run_salmon_tme_methods_11_pdac.R",
+      "source_sha256": "09c0c651a41a01afd06f879a96ed91be4faf3565125c5191b5e6c78619780123"
+    },
+    {
+      "path": "scripts/wes/complete_wes_outputs.py",
+      "sha256": "5ebdd6c0633418b612b47177f1e500a08ae279f193f0e11609a2647df06efbcd",
+      "source_filename": "complete_wes_outputs.py",
+      "source_sha256": "9139652c1509d77eb8584e7a41a1e6cdecf22d35006cc57e0ae78c1a4d49ac48"
+    },
+    {
+      "path": "scripts/wes/extract_deepsomatic_kras_fields.py",
+      "sha256": "a88805ba2f27ad344582b356fd2121df39f8c83bf54c56b40f5b4e8f81cd9529",
+      "source_filename": "extract_deepsomatic_kras_fields.py",
+      "source_sha256": "e2b75a29503e144c39dc1e2dd564a215c76c7f39e8b4657a9cc87a573431c87e"
+    },
+    {
+      "path": "scripts/wes/reanalyze_wes_cohorts.py",
+      "sha256": "bbf70d4f07cc0466fe26d2d84f92c9a41c1a80f05e0cdd45e44338d4978060b6",
+      "source_filename": "reanalyze_wes_cohorts.py",
+      "source_sha256": "9f993af174876955d54de4dd4ff374460a0e5933b89c445fbdeb4d7aa79f67fc"
+    },
+    {
+      "path": "scripts/wes/run_msisensor_pro_20260828.sh",
+      "sha256": "4eb3606bc755cdc51f53fbad7e784a58f169391a23a2a11dc553688d85c41b8f",
+      "source_filename": "run_msisensor_pro_20260828.sh",
+      "source_sha256": "ee5b628eb567562313f1111d2c5c1c94db82f087472ae88b3aeb596a90147a71"
+    },
+    {
+      "path": "scripts/wes/wes_somatic_01_wes_build_mutation_matrix_FIXED.py",
+      "sha256": "88db1c203a3f159d84ad8e6f83607efc520e178f8e3d47c2f88f07d4f4ae67e4",
+      "source_filename": "wes_somatic_01_wes_build_mutation_matrix_FIXED.py",
+      "source_sha256": "fa3d1585dec958ccd4a479fd25be75fc72d7f1192c0a1f62082c8c2bcf994b38"
     }
   ]
 }

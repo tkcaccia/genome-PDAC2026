@@ -1,8 +1,7 @@
 #!/usr/bin/env Rscript
-# Current collaborator code export. Salmon gene counts/TPM, paired DESeq2, response PCA and enrichment.
-# Source: Original Source and Code/scripts/run_native_deseq2_revised_11.R
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: Salmon gene counts/TPM, paired DESeq2, response PCA and enrichment.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 
 suppressPackageStartupMessages({
   library(DESeq2)

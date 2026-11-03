@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-# Current collaborator code export. VEP-annotated DeepSomatic calls, retained-variant summaries and paired MSI launcher.
-# Source: Original Source and Code/scripts/run_msisensor_pro_20260828.sh
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: VEP-annotated DeepSomatic calls, retained-variant summaries and paired MSI launcher.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 #SBATCH --job-name=msi_pro_14
 #SBATCH --partition=Main
 #SBATCH --array=1-14

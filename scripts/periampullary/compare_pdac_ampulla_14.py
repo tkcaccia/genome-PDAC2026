@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-# Current collaborator code export. Separate exploratory PDAC/periampullary comparisons.
-# Source: Original Source and Code/scripts/compare_pdac_ampulla_14.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: Separate exploratory PDAC/periampullary comparisons.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 """Exploratory PDAC versus periampullary comparison across WES, RNA, and proteomics."""
 
 from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path

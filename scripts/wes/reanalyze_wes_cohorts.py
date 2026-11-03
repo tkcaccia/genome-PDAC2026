@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-# Current collaborator code export. VEP-annotated DeepSomatic calls, retained-variant summaries and paired MSI launcher.
-# Source: All_figures/scripts/reanalyze_wes_cohorts.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: VEP-annotated DeepSomatic calls, retained-variant summaries and paired MSI launcher.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 """Reanalyze the validated DeepSomatic WES calls for revised cohorts.
 
 Cohort membership is read from private configuration. The VCF parser and quality thresholds are imported from
@@ -138,15 +137,15 @@ def write_reports(calls: pd.DataFrame, primary: dict[str, pd.DataFrame], peri: d
     kras = calls[calls["SYMBOL"].eq("KRAS")].sort_values(["cohort", "patient"])
     kras.to_csv(TABLE / "kras_variants_all_cohorts.tsv", sep="\t", index=False)
     lines = [
-        "REVISED WES ANALYSIS REPORT", "===========================", "",
-        "Primary cohort: supplied by private configuration.",
-        "Periampullary cohort: supplied by private configuration.", "",
-        "Reusable validated inputs", "--------------------------",
+        "WES ANALYSIS SUMMARY", "===========================", "",
+        "Primary cohort: defined in private configuration.",
+        "Periampullary cohort: defined in private configuration.", "",
+        "Analysis inputs", "--------------------------",
         "- Per-patient DeepSomatic VCFs and .tbi indexes in inputs/vcf_annotated/.",
-        "- Existing MSI summaries linked under inputs/msi/.",
-        "- Existing RNA-seq and proteomics matrices were not overwritten; WES-only rerun avoids recomputing them.",
-        "- VEP annotation and variant calling were not rerun because the validated patient-level outputs are unchanged.", "",
-        "Regenerated analyses", "---------------------",
+        "- MSI summaries are read from inputs/msi/.",
+        "- This step summarises WES calls; RNA and protein matrices are separate integration inputs.",
+        "- The input VCFs must already contain variant calls and VEP annotations.", "",
+        "Analysis outputs", "---------------------",
         "- Somatic variant tables, gene-by-patient matrices, burden, gene frequency, variant classification, driver-gene, and curated PDAC pathway summaries.",
         "- Mutation burden, recurrent-gene, oncoprint, and combined cohort clustering figures.",
         "- KRAS table and PDAC-versus-periampullary gene comparison.", "",
@@ -157,7 +156,7 @@ def write_reports(calls: pd.DataFrame, primary: dict[str, pd.DataFrame], peri: d
         f"- KRAS calls: {len(kras)} total; PDAC={int((kras['cohort'] == 'PDAC').sum())}; periampullary={int((kras['cohort'] == 'periampullary').sum())}.",
         "- Clustering is exploratory and descriptive because the periampullary group has only three cases.", "",
         "Downstream integration note", "-----------------------------",
-        "The WES feature matrix now contains only the 11 primary PDAC patients. Existing RNA-seq/proteomics outputs remain available for the same 11 complete cases; any future MOFA rerun should use the revised WES matrix and the corresponding 11-sample RNA/protein matrices.",
+        "MOFA integration requires matching patient order across the primary-cohort WES, RNA-response and protein-abundance matrices.",
     ]
     (RUN / "REVISED_WES_ANALYSIS_REPORT.txt").write_text("\n".join(lines) + "\n")
 

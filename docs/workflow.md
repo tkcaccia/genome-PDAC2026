@@ -7,17 +7,20 @@ title: Analysis workflow
 
 [Overview](index.md) | [Figure and table index](figures-and-tables.md) | [Inputs](inputs.md)
 
-This page describes the current collaborators' source, not the superseded
-STAR/Sarek/custom-expression workflow. Reorganization did not execute these steps.
+This page describes the analytical inputs, transformations, statistical models
+and outputs used in the project. The figure/table index links these calculations
+to their presentation.
 
 ## WES and MSI
 
-Previously aligned, duplicate-marked and DeepSomatic-called WES files are external
-inputs. The full alignment/calling/VEP job definitions were not present in this
-source selection, so they are not replaced with earlier Sarek commands.
+The downstream WES analysis starts from per-patient VEP-annotated DeepSomatic
+calls. Reproduction from raw reads additionally requires the alignment,
+duplicate-marking, calling and annotation job definitions, reference genome,
+capture intervals, model and annotation cache; those job definitions are not
+included in this repository.
 
 [The VCF parser](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/wes/wes_somatic_01_wes_build_mutation_matrix_FIXED.py)
-reads per-patient VEP-annotated DeepSomatic calls and applies the supplied PASS,
+reads per-patient VEP-annotated DeepSomatic calls and applies PASS,
 impact and available depth/allele-support filters. [Cohort summaries](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/wes/reanalyze_wes_cohorts.py)
 split PDAC from periampullary cases. [The completion helper](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/wes/complete_wes_outputs.py)
 applies the explicit gene-family/large-gene sensitivity rules and produces binary
@@ -29,8 +32,8 @@ removed variant is an artefact.
 `tools/microsatellites.list`, minimum coverage 20 and four threads.
 The aggregation code uses MSS <5%, intermediate 5 to <20%, and high >=20% as
 exploratory categories. Exact executable version and construction/checksum of
-the site list are not supplied by the launcher. Private fallback scores were
-removed: missing original MSI files are not silently replaced by embedded values.
+the site list are not specified by the launcher and must be documented with the
+run. MSI aggregation reads the raw summary files rather than embedded scores.
 
 ## RNA Expression and DESeq2
 
@@ -44,22 +47,22 @@ missing entries with zero, filters counts >=10 in at least the number of pairs,
 and rounds estimated counts. It fits `~ patient + condition`, with normal as the
 reference, uses a tumour-versus-normal Wald contrast, and applies BH correction.
 The exported DEG list uses FDR <0.05 and absolute log2 fold change >=1.
-No custom Python differential-expression fallback is included. The retained
-implementation directly imports gene-level estimated counts; it should not be
-described as a tximport/tximeta analysis because the code does not do that.
+Gene-level estimated counts are imported directly with
+`DESeqDataSetFromMatrix`; this implementation does not add transcript-length
+offsets through tximport or tximeta.
 
 [RNA responses](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/rnaseq/03_rnaseq_build_delta_matrix.py) are separately
 calculated as `log2((tumour TPM + 1)/(normal TPM + 1))`. The matrix helper operates
 on configured pairs and records filtered and unfiltered responses. The
 [PCA producer](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/rnaseq/regenerate_figure13_rna_pca_publication.py) consumes
-the archived primary-cohort response matrix, selects the 2,000 most variable
+the primary-cohort response matrix, selects the 2,000 most variable
 genes and standardizes features across patients. One point is one patient's
 response, not one tissue library. These response values are not DESeq2 inputs.
 
 [RNA enrichment](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/rnaseq/generate_native_rna_pathway_table_11.py) submits
 upregulated and downregulated gene symbols separately to the named GO, Reactome
-and KEGG Enrichr libraries. The supplied implementation uses the library
-background; reorganization has not rerun it with a measured-gene background.
+and KEGG Enrichr libraries. This implementation uses the Enrichr library
+background rather than a custom measured-gene background.
 Formatting a top-five table does not define the full tested enrichment family.
 
 ## From Expression to Immune and Stromal Scores
@@ -75,7 +78,7 @@ that symbol TPM matrix and its matched-sample metadata. EPIC receives linear TPM
 ESTIMATE, MCP-counter and xCell receive `log2(TPM + 1)`. It records coverage and
 EPIC fit diagnostics, and writes scores in each method's native scale. EPIC and
 quanTIseq provide estimated fractions; ESTIMATE, MCP-counter and xCell scores are
-not percentages. CIBERSORT is not part of this current supplied rerun.
+not percentages. The documented workflow uses these five frameworks.
 
 Paired tumour-normal comparisons use two-sided Wilcoxon signed-rank tests with
 normal approximation and BH correction separately within each method. EPIC also
@@ -93,7 +96,8 @@ The GMT is a biological reference, not an expression-derived file. Its
 `load_hallmark_sets()` function reads the cached Enrichr
 `MSigDB_Hallmark_2020` GMT or retrieves the collection through GSEApy, selects the
 named sets, and writes the selected GMT and mapping coverage into the private
-analysis tree. An unrelated example GMT is not included as a substitute.
+analysis tree. The selected GMT and gene-set coverage are analytical outputs
+required for reproducing the scores.
 
 The 19 selected programmes are EMT, hypoxia, TGF-beta signalling, angiogenesis,
 KRAS signalling up and down, E2F targets, G2-M checkpoint, MYC targets V1, p53,
@@ -126,17 +130,18 @@ or tumour-normal response classes.
 ## Proteomics and MOFA
 
 [The protein-matrix helper](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/proteomics/04_proteomics_build_protein_matrix.py)
-parses protein groups and sample labels from the supplied quantified report.
-It is not the missing original proteomics differential-abundance/search pipeline.
+parses protein groups and sample labels from the quantified protein report.
+It assembles abundances; it does not perform spectral searching or differential
+protein-abundance testing.
 The [normalization helper](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/proteomics/07_qc_normalize_inputs.py) documents
-the supplied integration/QC transformation, not a replacement for extraction-method
-or precursor-level plots.
+the integration/QC transformation. Extraction-method and precursor-level panels
+have separate source requirements listed in the figure/table index.
 
 [The MOFA implementation](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/mofa/run_mofa_revised_11.py) aligns three
 patient-level views: binary retained WES genes; tumour-normal RNA responses; and
 tumour-only protein `log2(abundance + 1)` values. Missing protein abundances become
 zero before transformation. The continuous views are standardized, Bernoulli
-and Gaussian likelihoods are used as appropriate, and the supplied model has
+and Gaussian likelihoods are used as appropriate, and the model has
 five factors. The script writes input matrices, QC filters, model, factors,
 loadings, clustering and interpretation outputs.
 
@@ -153,8 +158,8 @@ Result-specific factor names and exclusion membership stay in private configurat
 [TCGA downloading](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/tcga/18_pull_tcga_paad_xena.py) and
 [matrix preparation](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/tcga/19_prepare_tcga_paad_matrices.py) supply public
 RNA, RPPA and mutation inputs. The ancestry/modality script additionally requires
-public clinical metadata with genetic-ancestry labels; that file is not supplied
-by the Xena downloader. Joint expression PCA, mutation-frequency differences and
+public clinical metadata with genetic-ancestry labels, separately from the
+Xena expression downloads. Joint expression PCA, mutation-frequency differences and
 pathway-theme counts are descriptive cross-platform comparisons, not matched
 ancestry-association tests.
 

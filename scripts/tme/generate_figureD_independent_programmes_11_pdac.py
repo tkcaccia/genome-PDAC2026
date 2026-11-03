@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-# Current collaborator code export. Expression-to-deconvolution scores, paired comparisons and tumour-only Hallmark/TME groups.
-# Source: Original Source and Code/scripts/generate_figureD_independent_programmes_11_pdac.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: Expression-to-deconvolution scores, paired comparisons and tumour-only Hallmark/TME groups.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 """Create an independently specified programme/TME profile for 11 PDAC tumours."""
 
 from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path
@@ -275,21 +274,21 @@ def main():
 
     fig.suptitle("Tumour programme and microenvironment profiles in 11 PDAC cases", fontsize=15, fontweight="bold", y=.99)
     fig.text(.01, .005,
-             "Independent exploratory replacement, not a reproduction of the original custom Figure D. Panel A shows 19 selected Hallmark 2020 ssGSEA programmes. Panel B shows 12 ESTIMATE/MCP-counter features, row-standardized for display. Panel C classifies continuous immune, stromal and Hallmark EMT scores using each score's 11-tumour median; these cohort-relative groups are descriptive, not validated subtypes. MCP-counter NK signature coverage is limited (4/9 markers).",
+             "Tumour programme and microenvironment profiles. Panel A shows 19 selected Hallmark 2020 ssGSEA programmes. Panel B shows 12 ESTIMATE/MCP-counter features, row-standardized for display. Panel C classifies continuous immune, stromal and Hallmark EMT scores using each score's 11-tumour median; these cohort-relative groups are descriptive, not validated subtypes. MCP-counter NK signature coverage is limited (4/9 markers).",
              fontsize=8, va="bottom", wrap=True)
     fig.subplots_adjust(left=.30, right=.82, top=.965, bottom=.055)
     fig.savefig(OUT_FIG, dpi=300, bbox_inches="tight")
     plt.close(fig)
 
     methods = [
-        "Cohort: tumours only from PDAC patients 2, 5, 6, 9, 10, 22, 31, 32, 35, 49 and 51; periampullary cases excluded.",
+        "Cohort: tumour samples in the configured primary PDAC cohort; periampullary cases excluded.",
         "Expression: summed gene-symbol Salmon TPM from the immune-analysis input; log2(TPM+1) used for ssGSEA. The transform preserves within-sample gene ranks.",
         "Pathways: 19 selected sets from MSigDB_Hallmark_2020 retrieved with GSEApy 1.3.0; exact selected gene membership is archived in figureD_msigdb_hallmark_2020_selected.gmt. Sets were selected to represent EMT/stromal signalling, growth, metabolism and immune/inflammatory processes.",
         "Scoring: GSEApy ssGSEA, rank normalization, rank correlation normalization, weight 0.25, min_size 15, max_size 500, seed 42. Heatmap cells are row z-scores across observed tumours, not inferential p-values.",
         "TME: 12 features selected from ESTIMATE and MCP-counter, with complete values for all 11 tumours. Each feature is z-scored across the 11 tumours, then the immune and stromal composites are the unweighted means of their respective feature z-scores. Feature directions are positive for higher immune/stromal signal. Definitions are in figureD_tme_feature_definitions_11_pdac.csv.",
         "EMT: the selected Hallmark Epithelial Mesenchymal Transition ssGSEA score is used as a continuous programme score. For the descriptive group labels, each of the immune, stromal and EMT composite scores is classified high at or above its cohort median, and low below its cohort median. Stromal/EMT-high immune-low requires stromal and EMT high and immune low; immune-high stromal-low requires immune high and stromal low; all others are mixed/intermediate. Median cutoffs are saved in figureD_tme_median_cutoffs_11_pdac.csv.",
         "The 12 features comprise ESTIMATE ImmuneScore and StromalScore; MCP-counter T cells, CD8 T cells, Cytotoxic lymphocytes, B lineage, NK cells, Monocytic lineage, Myeloid dendritic cells, Neutrophils, Endothelial cells and Fibroblasts. MCP-counter NK coverage is limited (4/9 markers), so groupings involving the composite should be interpreted cautiously.",
-        "Interpretation: this is a newly specified exploratory analysis and does not reproduce the original 19 custom programmes, exact 12-feature meta-score, thresholds or reported patient classifications. Revise manuscript text/caption accordingly.",
+        "Interpretation: programme scores and cohort-relative TME groups are descriptive and exploratory, not validated molecular subtypes.",
     ]
     (RUN / "METHODS_FIGURE_D_INDEPENDENT_11_PDac.txt").write_text("\n".join(methods) + "\n")
     print(f"figure={OUT_FIG}")

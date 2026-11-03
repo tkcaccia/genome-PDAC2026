@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-# Current collaborator code export. Public-cohort preparation and descriptive comparisons; not ancestry-controlled validation.
-# Source: Original Source and Code/scripts/regenerate_figure17_african_vs_tcga_genuine.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
-"""Genuine African (11-patient revised WES) vs TCGA PAAD MC3 pathway-theme concordance.
+# PDAC2026 analysis: Public-cohort preparation and descriptive comparisons; not ancestry-controlled validation.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
+"""PDAC versus TCGA PAAD MC3 mutation-associated pathway-theme comparison.
 
-Both sides use the same modality (somatic mutation calls) and the same
-recurrence rule (mutated in >=2 samples), so this is a fair like-for-like
-comparison, unlike the legacy figure which mislabeled African RNA/MOFA
-enrichment as "TCGA".
+Both cohorts use somatic mutation calls and the recurrence rule of
+mutation in at least two samples. Enrichment results are aggregated
+into broad pathway themes for descriptive comparison.
 
 Outputs:
 - results/mofa_revised_11_20260916/tables/revised_11_vs_tcga_pathway_theme_concordance.csv

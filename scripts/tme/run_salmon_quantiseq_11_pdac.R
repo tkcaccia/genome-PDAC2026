@@ -1,8 +1,7 @@
 #!/usr/bin/env Rscript
-# Current collaborator code export. Expression-to-deconvolution scores, paired comparisons and tumour-only Hallmark/TME groups.
-# Source: Original Source and Code/scripts/run_salmon_quantiseq_11_pdac.R
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: Expression-to-deconvolution scores, paired comparisons and tumour-only Hallmark/TME groups.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 suppressPackageStartupMessages({
   library(quantiseqr)
   library(ggplot2)
@@ -81,6 +80,6 @@ paired_plot <- ggplot(long, aes(condition, fraction * 100, group = patient)) +
 ggsave(file.path(out, "figures/Figure_immune_paired_changes_quantiseq_11_pdac.png"), paired_plot, width = 12, height = 8, dpi = 300)
 capture.output(sessionInfo(), file = file.path(out, "qc/R_sessionInfo.txt"))
 write.csv(data.frame(file = c(source, mapping_file, signature_file), md5 = unname(tools::md5sum(c(source, mapping_file, signature_file)))), file.path(out, "qc/input_checksums.csv"), row.names = FALSE)
-writeLines(c("Primary cohort: 11 PDAC matched pairs; periampullary cases excluded.", "Input: the existing Salmon gene TPM matrix used by the revised RNA workflow; no DESeq2 inputs or results changed.", "Duplicate stripped Ensembl IDs and duplicate mapped symbols summed; missing symbols excluded and audited.", "Input is unlogged TPM. All 22 samples use is_arraydata=FALSE, is_tumordata=TRUE, scale_mRNA=TRUE, method=lsei, rm_genes=default so the same signature is used in both conditions.", "Tumour-mode removes aberrantly expressed signature genes in both conditions for primary paired comparability; method-dependent uncertainty remains.", "Other is a residual fraction, not a measured tumour-cell fraction or a distinct immune population.", "Paired tests: two-sided Wilcoxon with normal approximation (exact=FALSE, ties/zeros retained); BH across the 11 quanTIseq output types including Other.", "Cell fractions are estimates, not direct cell counts or validated immune infiltration measurements.", paste0("Effective signature coverage: ", sum(effective %in% rownames(gene_tpm)), "/", length(effective), " (", round(100 * coverage_fraction, 2), "%)."), "This does not reproduce the earlier STAR-based inputs, 19 programmes or 12-feature meta-scores."), file.path(out, "METHODS_AND_LIMITATIONS.txt"))
+writeLines(c("Primary cohort: 11 PDAC matched pairs; periampullary cases excluded.", "Input: Salmon gene-level TPM matrix with matched tumour and normal samples.", "Duplicate stripped Ensembl IDs and duplicate mapped symbols summed; missing symbols excluded and audited.", "Input is unlogged TPM. All 22 samples use is_arraydata=FALSE, is_tumordata=TRUE, scale_mRNA=TRUE, method=lsei, rm_genes=default so the same signature is used in both conditions.", "Tumour-mode removes aberrantly expressed signature genes in both conditions for primary paired comparability; method-dependent uncertainty remains.", "Other is a residual fraction, not a measured tumour-cell fraction or a distinct immune population.", "Paired tests: two-sided Wilcoxon with normal approximation (exact=FALSE, ties/zeros retained); BH across the 11 quanTIseq output types including Other.", "Cell fractions are estimates, not direct cell counts or validated immune infiltration measurements.", paste0("Effective signature coverage: ", sum(effective %in% rownames(gene_tpm)), "/", length(effective), " (", round(100 * coverage_fraction, 2), "%)."), "Hallmark programme scores and TME groups are calculated by generate_figureD_independent_programmes_11_pdac.py."), file.path(out, "METHODS_AND_LIMITATIONS.txt"))
 cat("Samples:", nrow(results), "effective signature coverage:", sum(effective %in% rownames(gene_tpm)), "/", length(effective), "\n")
 print(paired)

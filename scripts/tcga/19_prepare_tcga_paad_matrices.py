@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-# Current collaborator code export. Public-cohort preparation and descriptive comparisons; not ancestry-controlled validation.
-# Source: Original Source and Code/scripts/19_prepare_tcga_paad_matrices.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: Public-cohort preparation and descriptive comparisons; not ancestry-controlled validation.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 """Prepare TCGA PAAD matrices from downloaded Xena files.
 
 Creates comparison-ready matrices in `external/tcga_paad/processed/`:

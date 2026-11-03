@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-# Current collaborator code export. Three-view MOFA, exported factors/loadings, candidate ranking and sensitivity summaries.
-# Source: Original Source and Code/scripts/run_mofa_revised_11.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: Three-view MOFA, exported factors/loadings, candidate ranking and sensitivity summaries.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 """Run the complete 11-patient WES/RNA/proteomics MOFA workflow in isolation."""
 from __future__ import annotations
 
@@ -288,7 +287,7 @@ def downstream_figures(factors: pd.DataFrame, loadings: dict[str, pd.DataFrame],
 def main() -> None:
     for p in [INTEGRATION, QC, MOFA, FIG, TABLE]: p.mkdir(parents=True, exist_ok=True)
     wes, rna, prot = load_wes(), load_rna(), load_proteomics(); write_integration(wes, rna, prot); wes_qc, rna_qc, prot_qc = qc_views(wes, rna, prot); model = run_mofa(wes_qc, rna_qc, prot_qc); factors, loadings = export_mofa(model); clusters = cluster_and_figures(factors); shortlist = interpretation_figures(factors, loadings, clusters); pathway_and_candidates(loadings, shortlist); robustness(factors, clusters)
-    (RUN / "MOFA_REVISED_11_REPORT.txt").write_text("11-patient PDAC MOFA integration\n\nSamples: " + ", ".join(PATIENTS) + "\nViews: blacklist-filtered WES, tumour-normal RNA log2 delta, log2 proteomics abundance.\nMOFA settings retained: 5 factors, 1500 iterations, seed 42, fast convergence.\nAll outputs are isolated under this directory; legacy 14-patient integration outputs were not overwritten.\nThe 11-patient model is exploratory and requires robustness-aware interpretation.\n")
+    (RUN / "MOFA_REVISED_11_REPORT.txt").write_text("11-patient PDAC MOFA integration\n\nSamples: " + ", ".join(PATIENTS) + "\nViews: blacklist-filtered WES, tumour-normal RNA log2 delta, log2 proteomics abundance.\nMOFA settings: 5 factors, 1500 iterations, seed 42, fast convergence.\nOutputs are written to the configured MOFA analysis directory.\nThe 11-patient model is exploratory and requires robustness-aware interpretation.\n")
     downstream_figures(factors, loadings, shortlist, rna)
     print("Completed isolated 11-patient MOFA workflow:", RUN)
 

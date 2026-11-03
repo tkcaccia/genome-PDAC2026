@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-# Current collaborator code export. Public-cohort preparation and descriptive comparisons; not ancestry-controlled validation.
-# Source: Original Source and Code/scripts/generate_revised_tcga_ancestry_figure.py
-# Private paths/cohort labels are supplied separately; see docs/inputs.md.
-# Publication export only: not run or scientifically revalidated during reorganization.
+# PDAC2026 analysis: Public-cohort preparation and descriptive comparisons; not ancestry-controlled validation.
+# Input formats and private configuration: docs/inputs.md.
+# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
 """Rebuild TCGA PAAD ancestry/modality availability figures from source metadata."""
 from __future__ import annotations
 
