@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
-# PDAC2026 analysis: VEP-annotated DeepSomatic calls, retained-variant summaries and paired MSI launcher.
-# Input formats and private configuration: docs/inputs.md.
-# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
-"""Reanalyze the validated DeepSomatic WES calls for revised cohorts.
-
-Cohort membership is read from private configuration. The VCF parser and quality thresholds are imported from
-the validated corrected pipeline script.
-"""
+# WES processing, variant summaries, coverage and paired MSI.
+# Private paths/cohorts: config/private.example.json; never store populated inputs here.
+"""Publication analysis; inputs and outputs are documented in docs/workflow.md."""
 from __future__ import annotations
 
-from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path
+from pdac_runtime import project_root, private_path, private_value, cohort as configured_cohort, code_path
 
 import csv
 import importlib.util
@@ -23,9 +18,10 @@ import pandas as pd
 import seaborn as sns
 from scipy.cluster.hierarchy import dendrogram, linkage
 
-ROOT = project_root()
-RUN = ROOT / "results" / "wes_revised_11_20260916"
-VCF_DIR = RUN / "inputs" / "vcf_annotated"
+ROOT = private_path("handoff_root")
+WORKSPACE_ROOT = project_root()
+RUN = ROOT / "wes" / "analysis"
+VCF_DIR = ROOT / "wes" / "annotated"
 OUT = RUN / "outputs"
 FIG = RUN / "figures"
 TABLE = RUN / "tables"
@@ -76,6 +72,7 @@ def matrix(calls: pd.DataFrame) -> pd.DataFrame:
 
 def write_cohort(calls: pd.DataFrame, cohort: str, patients: list[str]) -> dict[str, pd.DataFrame]:
     out = OUT / ("primary_pdac" if cohort == "PDAC" else "periampullary")
+    out.mkdir(parents=True, exist_ok=True)
     sub = calls[calls["patient"].isin(patients)].copy()
     mat = matrix(sub).reindex(columns=[f"{p.zfill(2)}T" for p in patients], fill_value=0)
     burden = sub.groupby("patient").size().reindex(patients, fill_value=0).rename("somatic_variant_count").reset_index()
@@ -137,15 +134,14 @@ def write_reports(calls: pd.DataFrame, primary: dict[str, pd.DataFrame], peri: d
     kras = calls[calls["SYMBOL"].eq("KRAS")].sort_values(["cohort", "patient"])
     kras.to_csv(TABLE / "kras_variants_all_cohorts.tsv", sep="\t", index=False)
     lines = [
-        "WES ANALYSIS SUMMARY", "===========================", "",
-        "Primary cohort: defined in private configuration.",
-        "Periampullary cohort: defined in private configuration.", "",
-        "Analysis inputs", "--------------------------",
-        "- Per-patient DeepSomatic VCFs and .tbi indexes in inputs/vcf_annotated/.",
-        "- MSI summaries are read from inputs/msi/.",
-        "- This step summarises WES calls; RNA and protein matrices are separate integration inputs.",
-        "- The input VCFs must already contain variant calls and VEP annotations.", "",
-        "Analysis outputs", "---------------------",
+        "REVISED WES ANALYSIS REPORT", "===========================", "",
+        "Primary cohort: patients specified in private configuration (n=11).",
+        "Exploratory periampullary cohort: patients specified in private configuration (n=3).", "",
+        "Inputs", "------",
+        "- Per-patient DeepSomatic 1.10.0 FFPE_WES calls using the vendor Exome 2.5 BED, annotated with VEP 101.",
+        "- RNA-seq and proteomics inputs are unchanged and are reused only for the primary 11-patient integration.",
+        "- MSI is generated separately by the paired MSI workflow.", "",
+        "Regenerated analyses", "---------------------",
         "- Somatic variant tables, gene-by-patient matrices, burden, gene frequency, variant classification, driver-gene, and curated PDAC pathway summaries.",
         "- Mutation burden, recurrent-gene, oncoprint, and combined cohort clustering figures.",
         "- KRAS table and PDAC-versus-periampullary gene comparison.", "",
@@ -156,9 +152,10 @@ def write_reports(calls: pd.DataFrame, primary: dict[str, pd.DataFrame], peri: d
         f"- KRAS calls: {len(kras)} total; PDAC={int((kras['cohort'] == 'PDAC').sum())}; periampullary={int((kras['cohort'] == 'periampullary').sum())}.",
         "- Clustering is exploratory and descriptive because the periampullary group has only three cases.", "",
         "Downstream integration note", "-----------------------------",
-        "MOFA integration requires matching patient order across the primary-cohort WES, RNA-response and protein-abundance matrices.",
+        "The primary PDAC WES matrix contains only patients specified in private configuration. The three periampullary patients are summarized separately and are not included in primary integration.",
+        "This is the WES-derived analysis stage; it does not by itself refit MOFA or regenerate RNA/proteomics-only figures.",
     ]
-    (RUN / "REVISED_WES_ANALYSIS_REPORT.txt").write_text("\n".join(lines) + "\n")
+    (RUN / "WES_2_5_ANALYSIS_REPORT.txt").write_text("\n".join(lines) + "\n")
 
 
 def main() -> None:

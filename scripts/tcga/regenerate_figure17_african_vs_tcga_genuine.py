@@ -1,21 +1,8 @@
 #!/usr/bin/env python3
-# PDAC2026 analysis: Public-cohort preparation and descriptive comparisons; not ancestry-controlled validation.
-# Input formats and private configuration: docs/inputs.md.
-# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
-"""PDAC versus TCGA PAAD MC3 mutation-associated pathway-theme comparison.
-
-Both cohorts use somatic mutation calls and the recurrence rule of
-mutation in at least two samples. Enrichment results are aggregated
-into broad pathway themes for descriptive comparison.
-
-Outputs:
-- results/mofa_revised_11_20260916/tables/revised_11_vs_tcga_pathway_theme_concordance.csv
-- results/mofa_revised_11_20260916/tables/revised_11_wes_recurrent_gene_enrichment.csv
-- results/mofa_revised_11_20260916/tables/tcga_paad_mc3_recurrent_gene_enrichment.csv
-- results/figures/final_11_figures/Figure_17_pathway_theme_concordance.png
-"""
-
-from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path
+# TCGA context for the manuscript.
+# Private paths/cohorts: config/private.example.json; never store populated inputs here.
+"""Publication analysis; inputs and outputs are documented in docs/workflow.md."""
+from pdac_runtime import project_root, private_path, private_value, cohort as configured_cohort, code_path
 from collections import Counter
 from pathlib import Path
 
@@ -27,11 +14,12 @@ import pandas as pd
 import seaborn as sns
 from scipy.stats import spearmanr
 
-ROOT = project_root()
-AFRICAN_GENE_SUMMARY = ROOT / "results/wes_revised_11_20260916/outputs/primary_pdac/gene_summary_table.csv"
-TCGA_MC3 = ROOT / "external/tcga_paad/processed/tcga_mc3_gene_binary.csv"
-TABLES = ROOT / "results/mofa_revised_11_20260916/tables"
-OUT_FIG = ROOT / "results/figures/final_11_figures/Figure_17_pathway_theme_concordance.png"
+ROOT = private_path("handoff_root")
+WORKSPACE_ROOT = project_root()
+AFRICAN_GENE_SUMMARY = ROOT / "wes/analysis/outputs/primary_pdac/gene_summary_table.csv"
+TCGA_MC3 = WORKSPACE_ROOT / "external/tcga_paad/processed/tcga_mc3_gene_binary.csv"
+TABLES = ROOT / "comparisons/tcga/tables"
+OUT_FIG = ROOT / "comparisons/tcga/Figure_17_pathway_theme_concordance.png"
 RECURRENCE_MIN = 2
 GENE_SETS = ["GO_Biological_Process_2023", "KEGG_2021_Human", "Reactome_2022"]
 

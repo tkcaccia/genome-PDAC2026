@@ -1,7 +1,7 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "project": "PDAC2026",
-  "description": "Analysis code files and SHA-256 identities. Source-file checksums identify the referenced input code where recorded.",
+  "description": "Publication source identities. Configuration adaptation is not a new scientific run.",
   "files": [
     {
       "path": "pdac_runtime.py",
@@ -20,58 +20,102 @@
       "source_sha256": "4225fc5f87e47ef9a22db747dc255ad9c5f462c4c5ed965c4c9335b69e853352"
     },
     {
-      "path": "scripts/figures/generate_study_vectors.py",
-      "sha256": "154447976964b858fc13e735081751da39d108a116e7e317af31f33a8d078f81",
-      "source_filename": "generate_study_vectors.py",
-      "source_sha256": "f21dcaf91405952cf969767e48f98a24427d794dd348aefbe37cb2955edb4d06"
+      "path": "scripts/mofa/cluster_stability_panel.py",
+      "source_filename": "scripts/33_cluster_stability_panel_2_5.py",
+      "source_sha256": "36b85b22d1c68b75dcf43427be44b10dfa9c4fdb080f6b56b5315729adfdec5b",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "19dbd1c1e35be75fd318b00bf582d21aa24b32dacd0e13b6b2453a43389221d8"
+    },
+    {
+      "path": "scripts/mofa/export_modality_support_input.py",
+      "source_filename": "scripts/16_regenerate_mofa_figure12_full200_2_5.py",
+      "source_sha256": "076cc6058dd1062920f870f5d4687cdb06ce6abeebf613c9fe8efc1cfccbe0f8",
+      "adaptations": "Numeric support-table producer retained; unrelated top-200 scatter/pie presentation omitted. Private roots parameterised.",
+      "sha256": "f42657f74f8717e08d68135aecd99c1ce0d3974f4fef804c7241643d90424c3d"
+    },
+    {
+      "path": "scripts/mofa/finalize_candidates.py",
+      "source_filename": "scripts/13_finalize_candidates_2_5.py",
+      "source_sha256": "cd1aaf56766a60a840c6cea4df835477a300db26a784faac50c5d946608c64ec",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "9f4def04f409b650066d745064bca8f7ecf3fcab2f8e6b931b49b5ea0f4236b8"
+    },
+    {
+      "path": "scripts/mofa/formal_de_mutation_overlap.py",
+      "source_filename": "scripts/legacy_sources/generate_revised_valid_remaining_figures.py",
+      "source_sha256": "e168efc2645da5cc6b08e19b92d56093ef15014cae55c689b34a3a23bc448033",
+      "adaptations": "Only the reported formal-DE overlap function and its imports/configuration retained; unreported t-SNE and response-threshold overlaps excluded.",
+      "sha256": "eb9533ee6d616468c0cddfd07663066edb3c7795a3822961fba812b880933eaf"
+    },
+    {
+      "path": "scripts/mofa/generate_figure_s10_reconstruction.py",
+      "source_filename": "svg_pdf/s10_rerun/generate_figure_s10_reconstruction.py",
+      "source_sha256": "d0fb5ceb12df265c9dd5ca79c75cf6310c6a37570d9b5b18b5b01aa156e010fd",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "451261a66e194f4378448ba37df1dabe60c6b4c45a740384d1874874a21ab478"
     },
     {
       "path": "scripts/mofa/generate_kras_integrated_figures_11.py",
-      "sha256": "3d966681fa1c8c8d0a81bbf057f34b2f2109852d9b4f7ae0866384ef98815e04",
-      "source_filename": "generate_kras_integrated_figures_11.py",
-      "source_sha256": "ee0d9cb442f64f943179407bef6b8ab10195be29957f9df2bca7abd55eb7c4d2"
+      "source_filename": "scripts/24_generate_wes_dependent_figures_2_5.py",
+      "source_sha256": "9a7c097f50b8c2180adbffa229c77002b52337b5ce509d7e67ce25fa7b6f57bf",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "d9d7503b4a820562e02d80c9547832b942170dd67a53252c6cb630ed09123d3c"
     },
     {
       "path": "scripts/mofa/generate_mofa_seed_stability_11.py",
-      "sha256": "471c8f310bff46a0991eaa759a0d3fd43f3e0b4866d9cd5f74d1e0e5afaec26e",
-      "source_filename": "generate_mofa_seed_stability_11.py",
-      "source_sha256": "88c5d3cb5f6b3677ae796c5562285985182cd4e6b8767b0caf1fc20839de3d90"
+      "source_filename": "scripts/10_mofa_seed_stability_2_5.py",
+      "source_sha256": "d5292368ddba030df086d123668d8643c80a1c385b4f4b93cd57ad0a3d7a4619",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "bfb81784ea0b51bf6eacc638edf3f613be43bcba066a7c6ac71095e9af0dce11"
     },
     {
       "path": "scripts/mofa/generate_remaining_mofa_publication_figures_11.py",
-      "sha256": "0be878a06e39f4b20a3ba91665e76606a5eb2426794a3950e4c61c50bdf8b1cf",
-      "source_filename": "generate_remaining_mofa_publication_figures_11.py",
-      "source_sha256": "242e6fdca51bb03bfb3c510eff407c1c53cee8c36d0bacd874d9482b0918d801"
+      "source_filename": "scripts/09_generate_mofa_publication_figures_2_5.py",
+      "source_sha256": "62e931a12970c0b94212c8d4983f8319406991a1a004e20415fec97f46880cc3",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution. Unreported helper functions/calls excluded: factor_score_heatmap, loading_panels. Reported statistical functions unchanged.",
+      "sha256": "7da09f7d5ef74e2ebdd701e222595dd357493a02176209676d22c0d09a4c3e51"
+    },
+    {
+      "path": "scripts/mofa/manuscript_clustering.py",
+      "source_filename": "scripts/34_manuscript_mofa_clustering_2_5.py",
+      "source_sha256": "af06b7753dd5c2efbf6dfae3de41af9afc0a6f53f843d20c9fec9748f583e3c4",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "096b396458e361ffce46c20d85b29b6a5c9cbf28d520ae232a842f1214fd8dd3"
+    },
+    {
+      "path": "scripts/mofa/pathways_and_targets.py",
+      "source_filename": "scripts/12_pathways_and_targets_2_5.py",
+      "source_sha256": "78d814047442eada4b7e10c7ef57a20aaba785c717f8c61416bed1195acd236e",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "0d70a6948ae3b717ef56017496abf991fd855c773cc00cf149f988ade3cafbef"
     },
     {
       "path": "scripts/mofa/regenerate_figure11_composite_score.py",
-      "sha256": "c264ab567ab5b4fa70f1aaf45c9b67ac0749572e0ae5aa99bbf2fdb748ee8f95",
-      "source_filename": "regenerate_figure11_composite_score.py",
-      "source_sha256": "4d8226db6a631401fbea0df23dd28c0e116cf94976a72656318f8957e2163c8e"
+      "source_filename": "scripts/15_regenerate_mofa_figure11_2_5.py",
+      "source_sha256": "8c327e3dd71a15a0d70edfa48a113bf7931af9b077049d4886346eb1f853d940",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "e44c2205a2a897d52825623f3c867bc2af9f0b3e9094b0d52193064f159f3558"
     },
     {
       "path": "scripts/mofa/run_mofa_revised_11.py",
-      "sha256": "a492e85e9df1457af57275a8b20bd8df32ea9850a5ae1ca2c54cc3eae6256a2a",
-      "source_filename": "run_mofa_revised_11.py",
-      "source_sha256": "f1903091def72048000ab6440f60fac1dff4f701c7b70205a1beed1343e5307e"
-    },
-    {
-      "path": "scripts/periampullary/compare_pdac_ampulla_14.py",
-      "sha256": "d9c4fe406e66822ae01d8ca28b6c1a0667b4a5617932e46e3be5b46a529e2f24",
-      "source_filename": "compare_pdac_ampulla_14.py",
-      "source_sha256": "237de83b3a3a91f313e6d3206c347241b2149269013a262bce659d154c90ce74"
+      "source_filename": "scripts/08_run_mofa_pdac11_2_5.py",
+      "source_sha256": "411fed970596819117941da729237ca677f4cc4f7cdef27da44695b7a47975d1",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution. Unreported helper functions/calls excluded: downstream_figures, pathway_and_candidates. Reported statistical functions unchanged.",
+      "sha256": "670a04336dfaaf62dd3359ccb78b6bd4955f4acd4aa3653c411f235354fe69e9"
     },
     {
       "path": "scripts/periampullary/generate_pdac_ampulla_exploratory_figures.py",
-      "sha256": "e6c4e8a281e3f48f581ad66db87458a1aa3462741c0e60dd6a3789a1cda0ce72",
-      "source_filename": "generate_pdac_ampulla_exploratory_figures.py",
-      "source_sha256": "239ddc19b1903ee6bafafa536dab879fa738a07f936cdf77aefa3577876c3d41"
+      "source_filename": "scripts/37_figure7b_shared_pathways_2_5.py",
+      "source_sha256": "eb7ae4189b0ee8ec5d465c284aff3e1ca35f65445ee5309256389346a049399c",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution. Unreported helper functions/calls excluded: make_kras_figures. Reported statistical functions unchanged.",
+      "sha256": "8b2812fe8c6c27ead25da06151660952710b057664a350d5d83bffac99b1dd1a"
     },
     {
       "path": "scripts/periampullary/regenerate_pdac_ampulla_kras_oncoprint.py",
-      "sha256": "4553ae638943cc77a9cff2f25155a91928003dd8238c722bc2cb41f560a3dd89",
-      "source_filename": "regenerate_pdac_ampulla_kras_oncoprint.py",
-      "source_sha256": "a98b779c063d3011a29296b88188cd40f9c38fd4e460ce981621fdca0a751aa8"
+      "source_filename": "scripts/36_figure7a_kras_status_2_5.py",
+      "source_sha256": "fe7e719b36800852c43993d9fda30601dd03eff8946d1e3d55a3b67060948c67",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "c0d541c6ea6366dbe75f5a78cc7d0efa20da99509a0c1215292e90997210acde"
     },
     {
       "path": "scripts/proteomics/04_proteomics_build_protein_matrix.py",
@@ -126,12 +170,6 @@
       "source_sha256": "3e7570dffcbd668653e3dc1ebd053b9be2e041ad9ce249ab3c7401ebdc7755cb"
     },
     {
-      "path": "scripts/tables/generate_revised_tables_kras_msi.py",
-      "sha256": "f06d0313b73ff8850ad118d1d11ef7cca71ac252530879c8126fb4a69dc04de5",
-      "source_filename": "generate_revised_tables_kras_msi.py",
-      "source_sha256": "192f10d63a9ca1e808ac12699dc89fe6a237ff4b795b589bdf1c5046907e11ac"
-    },
-    {
       "path": "scripts/tables/render_native_rna_pathway_top5_png.py",
       "sha256": "8f996fe4c0272665702605500f283cf3a01ec440bbdf741a6871854d6b956ef7",
       "source_filename": "render_native_rna_pathway_top5_png.py",
@@ -151,9 +189,10 @@
     },
     {
       "path": "scripts/tcga/compare_mutation_frequencies.py",
-      "sha256": "089e1b8d610d0e3cc2274416642df4327035f8edc10a95967e55bafeb82a67fd",
+      "sha256": "4a31fb49b3fa95a8ed9ee53215354b74f943bceecabd872d2fffaf45f64cd7b4",
       "source_filename": "generate_revised_pending_figures.py",
-      "source_sha256": "83a672267a74fcd807d519128d88cc83f062eeaaba5216f12ed74df99d429fce"
+      "source_sha256": "83a672267a74fcd807d519128d88cc83f062eeaaba5216f12ed74df99d429fce",
+      "adaptations": "Configured Exome 2.5 study matrix/run paths; original statistical calculation unchanged."
     },
     {
       "path": "scripts/tcga/generate_figure13_rna_pca_tcga_11.py",
@@ -169,9 +208,10 @@
     },
     {
       "path": "scripts/tcga/regenerate_figure17_african_vs_tcga_genuine.py",
-      "sha256": "f6507ad806cdf2933e64c66337a97cb8620c66a18426d60f06de33c4077f4718",
-      "source_filename": "regenerate_figure17_african_vs_tcga_genuine.py",
-      "source_sha256": "79dbbcaa588825dd5b8dc107b48c424a5608bff470f15c7043196c5df9bad4ae"
+      "source_filename": "scripts/18_regenerate_tcga_mutation_pathway_2_5.py",
+      "source_sha256": "29ee1761abd754ab825923d263ccd75a70cccc6869c9c0d7dc32600cc38437e7",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "4c98d8233c80684148eac40bee89e7f189952215abb4e02885e714ba64b4aedd"
     },
     {
       "path": "scripts/tme/generate_figureC_immune_heatmap_11_pdac.py",
@@ -199,9 +239,10 @@
     },
     {
       "path": "scripts/wes/complete_wes_outputs.py",
-      "sha256": "5ebdd6c0633418b612b47177f1e500a08ae279f193f0e11609a2647df06efbcd",
-      "source_filename": "complete_wes_outputs.py",
-      "source_sha256": "9139652c1509d77eb8584e7a41a1e6cdecf22d35006cc57e0ae78c1a4d49ac48"
+      "source_filename": "scripts/07_complete_wes_outputs_2_5.py",
+      "source_sha256": "bda99da3d947de4bb203622a44802771e94ae33cb5818ac47684c47e87197b3b",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution. Unreported helper functions/calls excluded: extended_figures. Reported statistical functions unchanged.",
+      "sha256": "428ff8fa5f2e3fb1f441628369fde8a294918b98ace58a03c5f2fd5ec2b13ab5"
     },
     {
       "path": "scripts/wes/extract_deepsomatic_kras_fields.py",
@@ -210,22 +251,123 @@
       "source_sha256": "e2b75a29503e144c39dc1e2dd564a215c76c7f39e8b4657a9cc87a573431c87e"
     },
     {
-      "path": "scripts/wes/reanalyze_wes_cohorts.py",
-      "sha256": "bbf70d4f07cc0466fe26d2d84f92c9a41c1a80f05e0cdd45e44338d4978060b6",
-      "source_filename": "reanalyze_wes_cohorts.py",
-      "source_sha256": "9f993af174876955d54de4dd4ff374460a0e5933b89c445fbdeb4d7aa79f67fc"
+      "path": "scripts/wes/generate_primary_wes_panels.py",
+      "source_filename": "scripts/25_generate_primary_wes_panels_2_5.py",
+      "source_sha256": "dcd08bf2f1cf5c85359c430eb9c02121b11e5f3a65f68e418afe1451934c4f18",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "ae9f75d280dc3f76de7f8411eccb1dc339d2bb203dcfc0170ed31c8126fecd51"
     },
     {
-      "path": "scripts/wes/run_msisensor_pro_20260828.sh",
-      "sha256": "4eb3606bc755cdc51f53fbad7e784a58f169391a23a2a11dc553688d85c41b8f",
-      "source_filename": "run_msisensor_pro_20260828.sh",
-      "source_sha256": "ee5b628eb567562313f1111d2c5c1c94db82f087472ae88b3aeb596a90147a71"
+      "path": "scripts/wes/raw/01_prepare_capture_2_5.sh",
+      "source_filename": "scripts/01_prepare_capture_2_5.sh",
+      "source_sha256": "93c38312e9efa9bba6a6649cee91cc3e86646efb25f39e2503dc4850f010bffa",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "794e17765f961a8bf872041ad286425bcf38b9bda723aed3915971b8dee9b051"
+    },
+    {
+      "path": "scripts/wes/raw/02_align_markdup_2_5.sbatch",
+      "source_filename": "scripts/02_align_markdup_2_5.sbatch",
+      "source_sha256": "56c6a45809173f7cd9fefdea698d17282bee9f67ace0dbc7d4f6e35bfe8d2c14",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "5584eb7b9a4a035695cf3c2e4ac4a377f3e6437a9ea01f4780324ab3df6b6855"
+    },
+    {
+      "path": "scripts/wes/raw/03_deepsomatic_2_5.sbatch",
+      "source_filename": "scripts/03_deepsomatic_2_5.sbatch",
+      "source_sha256": "e7f9922a9e998a84ca21a80fcfb06850021f1bfc4303d84bc591a81498c6ffda",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "1a2b420d6d3806eae2406dfa512eaf7e6c3e4ba9e0dcb4b230b7180a1bc51db9"
+    },
+    {
+      "path": "scripts/wes/raw/04_vep_2_5.sbatch",
+      "source_filename": "scripts/04_vep_2_5.sbatch",
+      "source_sha256": "1ff9192744c3b9ec058173a624b365ffc8e104028056ad794e5a4c733700e284",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "c0ffa26db172b126ff1b29ce92d6b9bc456d69060fb390a77e6fb34d699b074c"
+    },
+    {
+      "path": "scripts/wes/raw/05_coverage_qc_2_5.sbatch",
+      "source_filename": "scripts/05_coverage_qc_2_5.sbatch",
+      "source_sha256": "b5f2afee3b5d25f6d751838b43f8b542d27ebfb2e834a0e7a3a06e7e96c1f9a3",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "a470d4525c065e4129821c362937596f478590e3929fad62540673dab75fa012"
+    },
+    {
+      "path": "scripts/wes/raw/20_fastqc_2_5.sbatch",
+      "source_filename": "scripts/20_fastqc_2_5.sbatch",
+      "source_sha256": "4a65ef804f921619a651e6b6b395d1d12cd433e43f52457050fbe139a368eec1",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "15b02e99fa2edaddb84383b4f8e3b78fd7f1380697b9ceb67e9aef2d602bc0e7"
+    },
+    {
+      "path": "scripts/wes/raw/26_msi_scan.sbatch",
+      "source_filename": "scripts/26_msi_scan.sbatch",
+      "source_sha256": "d2ae418f667507b283b2f0a0b051c54011d557da2d066b7e961a0aaca87c8b35",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "f4ead95dd5d4c15e26405ff49be933236aa6e1a40776a000f944bc1aeced38f3"
+    },
+    {
+      "path": "scripts/wes/raw/27_msi_paired.sbatch",
+      "source_filename": "scripts/27_msi_paired.sbatch",
+      "source_sha256": "44a48060b883f2d6f795a8be0127368cad3f4dfe32fe0abd091aba06488d25ea",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "be438c754ee11c781813d94479f8bacbe6c10a77f07ea4a3dd32b3c40e3621f8"
+    },
+    {
+      "path": "scripts/wes/raw/29_msi_summary.sbatch",
+      "source_filename": "scripts/29_msi_summary.sbatch",
+      "source_sha256": "7eddad46a2a8b3ab11073ee486d73b50cf965af51a55ea9cd3b5fbabc2b6e965",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "96428d29a8e0816cec5d796d7a4b2880ef7ebc1c8be9970d5c994a34bb170b1a"
+    },
+    {
+      "path": "scripts/wes/reanalyze_wes_cohorts.py",
+      "source_filename": "scripts/06_reanalyze_wes_cohorts_2_5.py",
+      "source_sha256": "6f715daba37c18e833ced9bbe901da48fc08fa34e21c280aad7f865e7ff26feb",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "b7442634891744db6e7c2938a74f9e54c5eb9f60308526c82a7b933716536428"
+    },
+    {
+      "path": "scripts/wes/remap_bed_to_refseq.py",
+      "source_filename": "scripts/remap_bed_to_refseq.py",
+      "source_sha256": "aaa73d250979dfdd05c421f3a37193743a37b7d6738a73b9b65190ad43728fd1",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "805a1d79a8a2239add46dfacf62fbe76056ceec898267a414e011da50ca43f2e"
+    },
+    {
+      "path": "scripts/wes/summarize_msi.py",
+      "source_filename": "scripts/28_summarize_msi.py",
+      "source_sha256": "2e5938dcce81e7d2a07b0f4ee2fdbb9c6d362ab00d05038024cf19540c5ed1b8",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "94574c8b9c2ad53b874cd59b2000af2ab2fc3fa865a836f0d32bddcccee45f91"
     },
     {
       "path": "scripts/wes/wes_somatic_01_wes_build_mutation_matrix_FIXED.py",
-      "sha256": "88db1c203a3f159d84ad8e6f83607efc520e178f8e3d47c2f88f07d4f4ae67e4",
-      "source_filename": "wes_somatic_01_wes_build_mutation_matrix_FIXED.py",
-      "source_sha256": "fa3d1585dec958ccd4a479fd25be75fc72d7f1192c0a1f62082c8c2bcf994b38"
+      "source_filename": "scripts/wes_somatic_01_wes_build_mutation_matrix_FIXED.py",
+      "source_sha256": "fa3d1585dec958ccd4a479fd25be75fc72d7f1192c0a1f62082c8c2bcf994b38",
+      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
+      "sha256": "d191970b697b2385139c00d10571c92fe9f5e03492461db0cb218d6690ec8970"
+    },
+    {
+      "path": "workflow/nextflow/main.nf",
+      "source_filename": "nextflow/main.nf",
+      "source_sha256": "a0eaf438e43c4bc21d997b1b53ac317008ee6d42f03428eac962388d578d4216",
+      "adaptations": "Private package and asset roots made explicit; interpreter generic; audit is the safe default. Not executed here.",
+      "sha256": "fdacc5af5d726db17fc3f58da9dda051ba04d34c5c5f011c1e47575ed0ce0395"
+    },
+    {
+      "path": "workflow/nextflow/nextflow.config",
+      "source_filename": "nextflow/nextflow.config",
+      "source_sha256": "4a80677294fcc5fd3085612960b126d411283f4532104d7a3f553fced5a93166",
+      "adaptations": "Private package and asset roots made explicit; interpreter generic; audit is the safe default. Not executed here.",
+      "sha256": "17b8b74233029a915613a193f16e42abdc3ae54b548a698a80930d46625ead47"
+    },
+    {
+      "path": "workflow/nextflow/stage.py",
+      "source_filename": "nextflow/stage.py",
+      "source_sha256": "dc044f69107c57ca9a046ceef9980b8c247bc7a45c8bbf37bce57cf0ac44703e",
+      "adaptations": "Private package and asset roots made explicit; interpreter generic; audit is the safe default. Not executed here.",
+      "sha256": "dc044f69107c57ca9a046ceef9980b8c247bc7a45c8bbf37bce57cf0ac44703e"
     }
   ]
 }

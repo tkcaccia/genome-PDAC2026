@@ -18,6 +18,7 @@ figures, manuscript, supplementary document or reviewer correspondence is includ
 - [Private inputs and configuration](docs/inputs.md): file formats, directory expectations and sample ordering.
 - [Reproducibility](docs/source-coverage.md): implementation coverage and requirements for reproducing each analysis.
 - [Code manifest](docs/source_manifest.json): script identifiers and SHA-256 checksums.
+- [Publication scope](docs/analysis_scope.json): manuscript role for every exported analysis/workflow source.
 - [Website](https://tkcaccia.github.io/genome-PDAC2026/): the same documentation on GitHub Pages.
 
 ## Organization
@@ -37,6 +38,12 @@ figures, manuscript, supplementary document or reviewer correspondence is includ
 | `config/` | Empty example configuration only |
 | `env/` | Python and R dependencies |
 | `tools/` | Static repository checks that never import the analysis scripts |
+| `workflow/nextflow/` | Site-aware WES/MSI/integration graph, staging adapter and execution-scope documentation |
+
+For domain-specific navigation, start with the [WES guide](scripts/wes/README.md)
+or [MOFA guide](scripts/mofa/README.md). Their tables separate input preparation,
+analysis and figure/table generation. [Nextflow requirements](workflow/nextflow/README.md)
+explain which assets remain private and what the supplied execution records establish.
 
 The figure/table index links each panel to its input files, computational
 producer and rendering function. It is the reference for matching publication

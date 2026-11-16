@@ -1,0 +1,450 @@
+{
+  "schema_version": 1,
+  "scope": "Analyses and presentation supporting manuscript main and supplementary material; no private results.",
+  "sources": {
+    "pdac_runtime.py": {
+      "role": "Private configuration support",
+      "supports": [
+        "Methods: reproducibility"
+      ]
+    },
+    "scripts/figures/convert_figures.py": {
+      "role": "Presentation of reported panels, not replacement statistics",
+      "supports": [
+        "Figures 2C and 3",
+        "Figure S1",
+        "Table S4",
+        "Figure 4 and S9: conversion only"
+      ]
+    },
+    "scripts/figures/generate_immune_vectors.py": {
+      "role": "Presentation of reported panels, not replacement statistics",
+      "supports": [
+        "Figures 2C and 3",
+        "Figure S1",
+        "Table S4",
+        "Figure 4 and S9: conversion only"
+      ]
+    },
+    "scripts/mofa/cluster_stability_panel.py": {
+      "role": "Primary-cohort multi-omics integration",
+      "supports": [
+        "Methods: MOFA",
+        "Figure 5",
+        "Figures S10-S13"
+      ]
+    },
+    "scripts/mofa/finalize_candidates.py": {
+      "role": "Primary-cohort multi-omics integration",
+      "supports": [
+        "Methods: MOFA",
+        "Figure 5",
+        "Figures S10-S13"
+      ]
+    },
+    "scripts/mofa/formal_de_mutation_overlap.py": {
+      "role": "Primary-cohort multi-omics integration",
+      "supports": [
+        "Methods: MOFA",
+        "Figure 5",
+        "Figures S10-S13"
+      ]
+    },
+    "scripts/mofa/generate_figure_s10_reconstruction.py": {
+      "role": "Primary-cohort multi-omics integration",
+      "supports": [
+        "Methods: MOFA",
+        "Figure 5",
+        "Figures S10-S13"
+      ]
+    },
+    "scripts/mofa/generate_kras_integrated_figures_11.py": {
+      "role": "Primary-cohort multi-omics integration",
+      "supports": [
+        "Methods: MOFA",
+        "Figure 5",
+        "Figures S10-S13"
+      ]
+    },
+    "scripts/mofa/generate_mofa_seed_stability_11.py": {
+      "role": "Primary-cohort multi-omics integration",
+      "supports": [
+        "Methods: MOFA",
+        "Figure 5",
+        "Figures S10-S13"
+      ]
+    },
+    "scripts/mofa/generate_remaining_mofa_publication_figures_11.py": {
+      "role": "Primary-cohort multi-omics integration",
+      "supports": [
+        "Methods: MOFA",
+        "Figure 5",
+        "Figures S10-S13"
+      ]
+    },
+    "scripts/mofa/manuscript_clustering.py": {
+      "role": "Primary-cohort multi-omics integration",
+      "supports": [
+        "Methods: MOFA",
+        "Figure 5",
+        "Figures S10-S13"
+      ]
+    },
+    "scripts/mofa/pathways_and_targets.py": {
+      "role": "Primary-cohort multi-omics integration",
+      "supports": [
+        "Methods: MOFA",
+        "Figure 5",
+        "Figures S10-S13"
+      ]
+    },
+    "scripts/mofa/regenerate_figure11_composite_score.py": {
+      "role": "Primary-cohort multi-omics integration",
+      "supports": [
+        "Methods: MOFA",
+        "Figure 5",
+        "Figures S10-S13"
+      ]
+    },
+    "scripts/mofa/run_mofa_revised_11.py": {
+      "role": "Primary-cohort multi-omics integration",
+      "supports": [
+        "Methods: MOFA",
+        "Figure 5",
+        "Figures S10-S13"
+      ]
+    },
+    "scripts/periampullary/generate_pdac_ampulla_exploratory_figures.py": {
+      "role": "Separate exploratory cohort comparison",
+      "supports": [
+        "Figure 7",
+        "Methods: periampullary comparison"
+      ]
+    },
+    "scripts/periampullary/regenerate_pdac_ampulla_kras_oncoprint.py": {
+      "role": "Separate exploratory cohort comparison",
+      "supports": [
+        "Figure 7",
+        "Methods: periampullary comparison"
+      ]
+    },
+    "scripts/proteomics/04_proteomics_build_protein_matrix.py": {
+      "role": "Protein matrix preparation and integration normalisation",
+      "supports": [
+        "Methods: protein preparation",
+        "Figure S2: matrix component only"
+      ]
+    },
+    "scripts/proteomics/07_qc_normalize_inputs.py": {
+      "role": "Protein matrix preparation and integration normalisation",
+      "supports": [
+        "Methods: protein preparation",
+        "Figure S2: matrix component only"
+      ]
+    },
+    "scripts/rnaseq/02_rnaseq_build_tpm_matrix.py": {
+      "role": "Count-based paired RNA analysis and response visualisation",
+      "supports": [
+        "Methods: RNA",
+        "Figure 2A-B",
+        "Table 2"
+      ]
+    },
+    "scripts/rnaseq/03_rnaseq_build_delta_matrix.py": {
+      "role": "Count-based paired RNA analysis and response visualisation",
+      "supports": [
+        "Methods: RNA",
+        "Figure 2A-B",
+        "Table 2"
+      ]
+    },
+    "scripts/rnaseq/generate_native_rna_pathway_table_11.py": {
+      "role": "Count-based paired RNA analysis and response visualisation",
+      "supports": [
+        "Methods: RNA",
+        "Figure 2A-B",
+        "Table 2"
+      ]
+    },
+    "scripts/rnaseq/regenerate_figure13_rna_pca_publication.py": {
+      "role": "Count-based paired RNA analysis and response visualisation",
+      "supports": [
+        "Methods: RNA",
+        "Figure 2A-B",
+        "Table 2"
+      ]
+    },
+    "scripts/rnaseq/run_native_deseq2_revised_11.R": {
+      "role": "Count-based paired RNA analysis and response visualisation",
+      "supports": [
+        "Methods: RNA",
+        "Figure 2A-B",
+        "Table 2"
+      ]
+    },
+    "scripts/shared/runtime.R": {
+      "role": "Private configuration support",
+      "supports": [
+        "Methods: reproducibility"
+      ]
+    },
+    "scripts/tables/generate_native_rna_pathway_top5_table_11.py": {
+      "role": "Formatting the reported RNA pathway table",
+      "supports": [
+        "Table 2"
+      ]
+    },
+    "scripts/tables/render_native_rna_pathway_top5_png.py": {
+      "role": "Formatting the reported RNA pathway table",
+      "supports": [
+        "Table 2"
+      ]
+    },
+    "scripts/tcga/18_pull_tcga_paad_xena.py": {
+      "role": "Public comparison input preparation and descriptive analyses",
+      "supports": [
+        "Figure 6",
+        "Figures S14-S15"
+      ]
+    },
+    "scripts/tcga/19_prepare_tcga_paad_matrices.py": {
+      "role": "Public comparison input preparation and descriptive analyses",
+      "supports": [
+        "Figure 6",
+        "Figures S14-S15"
+      ]
+    },
+    "scripts/tcga/compare_mutation_frequencies.py": {
+      "role": "Public comparison input preparation and descriptive analyses",
+      "supports": [
+        "Figure 6",
+        "Figures S14-S15"
+      ]
+    },
+    "scripts/tcga/generate_figure13_rna_pca_tcga_11.py": {
+      "role": "Public comparison input preparation and descriptive analyses",
+      "supports": [
+        "Figure 6",
+        "Figures S14-S15"
+      ]
+    },
+    "scripts/tcga/generate_revised_tcga_ancestry_figure.py": {
+      "role": "Public comparison input preparation and descriptive analyses",
+      "supports": [
+        "Figure 6",
+        "Figures S14-S15"
+      ]
+    },
+    "scripts/tcga/regenerate_figure17_african_vs_tcga_genuine.py": {
+      "role": "Public comparison input preparation and descriptive analyses",
+      "supports": [
+        "Figure 6",
+        "Figures S14-S15"
+      ]
+    },
+    "scripts/tme/generate_figureC_immune_heatmap_11_pdac.py": {
+      "role": "Native TME inference, paired tests and tumour-only programmes",
+      "supports": [
+        "Methods: TME",
+        "Figures 2C and 3",
+        "Figure S1",
+        "Table S4"
+      ]
+    },
+    "scripts/tme/generate_figureD_independent_programmes_11_pdac.py": {
+      "role": "Native TME inference, paired tests and tumour-only programmes",
+      "supports": [
+        "Methods: TME",
+        "Figures 2C and 3",
+        "Figure S1",
+        "Table S4"
+      ]
+    },
+    "scripts/tme/run_salmon_quantiseq_11_pdac.R": {
+      "role": "Native TME inference, paired tests and tumour-only programmes",
+      "supports": [
+        "Methods: TME",
+        "Figures 2C and 3",
+        "Figure S1",
+        "Table S4"
+      ]
+    },
+    "scripts/tme/run_salmon_tme_methods_11_pdac.R": {
+      "role": "Native TME inference, paired tests and tumour-only programmes",
+      "supports": [
+        "Methods: TME",
+        "Figures 2C and 3",
+        "Figure S1",
+        "Table S4"
+      ]
+    },
+    "scripts/wes/complete_wes_outputs.py": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/extract_deepsomatic_kras_fields.py": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/generate_primary_wes_panels.py": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/raw/01_prepare_capture_2_5.sh": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/raw/02_align_markdup_2_5.sbatch": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/raw/03_deepsomatic_2_5.sbatch": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/raw/04_vep_2_5.sbatch": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/raw/05_coverage_qc_2_5.sbatch": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/raw/20_fastqc_2_5.sbatch": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/raw/26_msi_scan.sbatch": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/raw/27_msi_paired.sbatch": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/raw/29_msi_summary.sbatch": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/reanalyze_wes_cohorts.py": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/remap_bed_to_refseq.py": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/summarize_msi.py": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "scripts/wes/wes_somatic_01_wes_build_mutation_matrix_FIXED.py": {
+      "role": "WES processing and variant/MSI evidence",
+      "supports": [
+        "Methods: WES and MSI",
+        "Figure 1",
+        "Table 1",
+        "Tables S1 and S3"
+      ]
+    },
+    "workflow/nextflow/main.nf": {
+      "role": "Site-aware orchestration and completed-output audit",
+      "supports": [
+        "Methods: computational reproducibility"
+      ]
+    },
+    "workflow/nextflow/nextflow.config": {
+      "role": "Site-aware orchestration and completed-output audit",
+      "supports": [
+        "Methods: computational reproducibility"
+      ]
+    },
+    "workflow/nextflow/stage.py": {
+      "role": "Site-aware orchestration and completed-output audit",
+      "supports": [
+        "Methods: computational reproducibility"
+      ]
+    },
+    "scripts/mofa/export_modality_support_input.py": {
+      "role": "Ranked numeric input for the reported modality-support panel",
+      "supports": [
+        "Figure S12"
+      ]
+    }
+  }
+}

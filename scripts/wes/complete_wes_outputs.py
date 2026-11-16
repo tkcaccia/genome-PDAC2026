@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-# PDAC2026 analysis: VEP-annotated DeepSomatic calls, retained-variant summaries and paired MSI launcher.
-# Input formats and private configuration: docs/inputs.md.
-# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
-"""Summarise filtered WES calls, gene-level exclusions and paired MSI scores."""
+# WES processing, variant summaries, coverage and paired MSI.
+# Private paths/cohorts: config/private.example.json; never store populated inputs here.
+"""Publication analysis; inputs and outputs are documented in docs/workflow.md."""
 from __future__ import annotations
 
-from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path
+from pdac_runtime import project_root, private_path, private_value, cohort as configured_cohort, code_path
 
 import re
 from collections import Counter
@@ -18,13 +17,12 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-ROOT = project_root()
-RUN = ROOT / "results" / "wes_revised_11_20260916"
+ROOT = private_path("handoff_root")
+RUN = ROOT / "wes" / "analysis"
 FIG = RUN / "figures" / "extended"
 TABLE = RUN / "tables"
-MSI_DIR = RUN / "inputs" / "msi"
+MSI_DIR = ROOT / "wes" / "msi_2_5"
 COHORTS = {"primary_pdac": configured_cohort("primary_pdac"), "periampullary": configured_cohort("periampullary")}
-VALIDATED_MSI_FALLBACKS = {}
 TRANSITIONS = {("A", "G"), ("G", "A"), ("C", "T"), ("T", "C")}
 CODING_TERMS = {"missense_variant", "synonymous_variant", "stop_gained", "stop_lost", "start_lost", "frameshift_variant", "inframe_insertion", "inframe_deletion", "protein_altering_variant", "coding_sequence_variant"}
 REFSEQ_TO_CHROM = {f"NC_{i:06d}.{v}": f"chr{i}" for i, v in []}
@@ -77,46 +75,27 @@ def complete_tables(cohort: str, df: pd.DataFrame) -> pd.DataFrame:
     return kept
 
 
-def extended_figures(cohort: str, df: pd.DataFrame) -> None:
-    d = df.copy(); d["TYPE"] = [variant_type(r, a) for r, a in zip(d.REF, d.ALT)]
-    d["chrom_name"] = d.CHROM.map(lambda x: REFSEQ_TO_CHROM.get(x, x))
-    prefix = "pdac11" if cohort == "primary_pdac" else "periampullary3"
-    counts = d.TYPE.value_counts(); fig, ax = plt.subplots(figsize=(5,4)); sns.barplot(x=counts.index, y=counts.values, ax=ax, hue=counts.index, palette="viridis", legend=False); ax.set(title=f"Variant types: {prefix}", xlabel="", ylabel="Count"); savefig(f"{prefix}_variant_types.png", fig)
-    snps = d[d.TYPE == "SNP"]; ts = sum((r, a) in TRANSITIONS for r, a in zip(snps.REF, snps.ALT)); tv = len(snps) - ts; fig, ax = plt.subplots(figsize=(5,4)); sns.barplot(x=["Transitions", "Transversions"], y=[ts, tv], ax=ax, hue=["Transitions", "Transversions"], palette="Set2", legend=False); ax.set(title=f"Ts/Tv ratio: {prefix} ({ts/tv:.2f})", ylabel="Count"); savefig(f"{prefix}_ts_tv.png", fig)
-    subs = Counter(f"{r}>{a}" for r, a in zip(snps.REF, snps.ALT)); fig, ax = plt.subplots(figsize=(7,4)); sns.barplot(x=list(subs), y=list(subs.values()), ax=ax, hue=list(subs), palette="magma", legend=False); ax.set(title=f"Substitution spectrum: {prefix}", ylabel="Count"); ax.tick_params(axis="x", rotation=45); savefig(f"{prefix}_substitutions.png", fig)
-    impacts = d.IMPACT.value_counts().reindex(["HIGH", "MODERATE", "LOW", "MODIFIER"]).dropna(); fig, ax = plt.subplots(figsize=(5,4)); sns.barplot(x=impacts.index, y=impacts.values, ax=ax, hue=impacts.index, palette={"HIGH":"#d62728","MODERATE":"#e9c46a","LOW":"#2a9d8f","MODIFIER":"#264653"}, legend=False); ax.set(title=f"VEP impact distribution: {prefix}", ylabel="Count"); savefig(f"{prefix}_impact_distribution.png", fig)
-    coding = d.Consequence.fillna("").map(lambda x: bool(set(str(x).split("&")) & CODING_TERMS)); fig, ax = plt.subplots(figsize=(4,4)); coding.value_counts().rename({True:"Coding",False:"Non-coding"}).plot.pie(autopct="%1.1f%%", ax=ax, colors=["#2a9d8f","#d9d9d9"]); ax.set(title=f"Coding summary: {prefix}", ylabel=""); savefig(f"{prefix}_coding_summary.png", fig)
-    genes = d.groupby("SYMBOL").agg(patients=("patient","nunique"), variants=("SYMBOL","size")).sort_values(["patients","variants"], ascending=False).head(20).sort_values("patients"); fig, ax = plt.subplots(figsize=(6,7)); ax.barh(genes.index, genes.patients, color="#6a4c93"); ax.set(title=f"Top mutated genes: {prefix}", xlabel="Patients affected"); savefig(f"{prefix}_top_genes.png", fig)
-    chrom = d.chrom_name.value_counts(); chrom = chrom.reindex(sorted(chrom.index, key=lambda x: int(x[3:]) if x.startswith("chr") and x[3:].isdigit() else 99)); fig, ax = plt.subplots(figsize=(9,4)); ax.bar(chrom.index, chrom.values, color=sns.color_palette("crest", len(chrom))); ax.set(title=f"Variants per chromosome: {prefix}", ylabel="Count"); ax.tick_params(axis="x", rotation=45); savefig(f"{prefix}_genomic_position.png", fig)
-    indels = d[d.TYPE.isin(["INS", "DEL"])].copy(); indels["length"] = indels.ALT.str.len() - indels.REF.str.len(); fig, ax = plt.subplots(figsize=(6,4)); ax.hist(indels.length, bins=range(-30, 31), color="#e76f51"); ax.set(title=f"Indel length distribution: {prefix}", xlabel="Length (ALT - REF, bp)", ylabel="Count"); savefig(f"{prefix}_indel_length.png", fig)
-    consequences = Counter(term for value in d.Consequence.dropna() for term in str(value).split("&")); top_consequences = dict(sorted(consequences.items(), key=lambda item: item[1], reverse=True)[:15]); fig, ax = plt.subplots(figsize=(8,5)); ax.barh(list(top_consequences)[::-1], list(top_consequences.values())[::-1], color="#457b9d"); ax.set(title=f"Top consequence types: {prefix}", xlabel="Count"); savefig(f"{prefix}_consequence_types.png", fig)
-    for chromosome in ["chr2", "chr6", "chr7", "chr11"]:
-        sub = d[d.chrom_name.eq(chromosome)].sort_values("POS")
-        if sub.empty:
-            continue
-        fig, ax = plt.subplots(figsize=(8,3)); ax.scatter(sub.POS, range(len(sub)), s=5, alpha=.55, color="#2a9d8f"); ax.set(title=f"Manhattan-style plot: {prefix}, {chromosome}", xlabel="Genomic position", ylabel="Variant index"); savefig(f"{prefix}_manhattan_{chromosome}.png", fig)
-    windows = d.assign(window=(d.POS // 1_000_000) * 1_000_000).groupby(["chrom_name","window"]).size().reset_index(name="n").sort_values("n", ascending=False).head(20); windows["label"] = windows.chrom_name + ":" + (windows.window // 1_000_000).astype(str) + "Mb"; fig, ax = plt.subplots(figsize=(8,5)); ax.barh(windows.label.iloc[::-1], windows.n.iloc[::-1], color="#e76f51"); ax.set(title=f"Top 1-Mb variant windows: {prefix}", xlabel="Variant count"); savefig(f"{prefix}_hotspots.png", fig)
-    d.groupby("patient").size().rename("variant_count").to_csv(TABLE / f"{prefix}_mutations_per_patient.csv")
-    d.groupby("patient").SYMBOL.nunique().rename("unique_genes").to_csv(TABLE / f"{prefix}_genes_per_patient.csv")
 
 
 def msi_outputs() -> None:
     rows = []
+    missing = []
     for cohort, patients in COHORTS.items():
         for patient in patients:
             path = MSI_DIR / f"patient_{patient}"
-            if not path.exists() and patient not in VALIDATED_MSI_FALLBACKS:
+            if not path.is_file():
+                missing.append(patient)
                 continue
             try:
-                if patient in VALIDATED_MSI_FALLBACKS and not path.exists():
-                    total, unstable, score = VALIDATED_MSI_FALLBACKS[patient]
-                else:
-                    x = pd.read_csv(path, sep=r"\s+", engine="python")
-                    row = x.iloc[0].to_dict(); score = float(row.get("%", np.nan)); total = int(row.get("Total_Number_of_Sites", np.nan)); unstable = int(row.get("Number_of_Unstable_Sites", np.nan))
+                x = pd.read_csv(path, sep=r"\s+", engine="python")
+                row = x.iloc[0].to_dict(); score = float(row.get("%", np.nan)); total = int(row.get("Total_Number_of_Sites", np.nan)); unstable = int(row.get("Number_of_Unstable_Sites", np.nan))
                 category = "MSI-High" if score >= 20 else "MSI-Intermediate" if score >= 5 else "MSS"
                 rows.append({"patient": patient, "cohort": cohort, "informative_sites": total, "unstable_sites": unstable, "msi_score_pct": score, "category": category})
             except Exception:
-                pass
+                missing.append(patient)
+    if missing:
+        print(f"MSI analysis skipped: complete 2.5 MSI outputs are missing or unreadable for patients {sorted(set(missing), key=int)}")
+        return
     msi = pd.DataFrame(rows).sort_values(["cohort", "msi_score_pct"], ascending=[True, False]); msi.to_csv(TABLE / "msisensor_pro_revised_cohorts.csv", index=False)
     if not msi.empty:
         fig, ax = plt.subplots(figsize=(8,5)); sns.stripplot(data=msi, x="cohort", y="msi_score_pct", hue="category", dodge=False, jitter=.15, palette={"MSS":"#2a9d8f","MSI-Intermediate":"#e9c46a","MSI-High":"#d62728"}, size=9, ax=ax); ax.axhline(5, ls="--", color="grey"); ax.axhline(20, ls="--", color="grey"); ax.set(xlabel="Cohort", ylabel="MSI score (% unstable microsatellite sites)", title="MSIsensor-pro MSI scores in revised WES cohorts"); fig.tight_layout(); fig.savefig(FIG / "revised_cohort_msi_scores.png", dpi=300); plt.close(fig)
@@ -127,9 +106,9 @@ def main() -> None:
     for cohort in COHORTS:
         raw = pd.read_csv(RUN / "outputs" / cohort / "wes_somatic_variants.tsv", sep="\t")
         kept = complete_tables(cohort, raw)
-        extended_figures(cohort, kept)
+        pass
     msi_outputs()
-    print("Completed blacklist-filtered tables, extended WES figures, gene summaries, and MSI outputs")
+    print("Completed gene-filtered tables, gene summaries, and MSI outputs")
 
 
 if __name__ == "__main__":

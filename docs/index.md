@@ -31,6 +31,9 @@ private.
 - [Private input requirements](inputs.md)
 - [Reproducibility and implementation coverage](source-coverage.md)
 - [Code files and checksums](source_manifest.json)
+- [WES code guide](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/wes/README.md)
+- [MOFA code guide](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/mofa/README.md)
+- [Nextflow graph and requirements](https://github.com/tkcaccia/genome-PDAC2026/blob/main/workflow/nextflow/README.md)
 - [Browse the code on GitHub](https://github.com/tkcaccia/genome-PDAC2026)
 
 Use the figure/table index to locate a script, the workflow page to understand

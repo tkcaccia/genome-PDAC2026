@@ -16,7 +16,7 @@ FORBIDDEN = {'.bam', '.bai', '.cram', '.crai', '.fastq', '.fq', '.vcf', '.bcf',
              '.maf', '.tsv', '.csv', '.xlsx', '.xls', '.rds', '.rdata', '.h5',
              '.hdf5', '.mtx', '.h5ad', '.pdf', '.png', '.jpg', '.jpeg', '.svg',
              '.tif', '.tiff', '.doc', '.docx', '.pptx', '.zip', '.gz', '.pyc', '.html'}
-PRIVATE_PATH = re.compile('/' + r'(?:Users|media|cbio/users|home)/[^/\s]+/')
+PRIVATE_PATH = re.compile('/' + r'(?:Users|users|media|cbio/users|home)/[^/\s]+/')
 SAMPLE_LITERAL = re.compile(r'\b\d{1,3}[TN](?:_(?:WES|RNA))?\b')
 PATIENT_LIST = re.compile(r'\bpatients?\s+\d{1,3}\s*(?:,|and\b|;|\.)', re.I)
 EDITORIAL_CONTEXT = re.compile(r'collaborat(?:or|ors)|reorganiz(?:ed|ation)|superseded|legacy\s+\d+|earlier STAR|previous manuscript', re.I)
@@ -33,6 +33,7 @@ def files():
 def main():
     problems = []
     paths = files()
+    visible_paths = {path.relative_to(ROOT).as_posix() for path in paths}
     parsed = 0
     config = json.loads((ROOT / 'config/private.example.json').read_text())
     for name, values in config['cohorts'].items():
@@ -62,6 +63,10 @@ def main():
                 tree = ast.parse(text, filename=str(relative))
                 parsed += 1
                 for node in ast.walk(tree):
+                    if isinstance(node, (ast.List, ast.Tuple, ast.Set)) and len(node.elts) >= 3:
+                        literals = [item.value for item in node.elts if isinstance(item, ast.Constant)]
+                        if len(literals) == len(node.elts) and all(isinstance(value, str) and value.isdigit() and len(value) <= 3 for value in literals):
+                            problems.append(f'Embedded numeric cohort list in {relative}:{node.lineno}')
                     if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
                         if node.func.id == 'configured_cohort' and node.args and isinstance(node.args[0], ast.Constant):
                             if node.args[0].value not in config['cohorts']:
@@ -76,12 +81,26 @@ def main():
                 if not (path.parent / target).exists():
                     problems.append(f'Broken documentation link in {relative}: {target}')
     manifest = json.loads((ROOT / 'docs/source_manifest.json').read_text())
+    source_paths = {entry['path'] for entry in manifest['files']}
+    for path in paths:
+        relative = path.relative_to(ROOT).as_posix()
+        if relative.startswith(('scripts/', 'workflow/')) and path.suffix in {'.py', '.R', '.sh', '.sbatch', '.nf', '.config'}:
+            if relative not in source_paths:
+                problems.append(f'Unmanifested analysis/workflow source: {relative}')
     for entry in manifest['files']:
         target = ROOT / entry['path']
         if not target.is_file():
             problems.append(f'Missing code file: {entry["path"]}')
+        elif entry['path'] not in visible_paths:
+            problems.append(f'Code file excluded by git rules: {entry["path"]}')
         elif hashlib.sha256(target.read_bytes()).hexdigest() != entry['sha256']:
             problems.append(f'Update published source checksum: {entry["path"]}')
+    scope = json.loads((ROOT / 'docs/analysis_scope.json').read_text())
+    if set(scope['sources']) != source_paths:
+        problems.append('Publication scope and source manifest do not cover the same files')
+    for relative, record in scope['sources'].items():
+        if not record.get('supports') or not record.get('role'):
+            problems.append(f'Missing manuscript role/output mapping: {relative}')
     if problems:
         for problem in problems:
             print('FAIL:', problem)

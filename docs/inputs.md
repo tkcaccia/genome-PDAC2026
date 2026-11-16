@@ -18,6 +18,7 @@ patient-level analysis. Do not put a populated configuration in this repository.
 | Key | Meaning |
 | --- | --- |
 | `paths.project_root` | Private project tree containing the relative input/output paths used by the analysis scripts |
+| `paths.handoff_root` | Private Exome 2.5 run tree containing `wes/`, `mofa/`, `qc/` and `manifests/`; distinct from the project root |
 | `paths.figures_out` | New private output directory for vector rendering/conversion |
 | `paths.study_tables` | Private presentation input root with `WES/`, `RNAseq/`, `MOFA/`, `Ampulla/` and `Proteomics/` subdirectories |
 | `paths.immune_tables` | Private folder containing native scores, paired comparisons, Hallmark scores, composites and group assignments |
@@ -44,9 +45,11 @@ export PDAC_PRIVATE_CONFIG=/path/to/private/pdac_config.json
 export PYTHONPATH="$PDAC_CODE_ROOT${PYTHONPATH:+:$PYTHONPATH}"
 ```
 
-The standalone Slurm MSI launcher additionally requires `PDAC_MSI_WORKDIR`.
-Its private working directory must contain the paired `sample_manifest.tsv`,
-duplicate-marked BAMs/indexes, executable and microsatellite list for the run.
+Raw WES/MSI Slurm jobs use `SLURM_SUBMIT_DIR` as the private run root. It must
+contain `manifests/sample_manifest.tsv`, duplicate-marked BAMs/indexes,
+reference assets and the pinned MSI executable. Preserve the expected private
+layout; do not submit these jobs with this public repository as the working tree.
+Nextflow has separate explicit private-package/asset parameters; see its guide.
 
 ## Input Contracts
 
@@ -69,11 +72,13 @@ duplicate-marked BAMs/indexes, executable and microsatellite list for the run.
 
 Analysis scripts use relative result names, including
 dated directories such as `results/rnaseq_revised_11_native_deseq2_20260917/`,
-`results/immune_salmon_11_20261012/` and `results/mofa_revised_11_20260916/`.
+`results/immune_salmon_11_20261012/`. WES and MOFA use `paths.handoff_root`
+with `wes/analysis/` and `mofa/pdac_11/`; the RNA and prepared protein inputs
+remain under `paths.project_root`.
 These names identify the paths expected by the scripts. Private hard-drive
 addresses are configured separately.
 
-The figure renderers use a flattened input tree. For example,
+Some figure renderers use a flattened input tree. For example,
 `study_tables/RNAseq/native_deseq2_results_11_pdac.csv` is an already derived table,
 not a raw Salmon input. Stage the derived inputs while preserving file contents,
 provenance and sample order. Rendering requires those intermediate files; it does

@@ -13,15 +13,15 @@ from scipy.stats import binomtest
 from statsmodels.stats.multitest import multipletests
 
 ROOT = project_root()
-RUN = ROOT / 'results' / 'mofa_revised_11_20260916'
-FIG = RUN / 'mofa_figures'
+RUN = private_path("handoff_root") / 'mofa' / 'pdac_11'
+FIG = RUN / 'figures'
 TAB = RUN / 'tables'
 COLORS = {'wes': '#264653', 'rnaseq': '#e76f51', 'proteomics': '#2a9d8f'}
 GENE_SET_COLORS = {'GO_Biological_Process_2023': '#4C78A8', 'KEGG_2021_Human': '#F58518', 'Reactome_2022': '#54A24B'}
 
 
 def revised_tcga_mutation():
-    afr = pd.read_csv(ROOT / 'results/wes_revised_11_20260916/outputs/primary_pdac/wes_mutation_matrix.blacklist_filtered.csv', index_col=0).fillna(0).astype(int)
+    afr = pd.read_csv(private_path("handoff_root") / 'wes/analysis/outputs/primary_pdac/wes_mutation_matrix.blacklist_filtered.csv', index_col=0).fillna(0).astype(int)
     tcga = pd.read_csv(ROOT / 'external/tcga_paad/processed/tcga_mc3_gene_binary.csv', index_col=0).fillna(0)
     common = afr.index.intersection(tcga.index)
     afr = afr.loc[common]; tcga = (tcga.loc[common] != 0).astype(int)

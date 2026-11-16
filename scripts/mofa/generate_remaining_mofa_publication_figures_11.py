@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-# PDAC2026 analysis: Three-view MOFA, exported factors/loadings, candidate ranking and sensitivity summaries.
-# Input formats and private configuration: docs/inputs.md.
-# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
-"""Generate the remaining publication-oriented MOFA figures for the revised 11-patient cohort."""
-
-from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path
+# MOFA fitting, molecular integration and publication panels.
+# Private paths/cohorts: config/private.example.json; never store populated inputs here.
+"""Publication analysis; inputs and outputs are documented in docs/workflow.md."""
+from pdac_runtime import project_root, private_path, private_value, cohort as configured_cohort, code_path
 from pathlib import Path
 from itertools import combinations
 
@@ -17,62 +15,66 @@ import pandas as pd
 import seaborn as sns
 from matplotlib.colors import TwoSlopeNorm
 
-ROOT = project_root()
-RUN = ROOT / "results/mofa_revised_11_20260916"
-OUT = ROOT / "results/figures/final_11_figures"
-MODEL = RUN / "mofa/mofa_model.hdf5"
-PATIENT_CLUSTERS = RUN / "mofa/clusters/mofa_patient_clusters.csv"
+ROOT = private_path("handoff_root")
+RUN = ROOT / "mofa" / "pdac_11"
+OUT = RUN / "figures"
+MODEL = RUN / "mofa" / "mofa_model.hdf5"
+PATIENT_CLUSTERS = RUN / "mofa" / "clusters" / "mofa_patient_clusters.csv"
 
 PROGRAMMES = private_value("mofa_factor_annotations")
 
 
-def training_data():
-    wes = pd.read_csv(RUN / "integration/wes_binary.csv", index_col=0)
-    rna = pd.read_csv(RUN / "integration/rnaseq_delta.csv", index_col=0)
-    prot = pd.read_csv(RUN / "integration/proteomics_log2.csv", index_col=0)
-    wes = wes.loc[wes.sum(axis=1) / wes.shape[1] >= 0.10]
-    rna = rna.loc[rna.var(axis=1) > 0]
-    prot = prot.loc[prot.notna().mean(axis=1) >= 0.20]
-    wes = wes.loc[wes.var(axis=1).sort_values(ascending=False).head(600).index]
-    zscore = lambda data: data.sub(data.mean(axis=1), axis=0).div(data.std(axis=1).replace(0, 1), axis=0).fillna(0)
-    rna = zscore(rna)
-    prot = zscore(prot)
-    rna = rna.loc[rna.var(axis=1).sort_values(ascending=False).head(2000).index]
-    prot = prot.loc[prot.var(axis=1).sort_values(ascending=False).head(1200).index]
-    wes = wes.sub(wes.mean(axis=1), axis=0)
-    return {"WES": wes, "RNA": rna, "Proteomics": prot}
+def training_data(factors, weights):
+    data = {
+        "WES": pd.read_csv(RUN / "qc/wes_binary_qc.csv", index_col=0),
+        "RNA": pd.read_csv(RUN / "qc/rnaseq_delta_zscore.csv", index_col=0),
+        "Proteomics": pd.read_csv(RUN / "qc/proteomics_log2_zscore.csv", index_col=0),
+    }
+    aligned = {}
+    for view, matrix in data.items():
+        if view == "WES":
+            matrix = matrix.sub(matrix.mean(axis=1), axis=0)
+        aligned[view] = matrix.loc[weights[view].index, factors.index]
+    return aligned
 
 
 def load_model():
     with h5py.File(MODEL, "r") as model:
         z = np.asarray(model["expectations/Z/all"][()]).T
+        samples = [x.decode() if isinstance(x, bytes) else str(x) for x in model["samples/all"][()]]
         factors = [f"factor_{index + 1}" for index in range(z.shape[1])]
         weights = {}
         for view, key in [("WES", "wes"), ("RNA", "rnaseq"), ("Proteomics", "proteomics")]:
             features = [x.decode() if isinstance(x, bytes) else str(x) for x in model[f"features/{key}"][()]]
             weights[view] = pd.DataFrame(np.asarray(model[f"expectations/W/{key}"][()]).T, index=features, columns=factors)
-    return pd.DataFrame(z, columns=factors), weights
+    return pd.DataFrame(z, index=samples, columns=factors), weights
 
 
 def native_r2(data, factors, weights):
     rows = []
+    z = factors.to_numpy()
     for view, matrix in data.items():
         y = matrix.to_numpy().T
         ss = np.square(y).sum()
-        for factor in factors.columns:
-            reconstruction = np.outer(factors[factor].values, weights[view][factor].values)
+        w = weights[view].to_numpy()
+        for index, factor in enumerate(factors.columns):
+            reconstruction = np.outer(z[:, index], w[:, index])
             rows.append({"view": view, "factor": factor, "r2_percent": (1 - np.square(y - reconstruction).sum() / ss) * 100})
+        reconstruction = z @ w.T
+        rows.append({"view": view, "factor": "All five factors", "r2_percent": (1 - np.square(y - reconstruction).sum() / ss) * 100})
     return pd.DataFrame(rows)
 
 
 def variance_heatmap(data, factors, weights):
     r2 = native_r2(data, factors, weights)
-    matrix = r2.pivot(index="factor", columns="view", values="r2_percent").reindex(index=factors.columns, columns=["WES", "RNA", "Proteomics"])
+    factor_order = list(factors.columns) + ["All five factors"]
+    matrix = r2.pivot(index="factor", columns="view", values="r2_percent").reindex(index=factor_order, columns=["WES", "RNA", "Proteomics"])
+    matrix.index = [factor.replace("factor_", "Factor ") if factor.startswith("factor_") else factor for factor in matrix.index]
     r2.to_csv(RUN / "tables/mofa_native_variance_explained_11_pdac.csv", index=False)
-    fig, ax = plt.subplots(figsize=(8, 6))
+    fig, ax = plt.subplots(figsize=(8, 6.8))
     limit = max(abs(matrix.min().min()), abs(matrix.max().max()))
-    sns.heatmap(matrix, annot=True, fmt=".2f", cmap="vlag", center=0, vmin=-limit, vmax=limit, linewidths=.6, linecolor="white", cbar_kws={"label": "Native MOFA reconstruction R² (%)"}, ax=ax)
-    ax.set_title("Native MOFA variance explained by factor and view\nRevised 11-patient PDAC cohort")
+    sns.heatmap(matrix, annot=True, fmt=".2f", cmap="vlag", center=0, vmin=-limit, vmax=limit, linewidths=.6, linecolor="white", cbar_kws={"label": "Native MOFA+ reconstruction R² (%)"}, ax=ax)
+    ax.set_title("Centered training-set reconstruction by MOFA+ factor\nRevised 11-patient PDAC cohort")
     ax.set_xlabel("Data view")
     ax.set_ylabel("Factor")
     fig.tight_layout()
@@ -80,51 +82,18 @@ def variance_heatmap(data, factors, weights):
     plt.close(fig)
 
 
-def loading_panels(weights):
-    rows = []
-    for view, table in weights.items():
-        for factor in table.columns:
-            selected = table[factor].abs().nlargest(10).index
-            for feature in selected:
-                rows.append({"view": view, "factor": factor, "feature": feature, "loading": table.loc[feature, factor]})
-    top = pd.DataFrame(rows)
-    top.to_csv(RUN / "tables/mofa_top_loadings_by_view_factor_11_pdac.csv", index=False)
-    fig, axes = plt.subplots(5, 3, figsize=(17, 24), sharex=False)
-    for row, factor in enumerate(weights["WES"].columns):
-        for col, view in enumerate(["WES", "RNA", "Proteomics"]):
-            ax = axes[row, col]
-            subset = top[(top.factor == factor) & (top.view == view)].sort_values("loading")
-            colours = ["#d1495b" if value < 0 else "#457b9d" for value in subset.loading]
-            ax.barh(subset.feature.astype(str), subset.loading, color=colours)
-            ax.axvline(0, color="black", linewidth=.7)
-            ax.set_title(f"{factor.replace('_', ' ').title()} — {view}")
-            ax.tick_params(axis="y", labelsize=8)
-            ax.grid(axis="x", alpha=.25, linestyle=":")
-    fig.suptitle("Top MOFA feature loadings by factor and data view\nRevised 11-patient PDAC cohort", fontsize=16, y=.995)
-    fig.tight_layout(rect=(0, 0, 1, .985))
-    fig.savefig(OUT / "Figure_19_mofa_top_loadings_by_view.png", dpi=300, bbox_inches="tight")
-    plt.close(fig)
 
 
-def factor_score_heatmap(factors):
-    clusters = pd.read_csv(PATIENT_CLUSTERS, index_col=0)["cluster"].reindex(factors.index)
-    ordered = factors.assign(cluster=clusters).sort_values("cluster").drop(columns="cluster")
-    ordered.to_csv(RUN / "tables/mofa_factor_scores_annotated_11_pdac.csv")
-    fig, ax = plt.subplots(figsize=(10, 7))
-    sns.heatmap(ordered.T, cmap="vlag", center=0, linewidths=.5, linecolor="white", cbar_kws={"label": "Factor score"}, ax=ax)
-    ax.set_title("MOFA factor scores across revised 11-patient PDAC cohort")
-    ax.set_xlabel("Patient")
-    ax.set_ylabel("Factor")
-    fig.tight_layout()
-    fig.savefig(OUT / "Figure_20_mofa_factor_scores_heatmap.png", dpi=300, bbox_inches="tight")
-    plt.close(fig)
 
 
 def modality_support():
-    ranking = pd.read_csv(RUN / "tables/mofa_top200_composite_score_11_pdac.csv")
+    ranking = pd.read_csv(RUN / "mofa/biology/mofa_cross_modal_target_ranking.csv")
     top = ranking.head(200).copy()
-    flags = ["wes_supported", "rnaseq_supported", "proteomics_supported"]
-    labels = {"wes_supported": "WES", "rnaseq_supported": "RNA", "proteomics_supported": "Proteomics"}
+    score_columns = {"wes_score": "WES", "rnaseq_score": "RNA", "proteomics_score": "Proteomics"}
+    flags = list(score_columns)
+    labels = score_columns
+    for column in flags:
+        top[column] = top[column].notna()
     top["support_set"] = top[flags].apply(lambda row: "+".join(labels[col] for col in flags if bool(row[col])), axis=1)
     counts = top["support_set"].value_counts().rename_axis("modality_support").reset_index(name="count")
     counts.to_csv(RUN / "tables/mofa_modality_support_top200_11_pdac.csv", index=False)
@@ -144,11 +113,11 @@ def modality_support():
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    data = training_data()
     factors, weights = load_model()
+    data = training_data(factors, weights)
     variance_heatmap(data, factors, weights)
-    loading_panels(weights)
-    factor_score_heatmap(factors)
+    pass
+    pass
     modality_support()
     print("Generated Figures 18-21 and supporting tables")
 

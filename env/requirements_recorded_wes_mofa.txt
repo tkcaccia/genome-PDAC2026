@@ -1,0 +1,16 @@
+# Recorded WES/MOFA handoff environment, not an independently resolved lockfile.
+# RNA/TME and site modules have separate dependencies; see docs/workflow.md.
+mofapy2==0.7.5
+h5py==3.16.0
+numpy==2.4.6
+pandas==3.1.1
+scipy==1.17.1
+scikit-learn==1.9.1
+matplotlib==3.11.2
+seaborn==0.13.2
+statsmodels==0.15.0
+gseapy==1.3.2
+mygene==3.2.2
+pillow==13.0.0
+pypdf==6.21.4
+tqdm==4.70.1

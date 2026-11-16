@@ -13,11 +13,12 @@ to their presentation.
 
 ## WES and MSI
 
-The downstream WES analysis starts from per-patient VEP-annotated DeepSomatic
-calls. Reproduction from raw reads additionally requires the alignment,
-duplicate-marking, calling and annotation job definitions, reference genome,
-capture intervals, model and annotation cache; those job definitions are not
-included in this repository.
+The [WES folder](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/wes/README.md) contains the raw-read jobs and downstream
+summaries. FastQC precedes BWA-MEM alignment, SAMtools sorting and Picard duplicate
+marking. DeepSomatic 1.10.0 uses the paired FFPE_WES model, the GRCh38.p14 RefSeq
+FASTA and remapped vendor Exome 2.5 intervals. VEP 101 uses the offline GRCh38
+cache, followed by split-VEP fields for gene-level parsing. Reference files,
+containers, licensed/site-installed tools and all patient inputs remain private.
 
 [The VCF parser](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/wes/wes_somatic_01_wes_build_mutation_matrix_FIXED.py)
 reads per-patient VEP-annotated DeepSomatic calls and applies PASS,
@@ -27,13 +28,15 @@ applies the explicit gene-family/large-gene sensitivity rules and produces binar
 gene matrices and gene summaries. This exclusion list does not prove that every
 removed variant is an artefact.
 
-[The MSI launcher](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/wes/run_msisensor_pro_20260828.sh) uses the paired
-`msisensor-pro msi` command, tumour/normal `.dedup.bam` files, the project
-`tools/microsatellites.list`, minimum coverage 20 and four threads.
-The aggregation code uses MSS <5%, intermediate 5 to <20%, and high >=20% as
-exploratory categories. Exact executable version and construction/checksum of
-the site list are not specified by the launcher and must be documented with the
-run. MSI aggregation reads the raw summary files rather than embedded scores.
+[The scan job](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/wes/raw/26_msi_scan.sbatch) uses MSIsensor-pro 1.3.0
+(source commit `35c39bb122e579c8fe97d405990a3d126030b850`) and scans the full
+GRCh38.p14 FASTA with `-l 8 -c 5 -m 50 -s 6 -r 5 -p 0`, rather than restricting
+the catalogue to the capture BED. [Paired scoring](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/wes/raw/27_msi_paired.sbatch)
+uses `msi -c 20 -b 4` and matched duplicate-marked BAMs.
+[Summary code](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/wes/summarize_msi.py) reads site counts and percentages,
+checks their consistency and applies study-defined MSS <5%, intermediate
+5 to <20%, and high >=20% categories. These are exploratory flags, not calibrated
+clinical diagnoses. The scan job records tool, FASTA and catalogue checksums.
 
 ## RNA Expression and DESeq2
 
@@ -137,17 +140,25 @@ The [normalization helper](https://github.com/tkcaccia/genome-PDAC2026/blob/main
 the integration/QC transformation. Extraction-method and precursor-level panels
 have separate source requirements listed in the figure/table index.
 
-[The MOFA implementation](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/mofa/run_mofa_revised_11.py) aligns three
+[The MOFA folder](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/mofa/README.md) links each integration panel to its
+producer. [The fitting implementation](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/mofa/run_mofa_revised_11.py) aligns three
 patient-level views: binary retained WES genes; tumour-normal RNA responses; and
-tumour-only protein `log2(abundance + 1)` values. Missing protein abundances become
-zero before transformation. The continuous views are standardized, Bernoulli
+prepared tumour-only protein `log2(abundance + 1)` values. Protein zero imputation
+and log transformation belong to preparation of that input, not a paired
+tumour-normal protein response. The continuous views are standardized, Bernoulli
 and Gaussian likelihoods are used as appropriate, and the model has
-five factors. The script writes input matrices, QC filters, model, factors,
+five factors. In the fitting script, row standardisation precedes variance-based
+feature selection; the separate stability script selects before standardising.
+The script writes input matrices, QC filters, model, factors,
 loadings, clustering and interpretation outputs.
 
 [Candidate scoring](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/mofa/regenerate_figure11_composite_score.py) takes
 maximum absolute loadings, maps features to symbols, percentile-normalizes within
-modality and combines evidence across modalities. [Reconstruction summaries](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/mofa/generate_remaining_mofa_publication_figures_11.py)
+modality and combines evidence across modalities. [Figure S10 reconstruction](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/mofa/generate_figure_s10_reconstruction.py)
+aligns QC matrices to the model's stored feature and sample names, then reports
+single-factor and full-model `100 * (1 - SSE/SST)` against the centred training
+baseline. Per-factor values are nonadditive and these are in-sample diagnostics.
+[Other MOFA summaries](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/mofa/generate_remaining_mofa_publication_figures_11.py)
 and [independent-seed fitting](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/mofa/generate_mofa_seed_stability_11.py)
 are separate helpers. Sample-exclusion sensitivity in the main model script
 reclusters retained rows of existing factor scores; it does not refit MOFA.
@@ -163,7 +174,23 @@ Xena expression downloads. Joint expression PCA, mutation-frequency differences 
 pathway-theme counts are descriptive cross-platform comparisons, not matched
 ancestry-association tests.
 
-[PDAC/periampullary comparisons](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/periampullary/compare_pdac_ampulla_14.py)
-and [pathway plots](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/periampullary/generate_pdac_ampulla_exploratory_figures.py)
+[PDAC/periampullary pathway plots](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/periampullary/generate_pdac_ampulla_exploratory_figures.py)
 keep the two cohorts separate. Their lists are private configuration, never
 hardcoded patient identifiers in public code.
+
+The pathway-sharing helper selects WES genes observed in at least two samples
+and the top 100 absolute mean RNA/protein responses within each group. A shared
+term means it appears in both groups' returned enrichment tables; the plotted
+row is the lowest adjusted p-value among those entries. This is not a test of
+between-cohort differences or a requirement for significance in both groups.
+The TCGA theme helper aggregates returned terms without an FDR filter and uses
+the same absolute recurrence count in cohorts of different sizes.
+
+## Nextflow Orchestration
+
+The [Nextflow guide](https://github.com/tkcaccia/genome-PDAC2026/blob/main/workflow/nextflow/README.md) describes the supplied DSL2
+graph, its site dependencies and execution scope. The graph covers WES/MSI and
+downstream integration while reusing prepared RNA/protein inputs. It is not a
+raw RNA-seq or mass-spectrometry workflow. Scientific outputs were produced by
+Bash/Slurm jobs; supplied Nextflow evidence covers stub and completed-output
+audits, not a fresh end-to-end scientific execution through the graph.

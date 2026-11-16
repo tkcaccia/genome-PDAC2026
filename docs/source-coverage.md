@@ -15,17 +15,18 @@ and method descriptions; patient-level inputs and results remain private.
 
 | Component | Repository implementation | Additional requirements |
 | --- | --- | --- |
-| Downstream WES and KRAS | VEP-annotated VCF parsing, variant filtering, cohort summaries and evidence extraction | Annotated VCFs and sample configuration; raw-read alignment/calling/annotation job definitions are not included |
-| MSI | Paired MSIsensor-pro launcher, raw-summary aggregation and table formatting | Matched BAMs/indexes, executable version and microsatellite-list provenance; full-cohort table assembly extends beyond the subset formatter |
+| WES and KRAS | Raw-read QC/alignment/duplicate marking, coverage, DeepSomatic/VEP jobs, parsing, cohort summaries and evidence extraction | Private manifests/FASTQ/BAM/VCF inputs, reference/index/container assets and site module/cache installation |
+| MSI | Pinned full-reference scan, paired MSIsensor-pro jobs and full-cohort summary | Matched BAMs/indexes, MSIsensor-pro 1.3.0, full GRCh38.p14 FASTA and generated catalogue; run checksums remain private |
 | RNA differential expression | Salmon count import, paired R DESeq2, response-matrix assembly, PCA and enrichment | Gene quantifications, identifier mapping and the software/reference versions used for the analysis |
 | Immune/stromal inference | Five inference methods, paired tests and EPIC convergence sensitivity | Gene-symbol TPM, matched metadata, method references and fit diagnostics |
 | Programme and phenotype scoring | Named Hallmark sets, ssGSEA, feature standardisation, composites and median-based grouping | Selected GMT, mapped-gene coverage and complete tumour score matrices |
 | Protein abundance and normalization | Protein-report parsing and integration/QC normalization | Quantified protein report and aligned sample metadata |
 | Protein differential abundance, extraction-method figures and selected protein enrichment tables | Exact statistical/plotting producers are not included | Analysis scripts, numeric source tables, search/modification settings and extraction-method replicate definitions |
-| MOFA | Model fitting, factor/loadings export, candidate scoring, reconstruction and sensitivity calculations | Aligned molecular matrices, identifier maps, model files and configured exclusions |
+| MOFA | Model fitting, factor/loadings export, candidate scoring, aligned full-model reconstruction and sensitivity calculations | Aligned molecular matrices, identifier maps, model files and configured exclusions; fitting/stability preprocessing order is documented in the workflow |
 | TCGA context | Public matrix preparation, joint PCA, mutation frequencies, pathway themes and ancestry/modality summaries | Public expression/mutation/protein files and clinical metadata with ancestry labels |
 | Clinical summary | No table-generation implementation included | Private clinical metadata and table-assembly code |
 | Figure presentation | Vector rendering and PDF conversion | Numeric plotting inputs, or the source PDF for conversion-only panels |
+| Nextflow | Site-aware DSL2 graph and staging/audit adapter | Private complete handoff package and large-asset tree; site dependencies; no fresh scientific Nextflow run was supplied |
 
 The [figure/table index](figures-and-tables.md) gives panel-specific inputs and
 identifies conversion-only figures. Converting a PDF into SVG preserves its
@@ -42,8 +43,15 @@ Record the following with each execution in the private analysis environment:
 - Model inputs, preprocessing, diagnostic outputs and the tables used for plotting.
 
 The [code manifest](source_manifest.json) identifies script filenames and SHA-256
-checksums. File hashes establish code identity, not the validity of a biological
+checksums, source-file identities and configuration adaptations. Files not needed
+for the reported analyses are not exported wholesale from the input packages.
+File hashes establish code identity, not the validity of a biological
 conclusion.
+
+The supplied figure packages contain more exploratory panels than the paper.
+Use the manuscript index rather than the full package inventory to select
+publication outputs. Most supplied SVGs embed raster images; the S10 producer
+exports native SVG/PDF. A file extension alone does not establish vector content.
 
 ## Private Configuration
 

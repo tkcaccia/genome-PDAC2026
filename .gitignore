@@ -50,3 +50,15 @@ external/
 *.log
 __pycache__/
 *.pyc
+.nextflow/
+.nextflow.log*
+nf_reports/
+work/
+*.sif
+*.bed
+*.bed.gz
+# This directory contains source jobs, not raw data. Allow only those source types.
+!scripts/wes/raw/
+scripts/wes/raw/*
+!scripts/wes/raw/*.sh
+!scripts/wes/raw/*.sbatch

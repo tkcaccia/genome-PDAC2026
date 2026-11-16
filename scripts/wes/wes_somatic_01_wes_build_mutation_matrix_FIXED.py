@@ -1,33 +1,11 @@
 #!/usr/bin/env python3
-# PDAC2026 analysis: VEP-annotated DeepSomatic calls, retained-variant summaries and paired MSI launcher.
-# Input formats and private configuration: docs/inputs.md.
-# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
-"""Build a WES gene x patient mutation matrix from per-patient VEP-annotated
-DeepSomatic VCFs, with AD/VAF/DP quality filtering and mutation-count plots.
-
-Each input VCF represents one patient and contains a tumour sample column.
-Matched-normal evidence can occur in FORMAT fields NDP/NAD/NAF.
-Somatic call status is read from FILTER; no genotype-based subtraction
-is performed by this downstream parser.
-
-Inputs:
-- A directory of per-patient VEP-annotated VCFs, one per patient, e.g.:
-    vep_annotated/patient_<id>.somatic.vep.vcf.gz
-    vep_annotated/patient_<id>.somatic.vep.vcf.gz
-    ...
-  (VEP annotation must be run first — this script does not annotate.)
-
-Outputs:
-- results/wes/wes_somatic_variants.tsv
-- results/wes/wes_mutation_matrix.csv
-- results/wes/wes_mutation_burden.csv
-- results/wes/wes_oncoprint.png
-- results/wes/wes_mutation_burden.png
-"""
+# WES processing, variant summaries, coverage and paired MSI.
+# Private paths/cohorts: config/private.example.json; never store populated inputs here.
+"""Publication analysis; inputs and outputs are documented in docs/workflow.md."""
 
 from __future__ import annotations
 
-from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path
+from pdac_runtime import project_root, private_path, private_value, cohort as configured_cohort, code_path
 
 import argparse
 import gzip
@@ -36,12 +14,12 @@ from pathlib import Path
 import pandas as pd
 
 
-PROJECT_ROOT = project_root()
+PROJECT_ROOT = private_path("handoff_root")
 DEFAULT_VCF_DIR = PROJECT_ROOT / "vep_annotated"
 DEFAULT_OUTDIR = PROJECT_ROOT / "results" / "wes"
 DEFAULT_VCF_GLOB = "patient_*.vep.vcf.gz"
 
-# Variant-level depth and allele-support thresholds for matrix construction.
+# Variant-level filtering thresholds.
 DEFAULT_MIN_DP = 10
 DEFAULT_MIN_ALT_READS = 3
 DEFAULT_MIN_VAF = 0.05
@@ -82,7 +60,7 @@ def parse_format_values(format_keys: list[str], sample_field: str) -> dict[str, 
 
 
 def passes_quality_filters(fmt: dict[str, str], min_dp: int, min_alt_reads: int, min_vaf: float) -> bool:
-    """Apply depth, alternate-read and variant-allele-fraction criteria."""
+    """AD/VAF/DP quality filtering — not present in the original script."""
     dp_str = fmt.get("DP", "")
     if dp_str in ("", "."):
         return False
@@ -125,7 +103,7 @@ def iter_patient_vcfs(vcf_dir: Path, pattern: str):
 
 
 def extract_patient_id(sample_name: str) -> str:
-    # Strip the tissue suffix from the numeric patient identifier.
+    # Remove the tissue suffix while preserving the configured patient identifier.
     return sample_name[:-1] if sample_name and sample_name[-1] in ("N", "T") else sample_name
 
 

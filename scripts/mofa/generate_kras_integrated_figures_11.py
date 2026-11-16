@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-# PDAC2026 analysis: Three-view MOFA, exported factors/loadings, candidate ranking and sensitivity summaries.
-# Input formats and private configuration: docs/inputs.md.
-# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
-"""Generate KRAS-stratified and integrated feature figures for revised 11-PDAC cohort."""
-
-from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path
+# MOFA fitting, molecular integration and publication panels.
+# Private paths/cohorts: config/private.example.json; never store populated inputs here.
+"""Publication analysis; inputs and outputs are documented in docs/workflow.md."""
+from pdac_runtime import project_root, private_path, private_value, cohort as configured_cohort, code_path
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -14,13 +12,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import mannwhitneyu
 
-ROOT = project_root()
-RUN = ROOT / "results/mofa_revised_11_20260916"
-OUT = ROOT / "results/figures/final_11_figures"
+ROOT = private_path("handoff_root")
+RUN = ROOT / "mofa" / "pdac_11"
+OUT = RUN / "figures"
 TAB = RUN / "tables"
-PATIENTS = [f"{patient}T" for patient in configured_cohort("primary_pdac")]
-KRAS_MUTANT = [f"{patient}T" for patient in configured_cohort("kras_hotspot_retained")]
-KRAS_WT = [f"{patient}T" for patient in configured_cohort("kras_hotspot_not_retained")]
+PATIENTS = [f"{p}T" for p in configured_cohort("primary_pdac")]
+KRAS_HOTSPOT_POSITIONS = {"25245347", "25245350", "25245351", "25227342"}
 
 
 def load_matrix(name):
@@ -72,17 +69,28 @@ def integrated_heatmap():
 def kras_stratified():
     rna = load_matrix("rnaseq_delta.csv")
     prot = load_matrix("proteomics_log2.csv")
+    calls = pd.read_csv(ROOT / "wes" / "analysis" / "outputs" / "primary_pdac" / "wes_somatic_variants.tsv", sep="\t")
+    kras = calls[calls["SYMBOL"].eq("KRAS") & calls["POS"].astype(str).isin(KRAS_HOTSPOT_POSITIONS)]
+    mutant_patients = set(kras["patient"].astype(str))
+    kras_mutant = [sample for sample in PATIENTS if sample[:-1] in mutant_patients]
+    kras_wildtype = [sample for sample in PATIENTS if sample[:-1] not in mutant_patients]
+    pd.DataFrame({
+        "sample": PATIENTS,
+        "patient": [sample[:-1] for sample in PATIENTS],
+        "group": ["KRAS-hotspot mutant" if sample in kras_mutant else "No detected KRAS hotspot" for sample in PATIENTS],
+    }).to_csv(TAB / "kras_hotspot_groups_11_pdac.csv", index=False)
     rows = []
     for view, matrix in [("RNA", rna), ("Proteomics", prot)]:
         for feature in matrix.index:
-            mutant = matrix.loc[feature, KRAS_MUTANT].dropna()
-            wild = matrix.loc[feature, KRAS_WT].dropna()
+            mutant = matrix.loc[feature, kras_mutant].dropna()
+            wild = matrix.loc[feature, kras_wildtype].dropna()
             if len(mutant) >= 3 and len(wild) >= 3:
                 _, pvalue = mannwhitneyu(mutant, wild, alternative="two-sided", method="exact")
                 rows.append({"view": view, "feature": feature, "mutant_mean": mutant.mean(), "wildtype_mean": wild.mean(), "difference_mutant_minus_wildtype": mutant.mean() - wild.mean(), "p_value": pvalue})
     result = pd.DataFrame(rows); result["FDR"] = result.groupby("view")["p_value"].transform(lambda x: bh(x.values)); result.sort_values(["view", "FDR", "p_value"]).to_csv(TAB / "kras_mutant_vs_wildtype_feature_comparison_11_pdac.csv", index=False)
     top = result.sort_values("p_value").head(30).copy(); top["label"] = top["feature"].astype(str).str.slice(0, 32); top["signed_minus_log10_p"] = -np.log10(top.p_value.clip(lower=1e-300)) * np.sign(top.difference_mutant_minus_wildtype); top = top.sort_values("signed_minus_log10_p")
-    fig, ax = plt.subplots(figsize=(10, 9)); ax.barh(top.label, top.signed_minus_log10_p, color=top.view.map({"RNA":"#e76f51", "Proteomics":"#2a9d8f"})); ax.axvline(0, color="black", linewidth=.8); ax.set_xlabel("Signed -log10 nominal p-value"); ax.set_ylabel("Feature"); ax.set_title("KRAS-mutant versus KRAS-wild-type RNA/proteomics features\nExploratory: n=5 versus n=6"); ax.grid(axis="x", alpha=.25, linestyle=":"); fig.tight_layout(); fig.savefig(OUT / "Figure_23_kras_mutant_vs_wildtype_features_11_pdac.png", dpi=300, bbox_inches="tight"); plt.close(fig)
+    fig, ax = plt.subplots(figsize=(10, 9)); ax.barh(top.label, top.signed_minus_log10_p, color=top.view.map({"RNA":"#e76f51", "Proteomics":"#2a9d8f"})); ax.axvline(0, color="black", linewidth=.8); ax.set_xlabel("Signed -log10 nominal p-value"); ax.set_ylabel("Feature"); ax.set_title(f"KRAS-hotspot mutant versus no detected hotspot\nExploratory: n={len(kras_mutant)} versus n={len(kras_wildtype)}"); ax.grid(axis="x", alpha=.25, linestyle=":"); fig.tight_layout(); fig.savefig(OUT / "Figure_23_kras_mutant_vs_wildtype_features_11_pdac.png", dpi=300, bbox_inches="tight"); plt.close(fig)
+    print("KRAS-hotspot patients:", [sample[:-1] for sample in kras_mutant], "non-mutant:", [sample[:-1] for sample in kras_wildtype])
 
 
 def main():

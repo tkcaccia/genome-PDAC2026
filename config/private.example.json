@@ -6,7 +6,8 @@
     "immune_tables": "/path/to/private/immune_tables",
     "source_pdfs": "/path/to/private/source_figure_pdfs",
     "salmon_quant_dir": "/path/to/private/salmon_quantifications",
-    "hallmark_gmt": "/path/to/public_references/Enrichr.MSigDB_Hallmark_2020.gmt"
+    "hallmark_gmt": "/path/to/public_references/Enrichr.MSigDB_Hallmark_2020.gmt",
+    "handoff_root": "/path/to/private/workspace/results/bed_2.5"
   },
   "cohorts": {
     "primary_pdac": [],
@@ -17,7 +18,9 @@
     "kras_hotspot_not_retained": []
   },
   "values": {
-    "mofa_exclusion_scenarios": {"full": []},
+    "mofa_exclusion_scenarios": {
+      "full": []
+    },
     "mofa_factor_annotations": {},
     "pca_label_offsets": {}
   }

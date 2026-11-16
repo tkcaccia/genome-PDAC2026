@@ -13,3 +13,4 @@ gseapy
 mygene
 requests
 PyMuPDF
+Pillow

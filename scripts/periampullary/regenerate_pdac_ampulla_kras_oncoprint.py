@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-# PDAC2026 analysis: Separate exploratory PDAC/periampullary comparisons.
-# Input formats and private configuration: docs/inputs.md.
-# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
-"""Render patient-level KRAS mutation status as a compact exploratory oncoprint."""
-
-from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path
+# Separate PDAC and periampullary comparisons.
+# Private paths/cohorts: config/private.example.json; never store populated inputs here.
+"""Publication analysis; inputs and outputs are documented in docs/workflow.md."""
+from pdac_runtime import project_root, private_path, private_value, cohort as configured_cohort, code_path
 from pathlib import Path
 
 import matplotlib
@@ -13,18 +11,21 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch, Rectangle
 import pandas as pd
 
-ROOT = project_root()
-OUT = ROOT / "results/pdac_ampulla_comparison_20260917/figures/pdac_ampulla_kras_status.png"
-VARIANTS = ROOT / "results/wes_revised_11_20260916/tables/kras_variants_all_cohorts.tsv"
-PATIENTS = configured_cohort("all")
-PDAC = set(configured_cohort("primary_pdac"))
-COLORS = {"G12V": "#4C78A8", "Q61L": "#F58518", "G12R": "#E45756", "G12D": "#54A24B", "Wild type": "#EEEEEE"}
+ROOT = private_path("handoff_root")
+OUT_DIR = ROOT / "comparisons/pdac_ampulla_2_5/figures"
+OUT = OUT_DIR / "Figure_7A_kras_mutation.png"
+STATUS_OUT = OUT_DIR / "pdac_ampulla_kras_status.png"
+VARIANTS = ROOT / "wes/analysis/tables/kras_variants_all_cohorts.tsv"
+PATIENTS = configured_cohort("primary_pdac") + configured_cohort("periampullary")
+PDAC = set(PATIENTS[:11])
+COLORS = {"G12V": "#4C78A8", "Q61L": "#F58518", "G12R": "#E45756", "G12D": "#54A24B", "No detected hotspot": "#EEEEEE"}
 
 
 def main() -> None:
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
     variants = pd.read_csv(VARIANTS, sep="\t")
     variants["patient"] = variants["patient"].astype(str)
-    status = {patient: "Wild type" for patient in PATIENTS}
+    status = {patient: "No detected hotspot" for patient in PATIENTS}
     for _, row in variants.iterrows():
         patient = str(row["patient"])
         if patient not in status:
@@ -39,8 +40,8 @@ def main() -> None:
         category = status[patient]
         color = COLORS.get(category, "#984EA3")
         ax.add_patch(Rectangle((index, 0), 1, 1, facecolor=color, edgecolor="white", linewidth=1.5))
-        label = category if category != "Wild type" else "WT"
-        if category != "Wild type":
+        label = category if category != "No detected hotspot" else "No hotspot"
+        if category != "No detected hotspot":
             ax.text(index + .5, .5, label, ha="center", va="center", fontsize=9, color="white", fontweight="bold")
     ax.axvline(len(PDAC), color="black", linewidth=2)
     ax.set_xlim(0, len(PATIENTS)); ax.set_ylim(0, 1)
@@ -54,6 +55,9 @@ def main() -> None:
     for spine in ax.spines.values(): spine.set_visible(False)
     fig.tight_layout(rect=(0, .08, 1, .95))
     fig.savefig(OUT, dpi=300, bbox_inches="tight")
+    fig.savefig(STATUS_OUT, dpi=300, bbox_inches="tight")
+    for extension in ("pdf", "svg"):
+        fig.savefig(OUT.with_suffix(f".{extension}"), dpi=300, bbox_inches="tight")
     plt.close(fig)
     print("status:", status)
 

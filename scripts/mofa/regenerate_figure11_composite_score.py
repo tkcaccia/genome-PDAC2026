@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-# PDAC2026 analysis: Three-view MOFA, exported factors/loadings, candidate ranking and sensitivity summaries.
-# Input formats and private configuration: docs/inputs.md.
-# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
-"""Rank cross-modal candidates by their composite evidence score."""
-
-from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path
+# MOFA fitting, molecular integration and publication panels.
+# Private paths/cohorts: config/private.example.json; never store populated inputs here.
+"""Publication analysis; inputs and outputs are documented in docs/workflow.md."""
+from pdac_runtime import project_root, private_path, private_value, cohort as configured_cohort, code_path
 from pathlib import Path
 
 import matplotlib
@@ -12,12 +10,14 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
-ROOT = project_root()
-EXPORTS = ROOT / "results/mofa_revised_11_20260916/mofa/exports"
-RNA_MAP = ROOT / "reproducible_pipeline_share_20260713_with_outputs/raw_outputs/results/figures/categories/04_cross_cohort_concordance/rnaseq_ensembl_to_symbol.csv"
-PROTEIN_MAP = ROOT / "reproducible_pipeline_share_20260713_with_outputs/raw_outputs/results/comparison_african_tcga/proteomics_index_to_symbol.csv"
-OUT_FIG = ROOT / "results/figures/final_11_figures/Figure_11_top_20_candidates.png"
-OUT_TABLE = ROOT / "results/mofa_revised_11_20260916/tables/mofa_top20_composite_score_11_pdac.csv"
+ROOT = private_path("handoff_root")
+WORKSPACE_ROOT = project_root()
+RUN = ROOT / "mofa" / "pdac_11"
+EXPORTS = RUN / "mofa" / "exports"
+RNA_MAP = WORKSPACE_ROOT / "reproducible_pipeline_share_20260713_with_outputs/raw_outputs/results/figures/categories/04_cross_cohort_concordance/rnaseq_ensembl_to_symbol.csv"
+PROTEIN_MAP = WORKSPACE_ROOT / "reproducible_pipeline_share_20260713_with_outputs/raw_outputs/results/comparison_african_tcga/proteomics_index_to_symbol.csv"
+OUT_FIG = RUN / "figures/Figure_11_top_20_candidates.png"
+OUT_TABLE = RUN / "tables/mofa_top20_composite_score_11_pdac.csv"
 
 MODALITY_COLORS = {"wes": "#2ecc71", "rnaseq": "#3498db", "proteomics": "#e74c3c"}
 

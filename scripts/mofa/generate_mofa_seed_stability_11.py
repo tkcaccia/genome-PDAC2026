@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-# PDAC2026 analysis: Three-view MOFA, exported factors/loadings, candidate ranking and sensitivity summaries.
-# Input formats and private configuration: docs/inputs.md.
-# Methods and code identity: docs/workflow.md and docs/source_manifest.json.
-"""Assess revised 11-patient MOFA stability across independent random seeds."""
-
-from pdac_runtime import project_root, figure_root, private_path, private_value, cohort as configured_cohort, code_path
+# MOFA fitting, molecular integration and publication panels.
+# Private paths/cohorts: config/private.example.json; never store populated inputs here.
+"""Publication analysis; inputs and outputs are documented in docs/workflow.md."""
+from pdac_runtime import project_root, private_path, private_value, cohort as configured_cohort, code_path
 from pathlib import Path
 import h5py
 import matplotlib
@@ -17,10 +15,10 @@ from scipy.optimize import linear_sum_assignment
 from scipy.stats import pearsonr
 from mofapy2.run.entry_point import entry_point
 
-ROOT = project_root()
-RUN = ROOT / "results/mofa_revised_11_20260916"
+ROOT = private_path("handoff_root")
+RUN = ROOT / "mofa" / "pdac_11"
 OUT = RUN / "mofa/seed_stability"
-FIG = ROOT / "results/figures/final_11_figures/Figure_24_mofa_seed_stability.png"
+FIG = RUN / "figures/Figure_24_mofa_seed_stability.png"
 SEEDS = [42, 43, 44]
 VIEWS = ["wes", "rnaseq", "proteomics"]
 

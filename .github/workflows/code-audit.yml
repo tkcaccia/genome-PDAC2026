@@ -18,4 +18,4 @@ jobs:
       - name: Inspect source without importing analysis modules
         run: python tools/check_repository.py
       - name: Check shell syntax
-        run: find . -name '*.sh' -print0 | xargs -0 -n1 bash -n
+        run: find scripts -type f \( -name '*.sh' -o -name '*.sbatch' \) -print0 | xargs -0 -n1 bash -n
