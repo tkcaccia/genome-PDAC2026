@@ -22,7 +22,7 @@ and method descriptions; patient-level inputs and results remain private.
 | Programme and phenotype scoring | Named Hallmark sets, ssGSEA, feature standardisation, composites and median-based grouping | Selected GMT, mapped-gene coverage and complete tumour score matrices |
 | Protein abundance and normalization | Protein-report parsing and integration/QC normalization | Quantified protein report and aligned sample metadata |
 | Protein differential abundance, extraction-method figures and selected protein enrichment tables | Exact statistical/plotting producers are not included | Analysis scripts, numeric source tables, search/modification settings and extraction-method replicate definitions |
-| MOFA | Model fitting, factor/loadings export, candidate scoring, aligned full-model reconstruction and sensitivity calculations | Aligned molecular matrices, identifier maps, model files and configured exclusions; fitting/stability preprocessing order is documented in the workflow |
+| MOFA | Model fitting, factor/loadings export, candidate scoring, aligned full-model reconstruction and saved-model-aligned stability | Aligned molecular matrices, identifier maps, model files and configured exclusions; stability source corrections require rerunning before reported values are changed |
 | TCGA context | Public matrix preparation, joint PCA, mutation frequencies, pathway themes and ancestry/modality summaries | Public expression/mutation/protein files and clinical metadata with ancestry labels |
 | Clinical summary | No table-generation implementation included | Private clinical metadata and table-assembly code |
 | Figure presentation | Vector rendering and PDF conversion | Numeric plotting inputs, or the source PDF for conversion-only panels |
@@ -64,6 +64,7 @@ identifiers or results. See [the input guide](inputs.md).
 
 `tools/check_repository.py` checks source parsing, configuration keys, file types,
 privacy patterns, code checksums and documentation links. GitHub Actions runs
-these static checks and shell-syntax validation without importing analysis
-modules. These checks are distinct from executing or statistically validating
-an analysis.
+these static checks, shell-syntax validation and synthetic-only input/staging
+tests. The synthetic tests do not import the fitting scripts or invoke scientific
+tools. They establish input handling and file protection, not the validity of
+patient results or a complete Nextflow scientific run.

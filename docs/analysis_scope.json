@@ -445,6 +445,12 @@
       "supports": [
         "Figure S12"
       ]
+    },
+    "scripts/mofa/model_inputs.py": {
+      "role": "Read-only exact saved-model input alignment for numerical stability",
+      "supports": [
+        "Methods: MOFA numerical stability"
+      ]
     }
   }
 }

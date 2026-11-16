@@ -148,7 +148,9 @@ and log transformation belong to preparation of that input, not a paired
 tumour-normal protein response. The continuous views are standardized, Bernoulli
 and Gaussian likelihoods are used as appropriate, and the model has
 five factors. In the fitting script, row standardisation precedes variance-based
-feature selection; the separate stability script selects before standardising.
+feature selection. The stability implementation reads the saved model's sample
+and feature names and takes those exact rows/columns from the prepared QC
+matrices, without selecting or standardising a second time.
 The script writes input matrices, QC filters, model, factors,
 loadings, clustering and interpretation outputs.
 
@@ -160,7 +162,10 @@ single-factor and full-model `100 * (1 - SSE/SST)` against the centred training
 baseline. Per-factor values are nonadditive and these are in-sample diagnostics.
 [Other MOFA summaries](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/mofa/generate_remaining_mofa_publication_figures_11.py)
 and [independent-seed fitting](https://github.com/tkcaccia/genome-PDAC2026/blob/main/scripts/mofa/generate_mofa_seed_stability_11.py)
-are separate helpers. Sample-exclusion sensitivity in the main model script
+are separate helpers. Seed scores are matched and sign-aligned to the saved
+primary model, and new outputs are isolated from the supplied results. A rerun
+is required before using those outputs to update reported stability values.
+Sample-exclusion sensitivity in the main model script
 reclusters retained rows of existing factor scores; it does not refit MOFA.
 Result-specific factor names and exclusion membership stay in private configuration.
 

@@ -65,8 +65,8 @@
       "path": "scripts/mofa/generate_mofa_seed_stability_11.py",
       "source_filename": "scripts/10_mofa_seed_stability_2_5.py",
       "source_sha256": "d5292368ddba030df086d123668d8643c80a1c385b4f4b93cd57ad0a3d7a4619",
-      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
-      "sha256": "bfb81784ea0b51bf6eacc638edf3f613be43bcba066a7c6ac71095e9af0dce11"
+      "adaptations": "Saved-model aligned QC inputs and primary-model reference correlations; separate output directory. Implementation correction only; no study rerun or replacement of reported values.",
+      "sha256": "f1a33a95ee9bd7a80ea5d8b5b574a8c22f830604914addd8c2df08ccebfa5b57"
     },
     {
       "path": "scripts/mofa/generate_remaining_mofa_publication_figures_11.py",
@@ -81,6 +81,11 @@
       "source_sha256": "af06b7753dd5c2efbf6dfae3de41af9afc0a6f53f843d20c9fec9748f583e3c4",
       "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
       "sha256": "096b396458e361ffce46c20d85b29b6a5c9cbf28d520ae232a842f1214fd8dd3"
+    },
+    {
+      "path": "scripts/mofa/model_inputs.py",
+      "adaptations": "Shared read-only saved-model feature/sample alignment and validation; no feature reselection, model fitting or study execution.",
+      "sha256": "2a3ddc05b012ac239ea60783e03399f857c7d32b4cd87ab288cc2029ff65feb9"
     },
     {
       "path": "scripts/mofa/pathways_and_targets.py",
@@ -303,8 +308,8 @@
       "path": "scripts/wes/raw/26_msi_scan.sbatch",
       "source_filename": "scripts/26_msi_scan.sbatch",
       "source_sha256": "d2ae418f667507b283b2f0a0b051c54011d557da2d066b7e961a0aaca87c8b35",
-      "adaptations": "Private paths and cohort membership parameterised; computational source retained without execution.",
-      "sha256": "f4ead95dd5d4c15e26405ff49be933236aa6e1a40776a000f944bc1aeced38f3"
+      "adaptations": "Verify pinned binary checksum and record its supplied source commit without relying on a Git checkout. Scientific scan parameters unchanged; not executed on study inputs.",
+      "sha256": "de64baaa997e1020f0cf58c12f7bc09d0a415838fc6fb1cbed91ffba324b2533"
     },
     {
       "path": "scripts/wes/raw/27_msi_paired.sbatch",
@@ -366,8 +371,8 @@
       "path": "workflow/nextflow/stage.py",
       "source_filename": "nextflow/stage.py",
       "source_sha256": "dc044f69107c57ca9a046ceef9980b8c247bc7a45c8bbf37bce57cf0ac44703e",
-      "adaptations": "Private package and asset roots made explicit; interpreter generic; audit is the safe default. Not executed here.",
-      "sha256": "dc044f69107c57ca9a046ceef9980b8c247bc7a45c8bbf37bce57cf0ac44703e"
+      "adaptations": "Private roots, non-overlap, empty workspace, asset traversal/size and exclusive audit-output checks; install checksum-verifying MSI scan source. Tested only with synthetic assets and mocked external commands.",
+      "sha256": "0869ca123144f2b59fc322594878a7ef1af84c8db873467943f654656c716e05"
     }
   ]
 }

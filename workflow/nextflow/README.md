@@ -25,8 +25,10 @@ environment. Adapt site installation paths before using another cluster.
 The recorded WES/MOFA Python versions are in
 [the environment snapshot](../../env/requirements_recorded_wes_mofa.txt); it is
 not an independently resolved lockfile or the RNA/TME environment.
-The scan job records provenance using `git rev-parse` and therefore expects
-the MSI source checkout, not just a copied binary directory.
+The scan job verifies the recorded MSI binary SHA-256 before running and records
+its pinned source commit. It does not infer provenance from a parent Git checkout.
+Preparation installs this source job into the private execution layout; it works
+with the packaged binary even when the complete source checkout is absent.
 
 ## Commands
 
@@ -55,6 +57,14 @@ nextflow run /path/to/genome-PDAC2026/workflow/nextflow/main.nf -profile slurm \
 Preparation refuses an existing run root. Preserve the new run and Nextflow work
 directory for `-resume`; never run two controllers against one output tree.
 Logs and reports can contain private paths/identifiers and must not be committed.
+The adapter also rejects nonempty workspaces, overlapping input/output trees,
+public-repository destinations and traversal paths in the asset manifest. An
+audit report is created exclusively outside its input tree.
+
+The site wrapper otherwise executes the private package's orchestration scripts.
+Standalone saved-model stability code in the public MOFA folder is not silently
+substituted for private package fits. Align the execution package explicitly
+before interpreting a new stability run as the manuscript analysis.
 
 ## Execution Evidence
 

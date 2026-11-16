@@ -73,4 +73,6 @@ rather than treating the directory listing as an execution order.
 
 For a source-only check, `python tools/check_repository.py` reads code and
 documentation without importing or executing analysis scripts. GitHub Actions
-uses only static checks; it does not run any study analysis.
+also runs synthetic-only input and staging tests; it does not run any study
+analysis. The tests never load patient files, fit models or invoke scientific
+executables.
